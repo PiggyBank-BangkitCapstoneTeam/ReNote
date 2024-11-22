@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.piggybank.renote.databinding.FragmentEditRekeningBinding
+import kotlinx.coroutines.launch
 
 class EditRekeningFragment : Fragment() {
 
@@ -38,14 +40,16 @@ class EditRekeningFragment : Fragment() {
             if (TextUtils.isEmpty(newAmount)) {
                 Toast.makeText(context, "Jumlah rekening tidak boleh kosong", Toast.LENGTH_SHORT).show()
             } else {
-                val updatedRekening = args.rekening.copy(uang = newAmount.toLong())
+                lifecycleScope.launch {
+                    val updatedRekening = args.rekening.copy(uang = newAmount.toLong())
 
-                val isUpdated = rekeningViewModel.updateRekening(updatedRekening)
+                    val isUpdated = rekeningViewModel.updateRekening(updatedRekening)
 
-                if (isUpdated) {
-                    findNavController().navigateUp()
-                } else {
-                    Toast.makeText(context, "Terjadi kesalahan saat memperbarui rekening", Toast.LENGTH_SHORT).show()
+                    if (isUpdated) {
+                        findNavController().navigateUp()
+                    } else {
+                        Toast.makeText(context, "Terjadi kesalahan saat memperbarui rekening", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -55,13 +59,15 @@ class EditRekeningFragment : Fragment() {
         }
 
         binding.deleteIcon.setOnClickListener {
-            val isDeleted = rekeningViewModel.deleteRekening(args.rekening)
+            lifecycleScope.launch {
+                val isDeleted = rekeningViewModel.deleteRekening(args.rekening)
 
-            if (isDeleted) {
-                Toast.makeText(context, "Rekening berhasil dihapus", Toast.LENGTH_SHORT).show()
-                findNavController().navigateUp()
-            } else {
-                Toast.makeText(context, "Terjadi kesalahan saat menghapus rekening", Toast.LENGTH_SHORT).show()
+                if (isDeleted) {
+                    Toast.makeText(context, "Rekening berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
+                } else {
+                    Toast.makeText(context, "Terjadi kesalahan saat menghapus rekening", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

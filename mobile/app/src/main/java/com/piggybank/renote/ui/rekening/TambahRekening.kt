@@ -7,8 +7,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.piggybank.renote.R
+import kotlinx.coroutines.launch
 
 class TambahRekening : Fragment(R.layout.fragment_tambah_rekening) {
 
@@ -31,12 +33,13 @@ class TambahRekening : Fragment(R.layout.fragment_tambah_rekening) {
                 val saldo = jumlahRekening.toDoubleOrNull()
                 if (saldo != null) {
                     val rekeningBaru = Rekening(namaRekening, saldo.toLong())
-                    // Cek apakah rekening sudah ada
-                    val isAdded = rekeningViewModel.addRekening(rekeningBaru)
-                    if (isAdded) {
-                        findNavController().navigateUp()
-                    } else {
-                        Toast.makeText(requireContext(), "Rekening Sudah '$namaRekening' Terdaftar", Toast.LENGTH_SHORT).show()
+                    lifecycleScope.launch {
+                        val isAdded = rekeningViewModel.addRekening(rekeningBaru)
+                        if (isAdded) {
+                            findNavController().navigateUp()
+                        } else {
+                            Toast.makeText(requireContext(), "Rekening '$namaRekening' Sudah Terdaftar", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
                     Toast.makeText(requireContext(), "Jumlah rekening tidak valid", Toast.LENGTH_SHORT).show()

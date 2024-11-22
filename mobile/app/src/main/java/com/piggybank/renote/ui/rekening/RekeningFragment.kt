@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentRekeningBinding
 import com.piggybank.renote.ui.catatan.CatatanViewModel
+import kotlinx.coroutines.launch
 
 class RekeningFragment : Fragment() {
 
@@ -31,7 +33,9 @@ class RekeningFragment : Fragment() {
 
         // Recalculate total saldo dynamically
         catatanViewModel.saldoChangeListener = { _ ->
-            catatanViewModel.refreshSaldo(rekeningViewModel)
+            lifecycleScope.launch {
+                catatanViewModel.refreshSaldo(rekeningViewModel)
+            }
         }
 
         _binding = FragmentRekeningBinding.inflate(inflater, container, false)
@@ -64,7 +68,9 @@ class RekeningFragment : Fragment() {
         }
 
         // Ensure saldo is refreshed when the fragment is displayed
-        catatanViewModel.refreshSaldo(rekeningViewModel)
+        lifecycleScope.launch {
+            catatanViewModel.refreshSaldo(rekeningViewModel)
+        }
 
         return root
     }
