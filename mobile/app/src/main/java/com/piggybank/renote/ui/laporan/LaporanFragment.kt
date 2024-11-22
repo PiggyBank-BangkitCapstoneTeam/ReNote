@@ -47,7 +47,6 @@ class LaporanFragment : Fragment() {
         "Des" to "Desember"
     )
 
-
     private val pemasukanColors = listOf(
         Color.parseColor("#4CAF50"), Color.parseColor("#FFEB3B"),
         Color.parseColor("#2196F3"), Color.parseColor("#9C27B0")
@@ -105,21 +104,33 @@ class LaporanFragment : Fragment() {
     }
 
     private fun updatePieCharts() {
-        val pemasukanData = mutableListOf<PieEntry>()
-        val pengeluaranData = mutableListOf<PieEntry>()
+        val pemasukanCounts = mutableMapOf<String, Int>()
+        val pengeluaranCounts = mutableMapOf<String, Int>()
 
         catatanViewModel.catatanList.value?.forEach { catatan ->
-            val nominal = catatan.nominal.toFloat()
-            if (nominal >= 0) {
-                pemasukanData.add(PieEntry(nominal, catatan.kategori))
+            if (catatan.nominal >= 0.toString()) {
+                pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0) + 1
             } else {
-                pengeluaranData.add(PieEntry(-nominal, catatan.kategori))
+                pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0) + 1
             }
+        }
+
+
+        val totalPemasukan = pemasukanCounts.values.sum().toFloat()
+        val totalPengeluaran = pengeluaranCounts.values.sum().toFloat()
+
+        val pemasukanData = pemasukanCounts.map { (kategori, count) ->
+            PieEntry((count / totalPemasukan) * 100, kategori)
+        }
+
+        val pengeluaranData = pengeluaranCounts.map { (kategori, count) ->
+            PieEntry((count / totalPengeluaran) * 100, kategori)
         }
 
         setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
         setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
     }
+
 
     private fun setupPieChart(pieChart: PieChart, data: List<PieEntry>, colors: List<Int>) {
         val dataSet = PieDataSet(data, "").apply {
