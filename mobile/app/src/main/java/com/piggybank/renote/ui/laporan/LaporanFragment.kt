@@ -125,7 +125,6 @@ class LaporanFragment : Fragment() {
         val selectedDate = laporanViewModel.selectedDate.value ?: return
         val (selectedMonth, selectedYear) = selectedDate
 
-        // Filter catatan berdasarkan bulan dan tahun yang dipilih
         val filteredCatatan = catatanViewModel.catatanList.value?.filter { catatan ->
             val parts = catatan.tanggal.split("-")
             val month = parts.getOrNull(1)?.toIntOrNull()
