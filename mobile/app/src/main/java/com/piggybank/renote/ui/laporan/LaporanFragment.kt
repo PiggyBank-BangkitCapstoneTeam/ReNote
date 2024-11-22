@@ -21,30 +21,32 @@ import com.github.mikephil.charting.data.PieEntry
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentLaporanBinding
+import com.piggybank.renote.ui.catatan.CatatanViewModel
 
 class LaporanFragment : Fragment() {
 
     private var _binding: FragmentLaporanBinding? = null
     private val binding get() = _binding!!
     private lateinit var laporanViewModel: LaporanViewModel
+    private val catatanViewModel: CatatanViewModel by lazy {
+        ViewModelProvider(requireActivity()).get(CatatanViewModel::class.java)
+    }
 
     private val monthMap = mapOf(
-        "Jan" to "Januari", "Feb" to "Februari", "Mar" to "Maret",
-        "Apr" to "April", "Mei" to "Mei", "Jun" to "Juni",
-        "Jul" to "Juli", "Agust" to "Agustus", "Sept" to "September",
-        "Okt" to "Oktober", "Nov" to "November", "Des" to "Desember"
+        "Jan" to "Januari",
+        "Feb" to "Februari",
+        "Mar" to "Maret",
+        "Apr" to "April",
+        "Mei" to "Mei",
+        "Jun" to "Juni",
+        "Jul" to "Juli",
+        "Agust" to "Agustus",
+        "Sept" to "September",
+        "Okt" to "Oktober",
+        "Nov" to "November",
+        "Des" to "Desember"
     )
 
-    private val pemasukanData = listOf(
-        PieEntry(40f, "Gaji"), PieEntry(30f, "Investasi"),
-        PieEntry(20f, "Paruh Waktu"), PieEntry(10f, "Lain-lain")
-    )
-
-    private val pengeluaranData = listOf(
-        PieEntry(25f, "Belanja"), PieEntry(20f, "Makanan"),
-        PieEntry(15f, "Minuman"), PieEntry(10f, "Pulsa"),
-        PieEntry(20f, "Transportasi"), PieEntry(10f, "Lain-lain")
-    )
 
     private val pemasukanColors = listOf(
         Color.parseColor("#4CAF50"), Color.parseColor("#FFEB3B"),
@@ -58,8 +60,7 @@ class LaporanFragment : Fragment() {
     )
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         laporanViewModel = ViewModelProvider(this).get(LaporanViewModel::class.java)
 
@@ -67,15 +68,13 @@ class LaporanFragment : Fragment() {
         val root: View = binding.root
 
         laporanViewModel.selectedDate.observe(viewLifecycleOwner) { (month, year) ->
-            binding.dateDropdown.text = "${monthMap[month] ?: month} $year"
+            binding.dateDropdown.text = "$month $year"
+            updatePieCharts()
         }
 
         binding.dateDropdown.setOnClickListener {
             showMonthYearPicker()
         }
-
-        setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
-        setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
 
         binding.radioPemasukan.isChecked = true
         binding.pieChartPemasukan.visibility = View.VISIBLE
@@ -94,7 +93,32 @@ class LaporanFragment : Fragment() {
             }
         }
 
+        observeCatatanChanges()
+
         return root
+    }
+
+    private fun observeCatatanChanges() {
+        catatanViewModel.catatanList.observe(viewLifecycleOwner) {
+            updatePieCharts()
+        }
+    }
+
+    private fun updatePieCharts() {
+        val pemasukanData = mutableListOf<PieEntry>()
+        val pengeluaranData = mutableListOf<PieEntry>()
+
+        catatanViewModel.catatanList.value?.forEach { catatan ->
+            val nominal = catatan.nominal.toFloat()
+            if (nominal >= 0) {
+                pemasukanData.add(PieEntry(nominal, catatan.kategori))
+            } else {
+                pengeluaranData.add(PieEntry(-nominal, catatan.kategori))
+            }
+        }
+
+        setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
+        setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
     }
 
     private fun setupPieChart(pieChart: PieChart, data: List<PieEntry>, colors: List<Int>) {
