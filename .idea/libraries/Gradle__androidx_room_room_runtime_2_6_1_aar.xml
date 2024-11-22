@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.room:room-runtime:2.6.1@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/29fdba88216b7f649ab75409a249b2d5/transformed/room-runtime-2.6.1/jars/classes.jar!/" />
+      <root url="file://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/29fdba88216b7f649ab75409a249b2d5/transformed/room-runtime-2.6.1/AndroidManifest.xml" />
+      <root url="file://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/29fdba88216b7f649ab75409a249b2d5/transformed/room-runtime-2.6.1/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/modules-2/files-2.1/androidx.room/room-runtime/2.6.1/32d0372c48888813c86c9fde561182c68745154d/room-runtime-2.6.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

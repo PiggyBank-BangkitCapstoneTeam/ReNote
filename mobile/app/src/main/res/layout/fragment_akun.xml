@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.Akun.AkunFragment">
+
+    <TextView
+        android:id="@+id/title_akun"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_brown"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/menu_akun"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextContrastCheck" />
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/profile_gambar"
+        android:src="@drawable/profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_akun" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_image">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/menu_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drawableEndCompat="@drawable/baseline_arrow_right"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:text="@string/profile"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/menu_bahasa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drawableEndCompat="@drawable/baseline_arrow_right"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:text="@string/bahasa"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/menu_bantuan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drawableEndCompat="@drawable/baseline_arrow_right"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:text="@string/bantuan"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/menu_tentang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drawableEndCompat="@drawable/baseline_arrow_right"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:text="@string/tentang"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.media:media:1.0.0@aar" external-system-id="GRADLE">
+    <ANNOTATIONS>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/73e01425359b543d68d49f49a7c9bd6c/transformed/media-1.0.0/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="file://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/73e01425359b543d68d49f49a7c9bd6c/transformed/media-1.0.0/AndroidManifest.xml" />
+      <root url="file://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/73e01425359b543d68d49f49a7c9bd6c/transformed/media-1.0.0/res" />
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/73e01425359b543d68d49f49a7c9bd6c/transformed/media-1.0.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/modules-2/files-2.1/androidx.media/media/1.0.0/5faf25be15e16e27275f5c7e04e15e944ebccea0/media-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

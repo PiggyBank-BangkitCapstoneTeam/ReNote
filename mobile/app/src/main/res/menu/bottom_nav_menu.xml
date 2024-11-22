@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_catatan"
+        android:icon="@drawable/catatan"
+        android:title="@string/menu_catatan" />
+
+    <item
+        android:id="@+id/navigation_rekening"
+        android:icon="@drawable/rekening"
+        android:title="@string/menu_rekening" />
+
+    <item
+        android:id="@+id/navigation_laporan"
+        android:icon="@drawable/laporan"
+        android:title="@string/menu_laporan" />
+
+    <item
+        android:id="@+id/navigation_akun"
+        android:icon="@drawable/user"
+        android:title="@string/menu_akun" />
+
+</menu>

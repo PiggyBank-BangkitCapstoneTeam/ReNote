@@ -1,0 +1,189 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    tools:context=".ui.catatan.TambahCatatan">
+
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/back_icon"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/tambah"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center" />
+
+        <ImageView
+            android:id="@+id/icon_camera"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/camera"
+            android:contentDescription="@string/camera_icon"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_bottom_topbar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="top_bar" />
+
+    <RadioGroup
+        android:id="@+id/toggle_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/barrier_bottom_topbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <RadioButton
+            android:id="@+id/radio_pengeluaran"
+            style="@style/ToggleButtonStyle"
+            android:text="@string/pengeluaran"
+            android:background="@drawable/toggle_selector"
+            android:button="@null"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/radio_pemasukan"
+            style="@style/ToggleButtonStyle"
+            android:text="@string/pemasukan"
+            android:background="@drawable/toggle_selector"
+            android:button="@null"
+            android:layout_weight="1"
+            android:padding="12dp" />
+    </RadioGroup>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toggle_group"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/title_scan_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/hasil_scan"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/text_scan_result"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/rounded_output"
+                android:hint="@string/hasil_scan"
+                android:padding="16dp"
+                android:gravity="top|start"
+                android:textColorHint="@color/Gainsboro"
+                android:layout_marginBottom="16dp" />
+
+            <Spinner
+                android:id="@+id/spinner_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_stroke"
+                android:layout_marginBottom="16dp"
+                android:padding="16dp"/>
+
+            <EditText
+                android:id="@+id/input_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/jumlah_nominal"
+                android:inputType="number"
+                android:background="@drawable/edit_text_stroke"
+                android:padding="16dp"
+                android:autofillHints="AUTOFILL_HINT_CURRENCY_AMOUNT"
+                android:layout_marginBottom="16dp" />
+
+            <EditText
+                android:id="@+id/input_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/deskripsi_transaksi"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:background="@drawable/edit_text_stroke"
+                android:padding="16dp"
+                android:autofillHints="AUTOFILL_HINT_DESCRIPTION"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_gravity="end"
+                android:padding="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/smokegray">
+
+                <ImageView
+                    android:id="@+id/icon_calendar"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_calendar"
+                    android:contentDescription="@string/icon_calendar" />
+
+                <TextView
+                    android:id="@+id/text_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tanggal"
+                    android:textSize="16sp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button_create"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/buat"
+                android:background="@drawable/rounded_background"
+                android:textColor="@android:color/white"
+                android:paddingVertical="12dp"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.appcompat:appcompat:1.7.0@aar" external-system-id="GRADLE">
+    <ANNOTATIONS>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/2c722c842b103aee232cf0ed992f5953/transformed/appcompat-1.7.0/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/2c722c842b103aee232cf0ed992f5953/transformed/appcompat-1.7.0/jars/classes.jar!/" />
+      <root url="file://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/2c722c842b103aee232cf0ed992f5953/transformed/appcompat-1.7.0/res" />
+      <root url="file://C:/Program Files (x86)/Java/jdk-23/caches/8.9/transforms/2c722c842b103aee232cf0ed992f5953/transformed/appcompat-1.7.0/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://C:/Program Files (x86)/Java/jdk-23/caches/modules-2/files-2.1/androidx.appcompat/appcompat/1.7.0/c66c25a939bfe4b18249922dc4e7a19caca8bf68/appcompat-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

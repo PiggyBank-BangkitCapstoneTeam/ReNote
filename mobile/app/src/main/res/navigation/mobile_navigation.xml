@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_catatan">
+
+    <fragment
+        android:id="@+id/navigation_catatan"
+        android:name="com.piggybank.renote.ui.catatan.CatatanFragment"
+        android:label="@string/menu_catatan"
+        tools:layout="@layout/fragment_catatan">
+        <action
+            android:id="@+id/action_catatanFragment_to_editCatatan"
+            app:destination="@id/navigation_editCatatan" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_rekening"
+        android:name="com.piggybank.renote.ui.rekening.RekeningFragment"
+        android:label="@string/menu_rekening"
+        tools:layout="@layout/fragment_rekening">
+        <action
+            android:id="@+id/action_rekeningFragment_to_editRekening"
+            app:destination="@id/navigation_editRekening" />
+        <action
+            android:id="@+id/action_rekeningFragment_to_tambahRekening"
+            app:destination="@id/navigation_tambahRekening" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_tambahRekening"
+        android:name="com.piggybank.renote.ui.rekening.TambahRekening"
+        android:label="Tambah Rekening"
+        tools:layout="@layout/fragment_tambah_rekening" />
+
+    <fragment
+        android:id="@+id/navigation_laporan"
+        android:name="com.piggybank.renote.ui.laporan.LaporanFragment"
+        android:label="@string/menu_laporan"
+        tools:layout="@layout/fragment_laporan" />
+
+    <fragment
+        android:id="@+id/navigation_akun"
+        android:name="com.piggybank.renote.ui.Akun.AkunFragment"
+        android:label="@string/menu_akun"
+        tools:layout="@layout/fragment_akun">
+        <action
+            android:id="@+id/action_akunFragment_to_profileFragment"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_akunFragment_to_bantuanFragment"
+            app:destination="@id/navigation_bantuan" />
+        <action
+            android:id="@+id/action_akunFragment_to_tentangFragment"
+            app:destination="@id/navigation_tentang" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_tambahCatatan"
+        android:name="com.piggybank.renote.ui.catatan.TambahCatatan"
+        android:label="Detail"
+        tools:layout="@layout/fragment_tambah" />
+
+    <fragment
+        android:id="@+id/navigation_editCatatan"
+        android:name="com.piggybank.renote.ui.catatan.EditCatatan"
+        android:label="Edit Catatan"
+        tools:layout="@layout/fragment_edit_catatan" />
+
+    <fragment
+        android:id="@+id/navigation_editRekening"
+        android:name="com.piggybank.renote.ui.rekening.EditRekeningFragment"
+        android:label="Edit Rekening"
+        tools:layout="@layout/fragment_edit_rekening">
+        <argument
+            android:name="rekening"
+            app:argType="com.piggybank.renote.ui.rekening.Rekening" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.piggybank.renote.ui.Akun.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_bantuan"
+        android:name="com.piggybank.renote.ui.Akun.BantuanFragment"
+        android:label="@string/bantuan"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_tentang"
+        android:name="com.piggybank.renote.ui.Akun.TentangFragment"
+        android:label="@string/tentang"
+        tools:layout="@layout/fragment_tentang" />
+
+</navigation>

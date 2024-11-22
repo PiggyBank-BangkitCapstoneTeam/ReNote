@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.welcome.SecondFragment">
+
+    <ImageView
+        android:id="@+id/imageAboveLabel"
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:layout_marginBottom="60dp"
+        android:contentDescription="@string/image_second"
+        android:src="@drawable/membership"
+        app:layout_constraintBottom_toTopOf="@id/labeSecond"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/labeSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
+        android:text="@string/pemasukan_desc"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-condensed"
+        app:layout_constraintBottom_toTopOf="@id/grid_slider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.927"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <GridLayout
+        android:id="@+id/grid_slider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:alignmentMode="alignMargins"
+        android:columnCount="3"
+        android:padding="8dp"
+        android:rowCount="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/slider"
+            android:src="@drawable/slidebutton" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/slider"
+            android:src="@drawable/circle_slider" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="8dp"
+            android:contentDescription="@string/slider"
+            android:src="@drawable/slidebutton" />
+    </GridLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

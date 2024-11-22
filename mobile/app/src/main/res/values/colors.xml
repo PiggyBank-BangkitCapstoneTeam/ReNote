@@ -1,0 +1,28 @@
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="warm_cream">#FFFDE7</color>
+    <color name="gg_cream">#FFFDE7</color>
+    <color name="light_brown">#D2B48C</color>
+    <color name="dark_brown">#A0522D</color>
+    <color name="cream">#FFFDD0</color>
+    <color name="light_cream">#F5F5DC</color>
+    <color name="ivory">#F0F0F0</color>
+    <color name="soft_brown_background">#FAF0E6</color>
+    <color name="Gainsboro">#dcdcdc</color>
+    <color name="smokegray">#F5F5F5</color>
+    <color name="dark_teal">#FAF0E6</color>
+    <color name="deep_orange">#dcdcdc</color>
+    <color name="orange">#dd6236</color>
+    <color name="beige">#c4bcab</color>
+    <color name="silver">#f0f0f0</color>
+
+
+    <color name="green">#4CAF50</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="blue">#2196F3</color>
+    <color name="purple">#9C27B0</color>
+    <color name="red">#F44336</color>
+    <color name="brown">#795548</color>
+
+</resources>
