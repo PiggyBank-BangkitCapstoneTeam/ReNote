@@ -29,7 +29,7 @@ class LaporanFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var laporanViewModel: LaporanViewModel
     private val catatanViewModel: CatatanViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(CatatanViewModel::class.java)
+        ViewModelProvider(requireActivity())[CatatanViewModel::class.java]
     }
 
     private val monthMap = mapOf(
@@ -61,13 +61,13 @@ class LaporanFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        laporanViewModel = ViewModelProvider(this).get(LaporanViewModel::class.java)
+        laporanViewModel = ViewModelProvider(this)[LaporanViewModel::class.java]
 
         _binding = FragmentLaporanBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         laporanViewModel.selectedDate.observe(viewLifecycleOwner) { (month, year) ->
-            binding.dateDropdown.text = "$month $year"
+            binding.dateDropdown.text = getString(R.string.date_display, month, year)
             updatePieCharts()
         }
 
@@ -103,18 +103,48 @@ class LaporanFragment : Fragment() {
         }
     }
 
+    private fun convertMonthToNumber(month: String): Int {
+        return when (month) {
+            "Januari", "Jan" -> 1
+            "Februari", "Feb" -> 2
+            "Maret", "Mar" -> 3
+            "April", "Apr" -> 4
+            "Mei" -> 5
+            "Juni", "Jun" -> 6
+            "Juli", "Jul" -> 7
+            "Agustus", "Agust" -> 8
+            "September", "Sept" -> 9
+            "Oktober", "Okt" -> 10
+            "November", "Nov" -> 11
+            "Desember", "Des" -> 12
+            else -> 0
+        }
+    }
+
     private fun updatePieCharts() {
+        val selectedDate = laporanViewModel.selectedDate.value ?: return
+        val (selectedMonth, selectedYear) = selectedDate
+
+        // Filter catatan berdasarkan bulan dan tahun yang dipilih
+        val filteredCatatan = catatanViewModel.catatanList.value?.filter { catatan ->
+            val parts = catatan.tanggal.split("-")
+            val month = parts.getOrNull(1)?.toIntOrNull()
+            val year = parts.getOrNull(2)?.toIntOrNull()
+
+            month != null && year != null &&
+                    month == convertMonthToNumber(selectedMonth) && year == selectedYear.toIntOrNull()
+        } ?: emptyList()
+
         val pemasukanCounts = mutableMapOf<String, Int>()
         val pengeluaranCounts = mutableMapOf<String, Int>()
 
-        catatanViewModel.catatanList.value?.forEach { catatan ->
-            if (catatan.nominal >= 0.toString()) {
+        filteredCatatan.forEach { catatan ->
+            if (catatan.nominal.toDouble() >= 0) {
                 pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0) + 1
             } else {
                 pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0) + 1
             }
         }
-
 
         val totalPemasukan = pemasukanCounts.values.sum().toFloat()
         val totalPengeluaran = pengeluaranCounts.values.sum().toFloat()

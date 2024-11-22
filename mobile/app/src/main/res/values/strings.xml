@@ -43,6 +43,7 @@
     <string name="edit_catatan">Edit Catatan</string>
     <string name="hapus">Hapus</string>
     <string name="my_rekening">My Rekening</string>
+    <string name="date_display">%1$s %2$s</string>
 
     <string name="pemasukan_text">Pemasukan\n Rp %1$s</string>
     <string name="pengeluaran_text">Pengeluaran\n Rp %1$s</string>
