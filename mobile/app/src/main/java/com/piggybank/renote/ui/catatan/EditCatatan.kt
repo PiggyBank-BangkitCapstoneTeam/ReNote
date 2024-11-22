@@ -37,38 +37,42 @@ class EditCatatan : Fragment() {
             binding.inputAmount.setText(selectedCatatan.nominal)
             binding.inputDescription.setText(selectedCatatan.deskripsi)
         } else {
-            Toast.makeText(requireContext(), "Tidak ada catatan yang dipilih!", Toast.LENGTH_SHORT).show()
-            findNavController().navigateUp()
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Tidak ada catatan yang dipilih!", Toast.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
+                }
+            }
         }
 
         binding.buttonEdit.setOnClickListener {
-            val newNominal = binding.inputAmount.text.toString()
-            val newDeskripsi = binding.inputDescription.text.toString()
-
-            if (newNominal.isNotBlank() && newDeskripsi.isNotBlank() && selectedCatatan != null) {
-                val dateKey = selectedCatatan.tanggal.split("-")
-                val date = Calendar.getInstance().apply {
-                    set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
-                }
-
-                lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch {
+                val newNominal = binding.inputAmount.text.toString()
+                val newDeskripsi = binding.inputDescription.text.toString()
+                if (newNominal.isNotBlank() && newDeskripsi.isNotBlank() && selectedCatatan != null) {
+                    val dateKey = selectedCatatan.tanggal.split("-")
+                    val date = Calendar.getInstance().apply {
+                        set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
+                    }
                     catatanViewModel.editCatatan(date, newNominal, newDeskripsi)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Catatan berhasil diubah!", Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
                     }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Nominal atau deskripsi tidak valid!", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            } else {
-                Toast.makeText(requireContext(), "Nominal atau deskripsi tidak valid!", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.deleteIcon.setOnClickListener {
-            val dateKey = selectedCatatan!!.tanggal.split("-")
-            val date = Calendar.getInstance().apply {
-                set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
-            }
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch {
+                val dateKey = selectedCatatan!!.tanggal.split("-")
+                val date = Calendar.getInstance().apply {
+                    set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
+                }
                 catatanViewModel.deleteSelectedCatatan(date)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Catatan berhasil dihapus!", Toast.LENGTH_SHORT).show()
@@ -78,7 +82,11 @@ class EditCatatan : Fragment() {
         }
 
         binding.topBar.setOnClickListener {
-            findNavController().navigateUp()
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    findNavController().navigateUp()
+                }
+            }
         }
 
         return binding.root

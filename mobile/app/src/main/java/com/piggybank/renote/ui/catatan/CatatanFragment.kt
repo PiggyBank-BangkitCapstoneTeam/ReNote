@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentCatatanBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -35,8 +37,12 @@ class CatatanFragment : Fragment() {
         _binding = FragmentCatatanBinding.inflate(inflater, container, false)
 
         catatanAdapter = CatatanAdapter { catatan ->
-            catatanViewModel.selectedCatatan = catatan
-            findNavController().navigate(R.id.navigation_editCatatan)
+            lifecycleScope.launch {
+                catatanViewModel.selectedCatatan = catatan
+                withContext(Dispatchers.Main) {
+                    findNavController().navigate(R.id.navigation_editCatatan)
+                }
+            }
         }
 
         binding.transactionRecyclerView.apply {
@@ -49,8 +55,12 @@ class CatatanFragment : Fragment() {
         updateUIForDate(selectedDate)
 
         binding.catatanAdd.setOnClickListener {
-            catatanViewModel.clearSelectedCatatan()
-            findNavController().navigate(R.id.navigation_tambahCatatan)
+            lifecycleScope.launch {
+                catatanViewModel.clearSelectedCatatan()
+                withContext(Dispatchers.Main) {
+                    findNavController().navigate(R.id.navigation_tambahCatatan)
+                }
+            }
         }
 
         binding.calendarButton.setOnClickListener {
@@ -62,11 +72,13 @@ class CatatanFragment : Fragment() {
 
     private fun updateUIForDate(date: Calendar) {
         lifecycleScope.launch {
-            catatanViewModel.updateDataForDate(date) // Moved to coroutine
+            catatanViewModel.updateDataForDate(date)
 
             catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
                 lifecycleScope.launch {
-                    catatanAdapter.submitList(catatanList)
+                    withContext(Dispatchers.Main) {
+                        catatanAdapter.submitList(catatanList)
+                    }
                 }
             }
 
@@ -74,7 +86,9 @@ class CatatanFragment : Fragment() {
                 lifecycleScope.launch {
                     val formattedPemasukan =
                         NumberFormat.getNumberInstance(Locale.getDefault()).format(pemasukan)
-                    binding.textPemasukan.text = getString(R.string.pemasukan_text, formattedPemasukan)
+                    withContext(Dispatchers.Main) {
+                        binding.textPemasukan.text = getString(R.string.pemasukan_text, formattedPemasukan)
+                    }
                 }
             }
 
@@ -82,7 +96,10 @@ class CatatanFragment : Fragment() {
                 lifecycleScope.launch {
                     val formattedPengeluaran =
                         NumberFormat.getNumberInstance(Locale.getDefault()).format(pengeluaran)
-                    binding.textPengeluaran.text = getString(R.string.pengeluaran_text, formattedPengeluaran)
+                    withContext(Dispatchers.Main) {
+                        binding.textPengeluaran.text =
+                            getString(R.string.pengeluaran_text, formattedPengeluaran)
+                    }
                 }
             }
         }

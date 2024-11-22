@@ -43,8 +43,12 @@ class TambahCatatan : Fragment() {
         bottomNavigationView.visibility = View.GONE
 
         binding.iconBack.setOnClickListener {
-            bottomNavigationView.visibility = View.VISIBLE
-            findNavController().navigateUp()
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    bottomNavigationView.visibility = View.VISIBLE
+                    findNavController().navigateUp()
+                }
+            }
         }
 
         binding.iconCalendar.setOnClickListener {
@@ -54,34 +58,40 @@ class TambahCatatan : Fragment() {
         setupCategorySpinner(pengeluaranCategory)
 
         binding.toggleGroup.setOnCheckedChangeListener { _, checkedId ->
-            if (checkedId == R.id.radio_pengeluaran) {
-                setupCategorySpinner(pengeluaranCategory)
-            } else if (checkedId == R.id.radio_pemasukan) {
-                setupCategorySpinner(pemasukanCategory)
+            lifecycleScope.launch {
+                val categories = if (checkedId == R.id.radio_pengeluaran) pengeluaranCategory else pemasukanCategory
+                withContext(Dispatchers.Main) {
+                    setupCategorySpinner(categories)
+                }
             }
         }
 
         binding.buttonCreate.setOnClickListener {
-            val kategori = binding.spinnerCategory.selectedItem.toString()
-            val nominal = binding.inputAmount.text.toString()
-            val deskripsi = binding.inputDescription.text.toString()
-            val isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
-
-            val adjustedNominal = if (isPengeluaran) "-$nominal" else nominal
-
-            if (selectedDate == null) {
-                Toast.makeText(requireContext(), "Pilih tanggal terlebih dahulu!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (kategori == "Pilih Kategori" || nominal.isBlank() || deskripsi.isBlank()) {
-                Toast.makeText(requireContext(), "Isi semua data dengan benar!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             lifecycleScope.launch {
+                val kategori = binding.spinnerCategory.selectedItem.toString()
+                val nominal = binding.inputAmount.text.toString()
+                val deskripsi = binding.inputDescription.text.toString()
+                val isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
+
+                val adjustedNominal = if (isPengeluaran) "-$nominal" else nominal
+
+                if (selectedDate == null) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Pilih tanggal terlebih dahulu!", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                if (kategori == "Pilih Kategori" || nominal.isBlank() || deskripsi.isBlank()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Isi semua data dengan benar!", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
                 catatanViewModel.addCatatan(selectedDate!!, kategori, adjustedNominal, deskripsi)
                 rekeningViewModel.updateTotalSaldo(adjustedNominal)
+
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                     bottomNavigationView.visibility = View.VISIBLE
@@ -94,13 +104,20 @@ class TambahCatatan : Fragment() {
     }
 
     private fun setupCategorySpinner(categories: List<String>) {
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            categories
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerCategory.adapter = adapter
+        lifecycleScope.launch {
+            val adapter = withContext(Dispatchers.Default) {
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    categories
+                ).apply {
+                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                }
+            }
+            withContext(Dispatchers.Main) {
+                binding.spinnerCategory.adapter = adapter
+            }
+        }
     }
 
     private fun showDatePickerDialog() {
@@ -112,10 +129,15 @@ class TambahCatatan : Fragment() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-                selectedDate = Calendar.getInstance().apply {
-                    set(selectedYear, selectedMonth, selectedDay)
+                lifecycleScope.launch {
+                    selectedDate = Calendar.getInstance().apply {
+                        set(selectedYear, selectedMonth, selectedDay)
+                    }
+                    withContext(Dispatchers.Main) {
+                        binding.textDate.text =
+                            getString(R.string.date_format, selectedDay, selectedMonth + 1, selectedYear)
+                    }
                 }
-                binding.textDate.text = getString(R.string.date_format, selectedDay, selectedMonth + 1, selectedYear)
             },
             year, month, day
         )
@@ -125,8 +147,12 @@ class TambahCatatan : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val bottomNavigationView = requireActivity().findViewById<View>(R.id.nav_view)
-        bottomNavigationView.visibility = View.VISIBLE
-        _binding = null
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                val bottomNavigationView = requireActivity().findViewById<View>(R.id.nav_view)
+                bottomNavigationView.visibility = View.VISIBLE
+                _binding = null
+            }
+        }
     }
 }
