@@ -43,7 +43,10 @@ class CatatanAdapter(
             binding.categoryTextView.text = catatan.kategori
             binding.descriptionTextView.text = catatan.deskripsi
 
-            val numberFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+            val numberFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+                minimumFractionDigits = 0
+                maximumFractionDigits = 0
+            }
             val nominal = catatan.nominal.toDoubleOrNull() ?: 0.0
             val formattedNominal = if (nominal >= 0) {
                 "+ ${numberFormat.format(nominal).replace("Rp", "Rp ")}"
