@@ -12,9 +12,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
@@ -26,7 +26,6 @@ class LaporanFragment : Fragment() {
 
     private var _binding: FragmentLaporanBinding? = null
     private val binding get() = _binding!!
-    private lateinit var laporanAdapter: LaporanAdapter
     private lateinit var laporanViewModel: LaporanViewModel
 
     private val monthMap = mapOf(
@@ -67,16 +66,6 @@ class LaporanFragment : Fragment() {
         _binding = FragmentLaporanBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        laporanAdapter = LaporanAdapter(emptyList())
-        binding.laporanList.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = laporanAdapter
-        }
-
-        laporanViewModel.categoryList.observe(viewLifecycleOwner) { categories ->
-            laporanAdapter.updateData(categories)
-        }
-
         laporanViewModel.selectedDate.observe(viewLifecycleOwner) { (month, year) ->
             binding.dateDropdown.text = "${monthMap[month] ?: month} $year"
         }
@@ -87,6 +76,10 @@ class LaporanFragment : Fragment() {
 
         setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
         setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
+
+        binding.radioPemasukan.isChecked = true
+        binding.pieChartPemasukan.visibility = View.VISIBLE
+        binding.pieChartPengeluaran.visibility = View.GONE
 
         binding.toggleGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
@@ -109,9 +102,15 @@ class LaporanFragment : Fragment() {
             this.colors = colors
             sliceSpace = 2f
             valueTextSize = 12f
+            valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return "${value.toInt()}%"
+                }
+            }
         }
         val pieData = PieData(dataSet).apply {
-            setValueTextColor(Color.WHITE)
+            setValueTextColor(Color.BLACK)
+            setValueTextSize(12f)
         }
         pieChart.apply {
             this.data = pieData
@@ -121,6 +120,11 @@ class LaporanFragment : Fragment() {
             holeRadius = 40f
             transparentCircleRadius = 50f
             setEntryLabelColor(Color.BLACK)
+            setEntryLabelTextSize(10f)
+            extraBottomOffset = 10f
+            extraTopOffset = 10f
+            legend.orientation = Legend.LegendOrientation.HORIZONTAL
+            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
             invalidate()
         }
     }
