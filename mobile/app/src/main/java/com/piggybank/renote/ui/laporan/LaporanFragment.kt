@@ -11,6 +11,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.PieChart
@@ -22,6 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentLaporanBinding
 import com.piggybank.renote.ui.catatan.CatatanViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LaporanFragment : Fragment() {
 
@@ -68,7 +72,9 @@ class LaporanFragment : Fragment() {
 
         laporanViewModel.selectedDate.observe(viewLifecycleOwner) { (month, year) ->
             binding.dateDropdown.text = getString(R.string.date_display, month, year)
-            updatePieCharts()
+            lifecycleScope.launch {
+                updatePieCharts()
+            }
         }
 
         binding.dateDropdown.setOnClickListener {
@@ -99,7 +105,9 @@ class LaporanFragment : Fragment() {
 
     private fun observeCatatanChanges() {
         catatanViewModel.catatanList.observe(viewLifecycleOwner) {
-            updatePieCharts()
+            lifecycleScope.launch {
+                updatePieCharts()
+            }
         }
     }
 
@@ -121,8 +129,8 @@ class LaporanFragment : Fragment() {
         }
     }
 
-    private fun updatePieCharts() {
-        val selectedDate = laporanViewModel.selectedDate.value ?: return
+    private suspend fun updatePieCharts() = withContext(Dispatchers.Default) {
+        val selectedDate = laporanViewModel.selectedDate.value ?: return@withContext
         val (selectedMonth, selectedYear) = selectedDate
 
         val filteredCatatan = catatanViewModel.catatanList.value?.filter { catatan ->
@@ -156,10 +164,11 @@ class LaporanFragment : Fragment() {
             PieEntry((count / totalPengeluaran) * 100, kategori)
         }
 
-        setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
-        setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
+        withContext(Dispatchers.Main) {
+            setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
+            setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
+        }
     }
-
 
     private fun setupPieChart(pieChart: PieChart, data: List<PieEntry>, colors: List<Int>) {
         val dataSet = PieDataSet(data, "").apply {
