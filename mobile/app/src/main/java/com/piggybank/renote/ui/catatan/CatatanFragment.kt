@@ -16,9 +16,7 @@ import com.piggybank.renote.databinding.FragmentCatatanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.NumberFormat
 import java.util.Calendar
-import java.util.Locale
 
 class CatatanFragment : Fragment() {
 
@@ -72,38 +70,26 @@ class CatatanFragment : Fragment() {
 
     private fun updateUIForDate(date: Calendar) {
         lifecycleScope.launch {
+            val dateKey = "${date.get(Calendar.YEAR)}-${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.DAY_OF_MONTH)}"
+
+            // Muat catatan dari Room Database
+            catatanViewModel.getNotesByDateFromDatabase(dateKey).observe(viewLifecycleOwner) { noteEntities ->
+                val catatanList = noteEntities.map { noteEntity ->
+                    Catatan(
+                        kategori = noteEntity.category,
+                        nominal = noteEntity.nominal,
+                        deskripsi = noteEntity.description,
+                        tanggal = noteEntity.date,
+                    )
+                }
+                catatanAdapter.submitList(catatanList)
+            }
+
+            // Perbarui pemasukan/pengeluaran
             catatanViewModel.updateDataForDate(date)
-
-            catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
-                lifecycleScope.launch {
-                    withContext(Dispatchers.Main) {
-                        catatanAdapter.submitList(catatanList)
-                    }
-                }
-            }
-
-            catatanViewModel.totalPemasukan.observe(viewLifecycleOwner) { pemasukan ->
-                lifecycleScope.launch {
-                    val formattedPemasukan =
-                        NumberFormat.getNumberInstance(Locale.getDefault()).format(pemasukan)
-                    withContext(Dispatchers.Main) {
-                        binding.textPemasukan.text = getString(R.string.pemasukan_text, formattedPemasukan)
-                    }
-                }
-            }
-
-            catatanViewModel.totalPengeluaran.observe(viewLifecycleOwner) { pengeluaran ->
-                lifecycleScope.launch {
-                    val formattedPengeluaran =
-                        NumberFormat.getNumberInstance(Locale.getDefault()).format(pengeluaran)
-                    withContext(Dispatchers.Main) {
-                        binding.textPengeluaran.text =
-                            getString(R.string.pengeluaran_text, formattedPengeluaran)
-                    }
-                }
-            }
         }
     }
+
 
     private fun showDatePickerDialog() {
         val year = selectedDate.get(Calendar.YEAR)
