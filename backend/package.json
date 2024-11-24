@@ -1,0 +1,31 @@
+{
+  "name": "piggybank_renote-bangkit-capstone-backend",
+  "version": "1.0.0",
+  "description": "This is the backend of PiggyBank's ReNote Bangkit Academy 2024 Capstone Project",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsc -p tsconfig.json && node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TIRTAGT/BangkitAcademy2024_CC-49.git"
+  },
+  "author": "PiggyBank's Cloud Computing (CC)",
+  "bugs": {
+    "url": "https://github.com/TIRTAGT/BangkitAcademy2024_CC-49/issues"
+  },
+  "homepage": "https://github.com/TIRTAGT/BangkitAcademy2024_CC-49#readme",
+  "dependencies": {
+    "@google-cloud/cloud-sql-connector": "^1.4.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "firebase-admin": "^13.0.1",
+    "mysql2": "^3.11.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.1"
+  }
+}
