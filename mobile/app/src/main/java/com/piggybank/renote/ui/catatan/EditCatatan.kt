@@ -54,7 +54,7 @@ class EditCatatan : Fragment() {
                     val date = Calendar.getInstance().apply {
                         set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
                     }
-                    catatanViewModel.editCatatan(date, newNominal, newDeskripsi)
+                    catatanViewModel.editCatatan(newNominal, newDeskripsi)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Catatan berhasil diubah!", Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()

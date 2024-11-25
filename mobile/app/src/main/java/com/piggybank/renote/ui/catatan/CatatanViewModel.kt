@@ -1,14 +1,20 @@
 package com.piggybank.renote.ui.catatan
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.piggybank.renote.data.database.NoteDao
+import com.piggybank.renote.data.database.NoteEntity
+import com.piggybank.renote.data.database.NoteRoomDatabase
 import com.piggybank.renote.ui.rekening.RekeningViewModel
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class CatatanViewModel : ViewModel() {
+class CatatanViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val allData = mutableMapOf<String, MutableList<Catatan>>()
+    private val noteDao: NoteDao = NoteRoomDatabase.getDatabase(application).noteDao()
 
     private val _catatanList = MutableLiveData<List<Catatan>>(emptyList())
     val catatanList: LiveData<List<Catatan>> = _catatanList
@@ -20,7 +26,6 @@ class CatatanViewModel : ViewModel() {
     val totalPengeluaran: LiveData<Double> = _totalPengeluaran
 
     private val _totalSaldo = MutableLiveData(0.0)
-    val totalSaldo: LiveData<Double> = _totalSaldo
 
     var selectedCatatan: Catatan? = null
 
@@ -28,63 +33,84 @@ class CatatanViewModel : ViewModel() {
 
     fun updateDataForDate(date: Calendar) {
         val dateKey = getDateKey(date)
-        val currentList = allData[dateKey]?.toMutableList() ?: mutableListOf()
-        _catatanList.value = currentList
+        viewModelScope.launch {
+            val notes = noteDao.getNotesByDate(dateKey)
+            val catatanList = notes.map {
+                Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+            }
+            _catatanList.postValue(catatanList)
 
-        val pemasukan = currentList.filter { it.nominal.toDouble() >= 0 }.sumOf { it.nominal.toDouble() }
-        val pengeluaran = currentList.filter { it.nominal.toDouble() < 0 }.sumOf { it.nominal.toDouble() }
-        _totalPemasukan.value = pemasukan
-        _totalPengeluaran.value = pengeluaran
-        _totalSaldo.value = pemasukan + pengeluaran
+            val pemasukan = catatanList.filter { it.nominal.toDouble() >= 0 }.sumOf { it.nominal.toDouble() }
+            val pengeluaran = catatanList.filter { it.nominal.toDouble() < 0 }.sumOf { it.nominal.toDouble() }
+            _totalPemasukan.postValue(pemasukan)
+            _totalPengeluaran.postValue(pengeluaran)
+        }
     }
 
     fun addCatatan(date: Calendar, kategori: String, nominal: String, deskripsi: String) {
         val dateKey = getDateKey(date)
         val nominalValue = nominal.replace("[^\\d.-]".toRegex(), "").toDoubleOrNull() ?: 0.0
-        val formattedDate = "${date.get(Calendar.DAY_OF_MONTH)}-${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.YEAR)}"
 
-        val newCatatan = Catatan(kategori, nominalValue.toString(), deskripsi, formattedDate)
+        val newNote = NoteEntity(
+            kategori = kategori,
+            nominal = nominalValue.toString(),
+            deskripsi = deskripsi,
+            tanggal = dateKey
+        )
 
-        val currentList = allData[dateKey] ?: mutableListOf()
-        currentList.add(newCatatan)
-        allData[dateKey] = currentList
-        updateDataForDate(date)
+        viewModelScope.launch {
+            noteDao.insertNote(newNote)
+            updateDataForDate(date)
+        }
     }
 
-    fun editCatatan(date: Calendar, newNominal: String, newDeskripsi: String) {
+    fun editCatatan(newNominal: String, newDeskripsi: String) {
         selectedCatatan?.let { catatan ->
-            val dateKey = getDateKey(date)
-            val currentList = allData[dateKey]?.toMutableList() ?: mutableListOf()
-            val index = currentList.indexOf(catatan)
-            if (index != -1) {
-                val oldNominal = catatan.nominal.toDouble()
-                val newNominalValue = newNominal.replace("[^\\d.-]".toRegex(), "").toDoubleOrNull() ?: 0.0
+            val nominalValue = newNominal.replace("[^\\d.-]".toRegex(), "").toDoubleOrNull() ?: 0.0
 
-                currentList[index] = catatan.copy(nominal = newNominal, deskripsi = newDeskripsi)
-                allData[dateKey] = currentList
-                updateDataForDate(date)
+            viewModelScope.launch {
 
-                saldoChangeListener?.invoke(newNominalValue - oldNominal)
+                val existingNote = noteDao.getNotesByDate(catatan.tanggal).find {
+                    it.deskripsi == catatan.deskripsi && it.kategori == catatan.kategori
+                }
+
+                existingNote?.let { noteEntity ->
+                    val updatedNote = noteEntity.copy(
+                        nominal = nominalValue.toString(),
+                        deskripsi = newDeskripsi,
+                    )
+                    noteDao.updateNote(updatedNote)
+
+                    val updatedDate = Calendar.getInstance().apply {
+                        val parts = updatedNote.tanggal.split("-")
+                        set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                    }
+                    updateDataForDate(updatedDate)
+                }
             }
         }
     }
 
     fun deleteSelectedCatatan(date: Calendar) {
         selectedCatatan?.let { catatan ->
-            val dateKey = getDateKey(date)
-            val currentList = allData[dateKey]?.toMutableList() ?: mutableListOf()
-            if (currentList.remove(catatan)) {
-                allData[dateKey] = currentList
-                updateDataForDate(date)
+            viewModelScope.launch {
+                val existingNote = noteDao.getNotesByDate(catatan.tanggal).find {
+                    it.deskripsi == catatan.deskripsi
+                }
 
-                saldoChangeListener?.invoke(-catatan.nominal.toDouble())
+                existingNote?.let { noteEntity ->
+                    noteDao.deleteNote(noteEntity)
+                    updateDataForDate(date)
+                    saldoChangeListener?.invoke(-catatan.nominal.toDouble())
+                }
             }
         }
     }
 
     fun calculateSaldo(): Double {
-        return allData.values.flatten().sumOf { it.nominal.toDouble() }
+        return _catatanList.value?.sumOf { it.nominal.toDouble() } ?: 0.0
     }
+
 
     fun refreshSaldo(rekeningViewModel: RekeningViewModel) {
         val totalSaldo = calculateSaldo()

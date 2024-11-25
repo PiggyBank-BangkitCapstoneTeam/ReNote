@@ -12,3 +12,4 @@ data class NoteEntity(
     val deskripsi: String,
     val tanggal: String
 )
+
