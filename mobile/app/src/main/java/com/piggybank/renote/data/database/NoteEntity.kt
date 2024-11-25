@@ -10,5 +10,5 @@ data class NoteEntity(
     val kategori: String,
     val nominal: String,
     val deskripsi: String,
-    val tanggal: Long
+    val tanggal: String
 )

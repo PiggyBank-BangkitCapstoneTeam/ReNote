@@ -19,7 +19,9 @@ import com.piggybank.renote.ui.rekening.RekeningViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class TambahCatatan : Fragment() {
 
@@ -97,11 +99,14 @@ class TambahCatatan : Fragment() {
                     catatanViewModel.addCatatan(selectedDate!!, kategori, adjustedNominal, deskripsi)
                     rekeningViewModel.updateTotalSaldo(adjustedNominal)
 
+                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    val formattedDate = dateFormat.format(selectedDate!!.time)
+
                     val noteEntity = NoteEntity(
                         kategori = kategori,
                         nominal = adjustedNominal,
                         deskripsi = deskripsi,
-                        tanggal = selectedDate!!.timeInMillis
+                        tanggal = formattedDate
                     )
                     withContext(Dispatchers.IO) {
                         database.noteDao().insertNote(noteEntity)
