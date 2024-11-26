@@ -36,10 +36,17 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
     private fun loadRekeningFromDatabase() {
         viewModelScope.launch {
             val rekeningEntities = noteDao.getAllRekening()
-            _rekeningList.value = rekeningEntities.map { Rekening(it.name, it.uang) }
-            updateTotalSaldo()
+            if (rekeningEntities.isEmpty()) {
+                noteDao.insertRekening(RekeningEntity(name = "DANA", uang = 0L))
+                noteDao.insertRekening(RekeningEntity(name = "OVO", uang = 0L))
+                noteDao.insertRekening(RekeningEntity(name = "BCA", uang = 0L))
+            }
+            val rekeningListFromDb = noteDao.getAllRekening().map { Rekening(it.name, it.uang) }
+            _rekeningList.value = rekeningListFromDb
+            _totalSaldo.value = rekeningListFromDb.sumOf { it.uang }
         }
     }
+
 
     fun addRekening(rekening: Rekening): Boolean {
         val existingRekening = _rekeningList.value?.find { it.name.equals(rekening.name, ignoreCase = true) }
@@ -63,10 +70,6 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
         _totalSaldo.value = amount
     }
 
-    private fun updateTotalSaldo() {
-        _totalSaldo.value = _rekeningList.value?.sumOf { it.uang } ?: 0L
-    }
-
     fun updateRekening(updatedRekening: Rekening): Boolean {
         val currentList = _rekeningList.value?.toMutableList() ?: return false
 
@@ -74,12 +77,26 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
         if (index == -1) {
             return false
         }
-
         currentList[index] = updatedRekening
         _rekeningList.value = currentList
-        updateTotalSaldo()
+
+        viewModelScope.launch {
+            val rekeningEntity = noteDao.getAllRekening().find { it.name.equals(updatedRekening.name, ignoreCase = true) }
+            if (rekeningEntity != null) {
+                noteDao.updateRekening(
+                    RekeningEntity(
+                        id = rekeningEntity.id,
+                        name = updatedRekening.name,
+                        uang = updatedRekening.uang
+                    )
+                )
+            }
+            loadRekeningFromDatabase()
+        }
+
         return true
     }
+
 
     fun deleteRekening(rekening: Rekening): Boolean {
         val currentList = _rekeningList.value?.toMutableList() ?: return false
@@ -89,12 +106,21 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
             return false
         }
 
-        _totalSaldo.value = _totalSaldo.value?.minus(currentList[index].uang)
-
         currentList.removeAt(index)
         _rekeningList.value = currentList
+
+        viewModelScope.launch {
+            val rekeningEntity = noteDao.getAllRekening().find { it.name.equals(rekening.name, ignoreCase = true) }
+            if (rekeningEntity != null) {
+                noteDao.deleteRekening(rekeningEntity)
+            }
+
+            loadRekeningFromDatabase()
+        }
+
         return true
     }
+
 
     fun formatCurrency(amount: Long): String {
         val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))

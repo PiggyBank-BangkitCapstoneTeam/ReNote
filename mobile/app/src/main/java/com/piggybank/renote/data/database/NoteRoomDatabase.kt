@@ -21,7 +21,7 @@ abstract class NoteRoomDatabase : RoomDatabase() {
                     NoteRoomDatabase::class.java,
                     "note_database"
                 )
-                    .fallbackToDestructiveMigration() // Handle schema changes
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
@@ -29,4 +29,3 @@ abstract class NoteRoomDatabase : RoomDatabase() {
         }
     }
 }
-
