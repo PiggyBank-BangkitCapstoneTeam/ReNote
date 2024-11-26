@@ -8,6 +8,7 @@ import androidx.room.Update
 
 @Dao
 interface NoteDao {
+    // Catatan
     @Insert
     suspend fun insertNote(note: NoteEntity)
 
@@ -19,4 +20,17 @@ interface NoteDao {
 
     @Delete
     suspend fun deleteNote(note: NoteEntity)
+
+    // Rekening
+    @Insert
+    suspend fun insertRekening(rekening: RekeningEntity)
+
+    @Query("SELECT * FROM rekening")
+    suspend fun getAllRekening(): List<RekeningEntity>
+
+    @Update
+    suspend fun updateRekening(rekening: RekeningEntity)
+
+    @Delete
+    suspend fun deleteRekening(rekening: RekeningEntity)
 }
