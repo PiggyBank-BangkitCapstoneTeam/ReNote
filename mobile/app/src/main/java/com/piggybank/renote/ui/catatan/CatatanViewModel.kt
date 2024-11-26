@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.piggybank.renote.data.database.NoteDao
 import com.piggybank.renote.data.database.NoteEntity
 import com.piggybank.renote.data.database.NoteRoomDatabase
-import com.piggybank.renote.ui.rekening.RekeningViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -25,8 +24,6 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
     private val _totalPengeluaran = MutableLiveData(0.0)
     val totalPengeluaran: LiveData<Double> = _totalPengeluaran
 
-    private val _totalSaldo = MutableLiveData(0.0)
-
     var selectedCatatan: Catatan? = null
 
     var saldoChangeListener: ((Double) -> Unit)? = null
@@ -42,10 +39,12 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
 
             val pemasukan = catatanList.filter { it.nominal.toDouble() >= 0 }.sumOf { it.nominal.toDouble() }
             val pengeluaran = catatanList.filter { it.nominal.toDouble() < 0 }.sumOf { it.nominal.toDouble() }
+
             _totalPemasukan.postValue(pemasukan)
             _totalPengeluaran.postValue(pengeluaran)
         }
     }
+
 
     fun addCatatan(date: Calendar, kategori: String, nominal: String, deskripsi: String) {
         val dateKey = getDateKey(date)
@@ -61,8 +60,10 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             noteDao.insertNote(newNote)
             updateDataForDate(date)
+            saldoChangeListener?.invoke(nominalValue)
         }
     }
+
 
     fun editCatatan(newNominal: String, newDeskripsi: String) {
         selectedCatatan?.let { catatan ->
@@ -95,26 +96,17 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         selectedCatatan?.let { catatan ->
             viewModelScope.launch {
                 val existingNote = noteDao.getNotesByDate(catatan.tanggal).find {
-                    it.deskripsi == catatan.deskripsi
+                    it.deskripsi == catatan.deskripsi && it.kategori == catatan.kategori
                 }
 
                 existingNote?.let { noteEntity ->
                     noteDao.deleteNote(noteEntity)
                     updateDataForDate(date)
                     saldoChangeListener?.invoke(-catatan.nominal.toDouble())
+                    clearSelectedCatatan()
                 }
             }
         }
-    }
-
-    fun calculateSaldo(): Double {
-        return _catatanList.value?.sumOf { it.nominal.toDouble() } ?: 0.0
-    }
-
-
-    fun refreshSaldo(rekeningViewModel: RekeningViewModel) {
-        val totalSaldo = calculateSaldo()
-        rekeningViewModel.setTotalSaldoDirectly(totalSaldo.toLong())
     }
 
     private fun getDateKey(date: Calendar): String {

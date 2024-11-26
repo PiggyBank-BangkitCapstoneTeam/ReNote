@@ -71,7 +71,7 @@ class EditCatatan : Fragment() {
             lifecycleScope.launch {
                 val dateKey = selectedCatatan!!.tanggal.split("-")
                 val date = Calendar.getInstance().apply {
-                    set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
+                    set(dateKey[0].toInt(), dateKey[1].toInt() - 1, dateKey[2].toInt())
                 }
                 catatanViewModel.deleteSelectedCatatan(date)
                 withContext(Dispatchers.Main) {

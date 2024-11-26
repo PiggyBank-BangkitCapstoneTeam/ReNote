@@ -135,26 +135,28 @@ class LaporanFragment : Fragment() {
 
         val filteredCatatan = catatanViewModel.catatanList.value?.filter { catatan ->
             val parts = catatan.tanggal.split("-")
-            val month = parts.getOrNull(1)?.toIntOrNull()
-            val year = parts.getOrNull(2)?.toIntOrNull()
+            val year = parts[0].toIntOrNull()
+            val month = parts[1].toIntOrNull()
 
-            month != null && year != null &&
-                    month == convertMonthToNumber(selectedMonth) && year == selectedYear.toIntOrNull()
+            year == selectedYear.toIntOrNull() && month == convertMonthToNumber(selectedMonth)
         } ?: emptyList()
 
-        val pemasukanCounts = mutableMapOf<String, Int>()
-        val pengeluaranCounts = mutableMapOf<String, Int>()
+
+        val pemasukanCounts = mutableMapOf<String, Float>()
+        val pengeluaranCounts = mutableMapOf<String, Float>()
 
         filteredCatatan.forEach { catatan ->
-            if (catatan.nominal.toDouble() >= 0) {
-                pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0) + 1
+            val value = catatan.nominal.toDouble().toFloat()
+            if (value >= 0) {
+                pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0f) + value
             } else {
-                pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0) + 1
+                pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0f) + -value
             }
         }
 
-        val totalPemasukan = pemasukanCounts.values.sum().toFloat()
-        val totalPengeluaran = pengeluaranCounts.values.sum().toFloat()
+        // Persiapkan data untuk diagram pie
+        val totalPemasukan = pemasukanCounts.values.sum()
+        val totalPengeluaran = pengeluaranCounts.values.sum()
 
         val pemasukanData = pemasukanCounts.map { (kategori, count) ->
             PieEntry((count / totalPemasukan) * 100, kategori)
@@ -164,6 +166,7 @@ class LaporanFragment : Fragment() {
             PieEntry((count / totalPengeluaran) * 100, kategori)
         }
 
+        // Update UI dengan data baru
         withContext(Dispatchers.Main) {
             setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
             setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
@@ -238,6 +241,9 @@ class LaporanFragment : Fragment() {
                     val displayDate = (monthMap[selectedMonth] ?: selectedMonth) + " $selectedYear"
                     binding.dateDropdown.text = displayDate
                     laporanViewModel.saveSelectedDate(selectedMonth!!, selectedYear!!)
+                    lifecycleScope.launch {
+                        updatePieCharts()
+                    }
                     Toast.makeText(context, "Dipilih: $displayDate", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Silakan pilih bulan dan tahun.", Toast.LENGTH_SHORT).show()
