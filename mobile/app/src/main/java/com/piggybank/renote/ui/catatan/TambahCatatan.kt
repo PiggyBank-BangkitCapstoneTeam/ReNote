@@ -12,16 +12,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.piggybank.renote.R
-import com.piggybank.renote.data.database.NoteEntity
-import com.piggybank.renote.data.database.NoteRoomDatabase
 import com.piggybank.renote.databinding.FragmentTambahBinding
 import com.piggybank.renote.ui.rekening.RekeningViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 class TambahCatatan : Fragment() {
 
@@ -31,7 +27,6 @@ class TambahCatatan : Fragment() {
     private val catatanViewModel: CatatanViewModel by activityViewModels()
     private val rekeningViewModel: RekeningViewModel by activityViewModels()
 
-    private lateinit var database: NoteRoomDatabase
     private var selectedDate: Calendar? = null
 
     private val pemasukanCategory = listOf("Pilih Kategori", "Gaji", "Investasi", "Paruh Waktu", "Lain-lain")
@@ -43,7 +38,6 @@ class TambahCatatan : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTambahBinding.inflate(inflater, container, false)
-        database = NoteRoomDatabase.getDatabase(requireContext())
 
         val bottomNavigationView = requireActivity().findViewById<View>(R.id.nav_view)
         bottomNavigationView.visibility = View.GONE
@@ -95,36 +89,17 @@ class TambahCatatan : Fragment() {
                     return@launch
                 }
 
-                try {
-                    catatanViewModel.addCatatan(selectedDate!!, kategori, adjustedNominal, deskripsi)
-                    rekeningViewModel.updateTotalSaldo(adjustedNominal)
+                catatanViewModel.addCatatan(selectedDate!!, kategori, adjustedNominal, deskripsi)
+                rekeningViewModel.updateTotalSaldo(adjustedNominal)
 
-                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                    val formattedDate = dateFormat.format(selectedDate!!.time)
-
-                    val noteEntity = NoteEntity(
-                        kategori = kategori,
-                        nominal = adjustedNominal,
-                        deskripsi = deskripsi,
-                        tanggal = formattedDate
-                    )
-                    withContext(Dispatchers.IO) {
-                        database.noteDao().insertNote(noteEntity)
-                    }
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-                        val bottomNavigationView = requireActivity().findViewById<View>(R.id.nav_view)
-                        bottomNavigationView.visibility = View.VISIBLE
-                        findNavController().navigateUp()
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                    bottomNavigationView.visibility = View.VISIBLE
+                    findNavController().navigateUp()
                 }
             }
         }
+
         return binding.root
     }
 
