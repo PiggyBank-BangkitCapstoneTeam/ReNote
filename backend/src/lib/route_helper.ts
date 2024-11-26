@@ -6,7 +6,7 @@ export type RouteContext = {
 	REQUEST_PROCESSING_TIME_MS: number;
 	RESPONSE_SIZE_BYTES: number;
 }
-export type RouteResponseValueType = string | number | boolean | Array<any> | { [key: string]: RouteResponseValueType } | undefined;
+export type RouteResponseValueType = string | number | boolean | Array<any> | { [key: string]: RouteResponseValueType } | object | undefined;
 
 /** Nilai yang dikembalikan oleh function rute API */
 export type RouteResponse = {
@@ -14,7 +14,10 @@ export type RouteResponse = {
 	[key: string]: RouteResponseValueType
 }
 
-type RouteDecoratorContext = (req: Request, res: Response, next: NextFunction) => RouteResponse | Promise<RouteResponse> | Buffer | Promise<Buffer> | undefined;
+type DecoratedFunctionReturnType = RouteResponse | Buffer | null | undefined | void;
+type DecoratedFunction<T> = (req: GenericRequestType<T>, res: Response, next: NextFunction) => DecoratedFunctionReturnType | Promise<DecoratedFunctionReturnType>;
+
+export type GenericRequestType<T> = Omit<Request, "body"> & { body: Partial<T> };
 
 /**
  * Function decorator Express.JS yang serbaguna untuk mempermudah penanganan rute API
@@ -26,7 +29,7 @@ type RouteDecoratorContext = (req: Request, res: Response, next: NextFunction) =
  * @async Fungsi parameter fn dapat bersifat async 
  * @this RouteContext Konteks yang akan digunakan oleh function rute API
  */
-const decoratorFunction = (fn: RouteDecoratorContext) => (req: Request, res: Response, next: NextFunction) => {
+const decoratorFunction = <T = any>(fn: DecoratedFunction<T>) => (req: GenericRequestType<T>, res: Response, next: NextFunction) => {
 	// Format: [DateTime] METHOD PATH: [String]
 	const REQUEST_CONTEXT: RouteContext = {
 		REQUEST_STARTTIME: new Date(),
@@ -41,10 +44,12 @@ const decoratorFunction = (fn: RouteDecoratorContext) => (req: Request, res: Res
 		return;
 	}
 
-	// Set header Content-Type ke application/json karena semua rute API akan mengembalikan JSON
-	res.setHeader("Content-Type", "application/json");
+	// Atur header Content-Type ke application/json jika belum diset
+	if (!res.getHeader("Content-Type")) {
+		res.setHeader("Content-Type", "application/json");
+	}
 
-	let ExecutionResult: RouteResponse | Promise<RouteResponse> | Buffer | Promise<Buffer> | undefined;
+	let ExecutionResult: ReturnType<DecoratedFunction<T>>;
 	try {
 		ExecutionResult = fn.apply(REQUEST_CONTEXT, [req, res, next]);
 		REQUEST_CONTEXT.REQUEST_ENDTIME = new Date();
@@ -58,44 +63,11 @@ const decoratorFunction = (fn: RouteDecoratorContext) => (req: Request, res: Res
 		}).end();
 		return;
 	}
-	
-	// Jika tidak ada nilai yang dikembalikan
-	if (!ExecutionResult) {
-		res.status(204).json({
-			status: 204,
-			message: "Tidak ada konten yang dikembalikan oleh kode backend"
-		}).end();
-		return;
-	}
 
-	// #region Area handle promise/async execution
 	if (ExecutionResult instanceof Promise) {
         ExecutionResult
             .then((PromiseExecutionResult) => {
-				try {
-					let ExecutionResultJSONEncoded = JSON.stringify(PromiseExecutionResult);
-					REQUEST_CONTEXT.RESPONSE_SIZE_BYTES = ExecutionResultJSONEncoded.length;
-
-					// Jika tipe response adalah raw buffer, langsung kirim sebagai body (HTTP 200 OK)
-					if (PromiseExecutionResult instanceof Buffer) {
-                        res.status(200).end(PromiseExecutionResult);
-                        return;
-                    }
-
-					if (PromiseExecutionResult.status < 1) {
-						throw new Error("HTTP Status Code harus lebih besar dari 0");
-					}
-					
-					res.status(PromiseExecutionResult.status).end(ExecutionResultJSONEncoded);
-				}
-				catch (error) {
-					console.error(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP 500 ${req.method} '${req.url}' error: ${error}`);
-					res.status(500).json({
-						status: 500,
-						message: "Terjadi kesalahan saat mengonversi nilai hasil kode backend"
-					}).end();
-					return;
-				}
+				HandleExecutionResult(REQUEST_CONTEXT, PromiseExecutionResult, req, res);
             })
             .catch((error) => {
                 console.error(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP 500 ${req.method} '${req.url}' error: ${error}`);
@@ -106,7 +78,18 @@ const decoratorFunction = (fn: RouteDecoratorContext) => (req: Request, res: Res
             });
         return;
     }
-	// #endregion
+
+	HandleExecutionResult(REQUEST_CONTEXT, ExecutionResult, req, res);
+
+	console.log(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP ${res.statusCode} ${req.method} '${req.url}' ${REQUEST_CONTEXT.RESPONSE_SIZE_BYTES} bytes, ${REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS} ms`);
+};
+
+function HandleExecutionResult(REQUEST_CONTEXT: RouteContext, ExecutionResult: DecoratedFunctionReturnType, req: Request, res: Response) {
+	// Jika tidak ada nilai yang dikembalikan
+	if (!ExecutionResult) {
+		res.end();
+		return;
+	}
 
 	// Jika tipe response adalah raw buffer, langsung kirim sebagai body (HTTP 200 OK)
 	if (ExecutionResult instanceof Buffer) {
@@ -133,9 +116,6 @@ const decoratorFunction = (fn: RouteDecoratorContext) => (req: Request, res: Res
 		}).end();
 		return;
 	}
-	// #endregion
-
-	console.log(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP ${res.statusCode} ${req.method} '${req.url}' ${REQUEST_CONTEXT.RESPONSE_SIZE_BYTES} bytes, ${REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS} ms`);
-};
+}
 
 export default decoratorFunction;

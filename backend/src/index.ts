@@ -11,10 +11,7 @@ const app = express();
 // Otomatis parse JSON yang diterima dari request body
 app.use(express.json());
 
-// Initialize firebase auth
-const firebaseAuth = new FirebaseAuth();
-
-//#region Area rute API yang tidak memerlukan verifikasi sesi Firebase Authentication
+//#region Area rute API yang tidak memerlukan verifikasi Firebase Authentication
 app.get("/", RouteHandler(() => {
 	return {
 		status: 200,
@@ -23,20 +20,62 @@ app.get("/", RouteHandler(() => {
 }));
 // #endregion
 
-// TODO: Middleware to verify Firebase ID token
-// app.use(firebaseAuth.VerifyIdToken);
+if (process.env.ENVIRONMENT === "production") {
+	// Proses verifikasi Firebase Authentication
+	const firebaseAuth = new FirebaseAuth();
+	app.use(firebaseAuth.VerifyIdToken);
+}
+else {
+	// Fake/Simulasi Firebase Authentication
+	app.use(RouteHandler((req, res, next) => {
+		req.FirebaseUserData = {
+			aud: "1234567890",
+			auth_time: 1234567890,
+			exp: 1234567890,
+			firebase: {
+				identities: {
+					email: ["user@example.com"],
+					email_verified: true
+				},
+				sign_in_provider: "google.com"
+			},
+			uid: "1234567890",
+			iat: 1234567890,
+			iss: "https://securetoken.google.com/piggybank-3b7b4",
+			sub: "1234567890"
+		};
+		
+		next();
+	}));
+}
+
 
 //#region Area rute API yang akan membutuhkan verifikasi Firebase Authentication
 
-import StrukRequestHandler from "./routes/struk.js";
+import NoteRequestHandler from "./routes/note.js";
 
-app.get("/kumpulan_struk", StrukRequestHandler.getAllStruk);
-app.post("/struk", StrukRequestHandler.addStruk);
-app.get("/struk/:id", StrukRequestHandler.getStrukById);
-app.put("/struk/:id", StrukRequestHandler.updateStruk);
-app.delete("/struk/:id", StrukRequestHandler.deleteStruk);
+app.get("/kumpulan_note", NoteRequestHandler.getAllNote);
+app.post("/note", NoteRequestHandler.addNote);
+app.get("/note/:id", NoteRequestHandler.getNoteById);
+app.put("/note/:id", NoteRequestHandler.updateNote);
+app.delete("/note/:id", NoteRequestHandler.deleteNote);
+
+import RekeningRequestHandler from "./routes/rekening.js";
+
+app.get("/kumpulan_rekening", RekeningRequestHandler.getAllRekening);
+app.post("/rekening", RekeningRequestHandler.addRekening);
+app.get("/rekening/:id", RekeningRequestHandler.getRekeningById);
+app.put("/rekening/:id", RekeningRequestHandler.updateRekening);
+app.delete("/rekening/:id", RekeningRequestHandler.deleteRekening);
 
 //#endregion
+
+app.use(RouteHandler(() => {
+	return {
+		status: 404,
+		message: "Halaman tidak ditemukan"
+	}
+}));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
