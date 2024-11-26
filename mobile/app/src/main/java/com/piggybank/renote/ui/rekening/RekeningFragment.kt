@@ -31,22 +31,17 @@ class RekeningFragment : Fragment() {
     ): View {
         rekeningViewModel = ViewModelProvider(requireActivity()).get(RekeningViewModel::class.java)
 
-        // Recalculate total saldo dynamically
-        catatanViewModel.saldoChangeListener = { _ ->
-            lifecycleScope.launch {
-                catatanViewModel.refreshSaldo(rekeningViewModel)
-            }
-        }
-
         _binding = FragmentRekeningBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Observe and display total saldo
+        lifecycleScope.launch {
+            rekeningViewModel.refreshTotalSaldo()
+        }
+
         rekeningViewModel.totalSaldo.observe(viewLifecycleOwner) { totalSaldo ->
             binding.totalSaldo.text = rekeningViewModel.formatCurrency(totalSaldo)
         }
 
-        // Update rekening list
         rekeningViewModel.rekeningList.observe(viewLifecycleOwner) { rekeningList ->
             adapter = RekeningAdapter(
                 rekeningList,
@@ -62,18 +57,13 @@ class RekeningFragment : Fragment() {
             binding.rekeningList.adapter = adapter
         }
 
-        // Add rekening button
         binding.rekeningAdd.setOnClickListener {
             findNavController().navigate(R.id.action_rekeningFragment_to_tambahRekening)
         }
 
-        // Ensure saldo is refreshed when the fragment is displayed
-        lifecycleScope.launch {
-            catatanViewModel.refreshSaldo(rekeningViewModel)
-        }
-
         return root
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
