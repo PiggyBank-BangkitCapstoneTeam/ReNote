@@ -1,0 +1,1046 @@
+{
+	"info": {
+		"_postman_id": "0120d7ce-5288-4cea-807f-af27acadffbc",
+		"name": "ReNote API Endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11603346"
+	},
+	"item": [
+		{
+			"name": "Rekening",
+			"item": [
+				{
+					"name": "Get All Rekening",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/kumpulan_rekening",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"kumpulan_rekening"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Tidak Kosong",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/kumpulan_rekening",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"kumpulan_rekening"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 19:37:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "87"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": [\n        {\n            \"id\": \"ZmZnVgSEid7hyZOUGERRH\",\n            \"name\": \"Bank Jago\",\n            \"uang\": \"1234\"\n        }\n    ]\n}"
+						},
+						{
+							"name": "Kosong",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/kumpulan_rekening",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"kumpulan_rekening"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:01:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "24"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": []\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Rekening berdasarkan ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/rekening/:id",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"rekening",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "67p2PFajyKsIMNb1kxzK1",
+									"description": "ID Rekening pada Database"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/rekening/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "67p2PFajyKsIMNb1kxzK1",
+											"description": "ID Rekening pada Database"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 19:38:05 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "101"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"67p2PFajyKsIMNb1kxzK1\",\n        \"name\": \"Bank Jago\",\n        \"uang\": \"12345678901234567168\"\n    }\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/rekening/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "67p2PFajyKsIMNb1kxzK1",
+											"description": "ID Rekening pada Database"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:02:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Rekening tidak ditemukan\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Tambahkan Rekening",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bank Jago\",\n    \"uang\": 12345678901234567890\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/rekening",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"rekening"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Tambahkan Rekening",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Bank Jago\",\n    \"uang\": 12345678901234567890\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/rekening",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 19:37:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "56"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 201,\n    \"message\": \"Rekening berhasil ditambahkan\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Rekening",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bank SuS\",\n    \"uang\": 1234\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/rekening/:id",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"rekening",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "67p2PFajyKsIMNb1kxzK1",
+									"description": "ID Rekening pada Database"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Bank SuS\",\n    \"uang\": 1234\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/rekening/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "67p2PFajyKsIMNb1kxzK1",
+											"description": "ID Rekening pada Database"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 19:38:30 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "53"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Rekening berhasil diupdate\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Hapus Rekening",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/rekening/:id",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"rekening",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "67p2PFajyKsIMNb1kxzK1",
+									"description": "ID Rekening pada Database"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/rekening/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "67p2PFajyKsIMNb1kxzK1",
+											"description": "ID Rekening pada Database"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 19:38:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "52"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Rekening berhasil dihapus\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Note",
+			"item": [
+				{
+					"name": "Get All Note",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/kumpulan_note",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"kumpulan_note"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Kosong",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/kumpulan_note",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"kumpulan_note"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:03:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "24"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": []\n}"
+						},
+						{
+							"name": "Tidak Kosong",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/kumpulan_note",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"kumpulan_note"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:03:16 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "147"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": [\n        {\n            \"id\": \"6MDjdg653_cAS7NkmolgO\",\n            \"kategori\": \"pengeluaran\",\n            \"nominal\": \"8000\",\n            \"deskripsi\": \"Beli milk tea\",\n            \"tanggal\": \"27-11-2024\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Note berdasarkan ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/note/:id",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"note",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6MDjdg653_cAS7NkmolgO"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/note/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6MDjdg653_cAS7NkmolgO"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:03:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "145"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"6MDjdg653_cAS7NkmolgO\",\n        \"kategori\": \"pengeluaran\",\n        \"nominal\": \"8000\",\n        \"deskripsi\": \"Beli milk tea\",\n        \"tanggal\": \"27-11-2024\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Tambahkan Note",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kategori\": \"pengeluaran\",\n    \"nominal\": \"8000\",\n    \"deskripsi\": \"Beli milk tea\",\n    \"tanggal\": \"27-11-2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/note",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"note"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"kategori\": \"pengeluaran\",\n    \"nominal\": \"8000\",\n    \"deskripsi\": \"Beli milk tea\",\n    \"tanggal\": \"27-11-2024\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/note",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:03:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "52"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 201,\n    \"message\": \"Note berhasil ditambahkan\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Note",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli milk tea\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/note/:id",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"note",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6MDjdg653_cAS7NkmolgO"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli milk tea\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/note/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6MDjdg653_cAS7NkmolgO"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:03:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Note berhasil diubah\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Hapus Note",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/note/:id",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"note",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6MDjdg653_cAS7NkmolgO"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/note/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6MDjdg653_cAS7NkmolgO"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:04:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "48"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Note berhasil dihapus\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Server Connection Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Server Connection OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 24 Nov 2024 20:40:21 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						},
+						{
+							"key": "Content-Length",
+							"value": "72"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"Selamat Datang PiggyBank's ReNote Backend API\"\n}"
+				}
+			]
+		}
+	]
+}
