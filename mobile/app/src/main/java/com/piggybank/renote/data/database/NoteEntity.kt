@@ -8,8 +8,7 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val kategori: String,
-    val nominal: String,
+    val nominal: Int,
     val deskripsi: String,
     val tanggal: String
 )
-

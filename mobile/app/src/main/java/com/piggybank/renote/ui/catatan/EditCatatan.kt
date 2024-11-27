@@ -34,7 +34,7 @@ class EditCatatan : Fragment() {
 
         val selectedCatatan = catatanViewModel.selectedCatatan
         if (selectedCatatan != null) {
-            binding.inputAmount.setText(selectedCatatan.nominal)
+            binding.inputAmount.setText(selectedCatatan.nominal.toString())
             binding.inputDescription.setText(selectedCatatan.deskripsi)
         } else {
             lifecycleScope.launch {
@@ -44,6 +44,7 @@ class EditCatatan : Fragment() {
                 }
             }
         }
+
 
         binding.buttonEdit.setOnClickListener {
             lifecycleScope.launch {

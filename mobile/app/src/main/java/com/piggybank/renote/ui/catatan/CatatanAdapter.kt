@@ -47,11 +47,10 @@ class CatatanAdapter(
                 minimumFractionDigits = 0
                 maximumFractionDigits = 0
             }
-            val nominal = catatan.nominal.toDoubleOrNull() ?: 0.0
-            val formattedNominal = if (nominal >= 0) {
-                "+ ${numberFormat.format(nominal).replace("Rp", "Rp ")}"
+            val formattedNominal = if (catatan.nominal >= 0) {
+                "+ ${numberFormat.format(catatan.nominal).replace("Rp", "Rp ")}"
             } else {
-                "- ${numberFormat.format(-nominal).replace("Rp", "Rp ")}"
+                "- ${numberFormat.format(-catatan.nominal).replace("Rp", "Rp ")}"
             }
             binding.amountTextView.text = formattedNominal
             binding.arrowIcon.setOnClickListener {
