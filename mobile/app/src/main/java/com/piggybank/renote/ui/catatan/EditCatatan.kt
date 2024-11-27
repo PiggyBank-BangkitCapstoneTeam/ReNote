@@ -1,5 +1,6 @@
 package com.piggybank.renote.ui.catatan
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ class EditCatatan : Fragment() {
     private val binding get() = _binding!!
     private val catatanViewModel: CatatanViewModel by activityViewModels()
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,16 +47,11 @@ class EditCatatan : Fragment() {
             }
         }
 
-
         binding.buttonEdit.setOnClickListener {
             lifecycleScope.launch {
                 val newNominal = binding.inputAmount.text.toString()
                 val newDeskripsi = binding.inputDescription.text.toString()
                 if (newNominal.isNotBlank() && newDeskripsi.isNotBlank() && selectedCatatan != null) {
-                    val dateKey = selectedCatatan.tanggal.split("-")
-                    val date = Calendar.getInstance().apply {
-                        set(dateKey[2].toInt(), dateKey[1].toInt() - 1, dateKey[0].toInt())
-                    }
                     catatanViewModel.editCatatan(newNominal, newDeskripsi)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Catatan berhasil diubah!", Toast.LENGTH_SHORT).show()

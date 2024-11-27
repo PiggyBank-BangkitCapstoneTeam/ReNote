@@ -38,7 +38,7 @@ class CatatanFragment : Fragment() {
 
         catatanAdapter = CatatanAdapter { catatan ->
             lifecycleScope.launch {
-                catatanViewModel.selectedCatatan = catatan // Pastikan selectedCatatan terisi
+                catatanViewModel.selectedCatatan = catatan
                 withContext(Dispatchers.Main) {
                     findNavController().navigate(R.id.navigation_editCatatan)
                 }
