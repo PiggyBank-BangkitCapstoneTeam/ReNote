@@ -8,5 +8,5 @@ data class RekeningEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
-    val uang: Long
+    val uang: Int
 )

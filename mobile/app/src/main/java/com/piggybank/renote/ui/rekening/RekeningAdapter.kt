@@ -10,7 +10,7 @@ import com.piggybank.renote.R
 class RekeningAdapter(
     private val rekeningList: List<Rekening>,
     private val onArrowClick: (Rekening) -> Unit,
-    private val formatCurrency: (Long) -> String
+    private val formatCurrency: (Int) -> String
 ) : RecyclerView.Adapter<RekeningAdapter.RekeningViewHolder>() {
 
     class RekeningViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -21,9 +21,9 @@ class RekeningAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RekeningViewHolder {
-        val view = LayoutInflater.from(parent.context)
+        val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_rekening, parent, false)
-        return RekeningViewHolder(view)
+        return RekeningViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: RekeningViewHolder, position: Int) {

@@ -30,9 +30,9 @@ class TambahRekening : Fragment(R.layout.fragment_tambah_rekening) {
             val jumlahRekening = view.findViewById<EditText>(R.id.input_jumlah_rekening).text.toString()
 
             if (namaRekening.isNotBlank() && jumlahRekening.isNotBlank()) {
-                val saldo = jumlahRekening.toDoubleOrNull()
+                val saldo = jumlahRekening.toIntOrNull()
                 if (saldo != null) {
-                    val rekeningBaru = Rekening(namaRekening, saldo.toLong())
+                    val rekeningBaru = Rekening(namaRekening, saldo)
                     lifecycleScope.launch {
                         val isAdded = rekeningViewModel.addRekening(rekeningBaru)
                         if (isAdded) {
@@ -48,6 +48,7 @@ class TambahRekening : Fragment(R.layout.fragment_tambah_rekening) {
                 Toast.makeText(requireContext(), "Harap isi semua untuk melengkapi data Rekening", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     override fun onResume() {

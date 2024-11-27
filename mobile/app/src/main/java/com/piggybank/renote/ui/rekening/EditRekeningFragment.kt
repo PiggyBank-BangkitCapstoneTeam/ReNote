@@ -41,7 +41,7 @@ class EditRekeningFragment : Fragment() {
                 Toast.makeText(context, "Jumlah rekening tidak boleh kosong", Toast.LENGTH_SHORT).show()
             } else {
                 lifecycleScope.launch {
-                    val updatedRekening = args.rekening.copy(uang = newAmount.toLong())
+                    val updatedRekening = args.rekening.copy(uang = newAmount.toInt())
 
                     val isUpdated = rekeningViewModel.updateRekening(updatedRekening)
 

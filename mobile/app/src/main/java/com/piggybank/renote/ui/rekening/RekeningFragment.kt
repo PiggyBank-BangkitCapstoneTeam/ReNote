@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentRekeningBinding
-import com.piggybank.renote.ui.catatan.CatatanViewModel
 import kotlinx.coroutines.launch
 
 class RekeningFragment : Fragment() {
@@ -21,7 +19,6 @@ class RekeningFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var rekeningViewModel: RekeningViewModel
-    private val catatanViewModel: CatatanViewModel by activityViewModels()
 
     private lateinit var adapter: RekeningAdapter
 
@@ -29,7 +26,7 @@ class RekeningFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        rekeningViewModel = ViewModelProvider(requireActivity()).get(RekeningViewModel::class.java)
+        rekeningViewModel = ViewModelProvider(requireActivity())[RekeningViewModel::class.java]
 
         _binding = FragmentRekeningBinding.inflate(inflater, container, false)
         val root: View = binding.root

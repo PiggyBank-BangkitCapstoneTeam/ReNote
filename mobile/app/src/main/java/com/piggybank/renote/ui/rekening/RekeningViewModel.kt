@@ -18,10 +18,10 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
     private val _rekeningList = MutableLiveData<List<Rekening>>()
     val rekeningList: LiveData<List<Rekening>> = _rekeningList
 
-    private val _totalSaldo = MutableLiveData<Long>().apply {
-        value = _rekeningList.value?.sumOf { it.uang } ?: 0L
+    private val _totalSaldo = MutableLiveData<Int>().apply {
+        value = _rekeningList.value?.sumOf { it.uang } ?: 0
     }
-    val totalSaldo: LiveData<Long> = _totalSaldo
+    val totalSaldo: LiveData<Int> = _totalSaldo
 
     private val _activeRekening = MutableLiveData<Rekening?>()
 
@@ -37,16 +37,15 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val rekeningEntities = noteDao.getAllRekening()
             if (rekeningEntities.isEmpty()) {
-                noteDao.insertRekening(RekeningEntity(name = "DANA", uang = 0L))
-                noteDao.insertRekening(RekeningEntity(name = "OVO", uang = 0L))
-                noteDao.insertRekening(RekeningEntity(name = "BCA", uang = 0L))
+                noteDao.insertRekening(RekeningEntity(name = "DANA", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "OVO", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "BCA", uang = 0))
             }
             val rekeningListFromDb = noteDao.getAllRekening().map { Rekening(it.name, it.uang) }
             _rekeningList.value = rekeningListFromDb
             _totalSaldo.value = rekeningListFromDb.sumOf { it.uang }
         }
     }
-
 
     fun addRekening(rekening: Rekening): Boolean {
         val existingRekening = _rekeningList.value?.find { it.name.equals(rekening.name, ignoreCase = true) }
@@ -66,8 +65,8 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun updateTotalSaldo(amount: String) {
-        val amountValue = amount.toDoubleOrNull()?.toLong() ?: 0L
-        _totalSaldo.value = (_totalSaldo.value ?: 0L) + amountValue
+        val amountValue = amount.toDoubleOrNull()?.toInt() ?: 0
+        _totalSaldo.value = (_totalSaldo.value ?: 0) + amountValue
     }
 
     fun refreshTotalSaldo() {
@@ -77,7 +76,7 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun setTotalSaldoDirectly(amount: Long) {
+    fun setTotalSaldoDirectly(amount: Int) {
         _totalSaldo.postValue(amount)
     }
 
@@ -110,7 +109,6 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
         return true
     }
 
-
     fun deleteRekening(rekening: Rekening): Boolean {
         val currentList = _rekeningList.value?.toMutableList() ?: return false
 
@@ -134,9 +132,10 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
         return true
     }
 
-
-    fun formatCurrency(amount: Long): String {
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    fun formatCurrency(amount: Int): String {
+        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            maximumFractionDigits = 0
+        }
         return format.format(amount).replace("Rp", "Rp.")
     }
 }
