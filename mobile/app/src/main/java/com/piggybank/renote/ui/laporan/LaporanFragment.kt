@@ -154,7 +154,6 @@ class LaporanFragment : Fragment() {
             }
         }
 
-        // Persiapkan data untuk diagram pie
         val totalPemasukan = pemasukanCounts.values.sum()
         val totalPengeluaran = pengeluaranCounts.values.sum()
 

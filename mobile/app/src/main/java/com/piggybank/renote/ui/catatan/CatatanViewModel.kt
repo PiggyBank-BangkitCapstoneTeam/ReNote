@@ -26,7 +26,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
 
     var selectedCatatan: Catatan? = null
 
-    var saldoChangeListener: ((Int) -> Unit)? = null
+    private var saldoChangeListener: ((Int) -> Unit)? = null
 
     fun updateDataForDate(date: Calendar) {
         val dateKey = getDateKey(date)
@@ -65,10 +65,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
 
     fun editCatatan(newNominal: String, newDeskripsi: String) {
         selectedCatatan?.let { catatan ->
-            val nominalValue = newNominal.replace("[^\\d-]".toRegex(), "").toIntOrNull()
-            if (nominalValue == null) {
-                return
-            }
+            val nominalValue = newNominal.replace("[^\\d-]".toRegex(), "").toIntOrNull() ?: return
 
             viewModelScope.launch {
                 val existingNote = noteDao.getNotesByDate(catatan.tanggal).find {
