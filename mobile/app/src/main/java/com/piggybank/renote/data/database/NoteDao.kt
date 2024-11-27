@@ -33,4 +33,9 @@ interface NoteDao {
 
     @Delete
     suspend fun deleteRekening(rekening: RekeningEntity)
+
+    // Laporan
+    @Query("SELECT * FROM notes WHERE strftime('%m', tanggal) = :month AND strftime('%Y', tanggal) = :year")
+    suspend fun getNotesByMonthAndYear(month: String, year: String): List<NoteEntity>
+
 }

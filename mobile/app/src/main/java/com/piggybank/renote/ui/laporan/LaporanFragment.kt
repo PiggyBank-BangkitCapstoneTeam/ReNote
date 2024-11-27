@@ -134,13 +134,12 @@ class LaporanFragment : Fragment() {
         val selectedDate = laporanViewModel.selectedDate.value ?: return@withContext
         val (selectedMonth, selectedYear) = selectedDate
 
-        val filteredCatatan = catatanViewModel.catatanList.value?.filter { catatan ->
-            val parts = catatan.tanggal.split("-")
-            val year = parts[0].toIntOrNull()
-            val month = parts[1].toIntOrNull()
+        catatanViewModel.updateDataForMonth(
+            convertMonthToNumber(selectedMonth).toString().padStart(2, '0'),
+            selectedYear
+        )
 
-            year == selectedYear.toIntOrNull() && month == convertMonthToNumber(selectedMonth)
-        } ?: emptyList()
+        val filteredCatatan = catatanViewModel.catatanList.value ?: emptyList()
 
         val pemasukanCounts = mutableMapOf<String, Float>()
         val pengeluaranCounts = mutableMapOf<String, Float>()
@@ -170,6 +169,7 @@ class LaporanFragment : Fragment() {
             setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
         }
     }
+
 
     private fun setupPieChart(pieChart: PieChart, data: List<PieEntry>, colors: List<Int>) {
         val dataSet = PieDataSet(data, "").apply {

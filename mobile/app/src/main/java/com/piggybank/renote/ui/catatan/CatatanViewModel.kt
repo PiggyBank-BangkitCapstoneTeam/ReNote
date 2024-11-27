@@ -45,6 +45,22 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun updateDataForMonth(month: String, year: String) {
+        viewModelScope.launch {
+            val notes = noteDao.getNotesByMonthAndYear(month, year)
+            val catatanList = notes.map {
+                Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+            }
+            _catatanList.postValue(catatanList)
+
+            val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
+            val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
+
+            _totalPemasukan.postValue(pemasukan)
+            _totalPengeluaran.postValue(pengeluaran)
+        }
+    }
+
     fun addCatatan(date: Calendar, kategori: String, nominal: String, deskripsi: String) {
         val dateKey = getDateKey(date)
         val nominalValue = nominal.replace("[^\\d-]".toRegex(), "").toIntOrNull() ?: 0
