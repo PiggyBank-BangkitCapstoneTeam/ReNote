@@ -61,7 +61,10 @@ class TambahCatatan : Fragment() {
             showDatePickerDialog()
         }
 
-        setupCategorySpinner(pengeluaranCategory)
+        val isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
+        setupCategorySpinner(if (isPengeluaran) pengeluaranCategory else pemasukanCategory)
+
+        toggleAdditionalFieldsVisibility(isPengeluaran)
 
         binding.toggleGroup.setOnCheckedChangeListener { _, checkedId ->
             lifecycleScope.launch {
@@ -112,7 +115,6 @@ class TambahCatatan : Fragment() {
 
         return binding.root
     }
-
     private fun setupCategorySpinner(categories: List<String>) {
         lifecycleScope.launch {
             val adapter = withContext(Dispatchers.Default) {
