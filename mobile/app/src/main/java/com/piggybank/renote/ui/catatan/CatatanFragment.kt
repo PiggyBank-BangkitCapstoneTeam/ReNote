@@ -48,11 +48,23 @@ class CatatanFragment : Fragment() {
         binding.transactionRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = catatanAdapter
-            val itemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-            addItemDecoration(itemDecoration)
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
 
-        updateUIForDate(selectedDate)
+        // Set observer
+        catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
+            catatanAdapter.submitList(catatanList)
+        }
+
+        catatanViewModel.totalPemasukan.observe(viewLifecycleOwner) { pemasukan ->
+            val formattedPemasukan = NumberFormat.getNumberInstance(Locale.getDefault()).format(pemasukan)
+            binding.textPemasukan.text = getString(R.string.pemasukan_text, formattedPemasukan)
+        }
+
+        catatanViewModel.totalPengeluaran.observe(viewLifecycleOwner) { pengeluaran ->
+            val formattedPengeluaran = NumberFormat.getNumberInstance(Locale.getDefault()).format(pengeluaran)
+            binding.textPengeluaran.text = getString(R.string.pengeluaran_text, formattedPengeluaran)
+        }
 
         binding.catatanAdd.setOnClickListener {
             lifecycleScope.launch {
@@ -67,8 +79,11 @@ class CatatanFragment : Fragment() {
             showDatePickerDialog()
         }
 
+        updateUIForDate(selectedDate)
+
         return binding.root
     }
+
 
     private fun updateUIForDate(date: Calendar) {
         lifecycleScope.launch {
@@ -123,6 +138,12 @@ class CatatanFragment : Fragment() {
 
         datePickerDialog.show()
     }
+
+    override fun onResume() {
+        super.onResume()
+        updateUIForDate(selectedDate)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

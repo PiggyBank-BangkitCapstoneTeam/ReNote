@@ -45,6 +45,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+
     fun updateDataForMonth(month: String, year: String) {
         viewModelScope.launch {
             val notes = noteDao.getNotesByMonthAndYear(month, year)
