@@ -34,7 +34,7 @@ class TambahCatatan : Fragment() {
     private var selectedDate: Calendar? = null
 
     private val pemasukanCategory = listOf("Pilih Kategori", "Gaji", "Investasi", "Paruh Waktu", "Lain-lain")
-    private val pengeluaranCategory = listOf("Pilih Kategori", "Belanja", "Makanan", "Minuman", "Pulsa", "Transportasi", "Lain-lain")
+    private val pengeluaranCategory = listOf("Pilih Kategori", "Parkir", "Makanan dan Minuman", "Transportasi", "Hiburan", "Kesehatan", "Lain-lain")
 
     override fun onCreateView(
         inflater: LayoutInflater,
