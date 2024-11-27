@@ -2,6 +2,8 @@ package com.piggybank.renote.ui.catatan
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +17,9 @@ import com.piggybank.renote.databinding.FragmentEditCatatanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.NumberFormat
 import java.util.Calendar
+import java.util.Locale
 
 class EditCatatan : Fragment() {
 
@@ -36,7 +40,7 @@ class EditCatatan : Fragment() {
 
         val selectedCatatan = catatanViewModel.selectedCatatan
         if (selectedCatatan != null) {
-            binding.inputAmount.setText(selectedCatatan.nominal.toString())
+            binding.inputAmount.setText(formatCurrency(selectedCatatan.nominal.toString()))
             binding.inputDescription.setText(selectedCatatan.deskripsi)
         } else {
             lifecycleScope.launch {
@@ -47,12 +51,15 @@ class EditCatatan : Fragment() {
             }
         }
 
+        setupAmountFormatter()
+
         binding.buttonEdit.setOnClickListener {
             lifecycleScope.launch {
-                val newNominal = binding.inputAmount.text.toString()
+                val newNominalFormatted = binding.inputAmount.text.toString()
+                val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toLongOrNull()
                 val newDeskripsi = binding.inputDescription.text.toString()
-                if (newNominal.isNotBlank() && newDeskripsi.isNotBlank() && selectedCatatan != null) {
-                    catatanViewModel.editCatatan(newNominal, newDeskripsi)
+                if (newNominal != null && newDeskripsi.isNotBlank() && selectedCatatan != null) {
+                    catatanViewModel.editCatatan(newNominal.toString(), newDeskripsi)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Catatan berhasil diubah!", Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
@@ -88,6 +95,37 @@ class EditCatatan : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun setupAmountFormatter() {
+        binding.inputAmount.addTextChangedListener(object : TextWatcher {
+            private var currentText = ""
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.toString() != currentText) {
+                    binding.inputAmount.removeTextChangedListener(this)
+
+                    val cleanString = s.toString().replace("[,.]".toRegex(), "")
+                    if (cleanString.isNotEmpty()) {
+                        val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
+                            .format(cleanString.toDouble())
+                        currentText = formatted
+                        binding.inputAmount.setText(formatted)
+                        binding.inputAmount.setSelection(formatted.length)
+                    }
+
+                    binding.inputAmount.addTextChangedListener(this)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun formatCurrency(value: String): String {
+        return NumberFormat.getNumberInstance(Locale("in", "ID")).format(value.toLong())
     }
 
     override fun onDestroyView() {
