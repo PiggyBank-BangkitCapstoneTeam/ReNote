@@ -71,7 +71,8 @@ class LaporanFragment : Fragment() {
         val root: View = binding.root
 
         laporanViewModel.selectedDate.observe(viewLifecycleOwner) { (month, year) ->
-            binding.dateDropdown.text = getString(R.string.date_display, month, year)
+            val fullMonthName = monthMap[month] ?: month
+            binding.dateDropdown.text = getString(R.string.date_display, fullMonthName, year)
             lifecycleScope.launch {
                 updatePieCharts()
             }
@@ -141,7 +142,6 @@ class LaporanFragment : Fragment() {
             year == selectedYear.toIntOrNull() && month == convertMonthToNumber(selectedMonth)
         } ?: emptyList()
 
-
         val pemasukanCounts = mutableMapOf<String, Float>()
         val pengeluaranCounts = mutableMapOf<String, Float>()
 
@@ -165,7 +165,6 @@ class LaporanFragment : Fragment() {
             PieEntry((count / totalPengeluaran) * 100, kategori)
         }
 
-        // Update UI dengan data baru
         withContext(Dispatchers.Main) {
             setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
             setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
@@ -237,7 +236,8 @@ class LaporanFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("OK") { _, _ ->
                 if (!selectedMonth.isNullOrEmpty() && !selectedYear.isNullOrEmpty()) {
-                    val displayDate = (monthMap[selectedMonth] ?: selectedMonth) + " $selectedYear"
+                    val fullMonthName = monthMap[selectedMonth] ?: selectedMonth
+                    val displayDate = "$fullMonthName $selectedYear"
                     binding.dateDropdown.text = displayDate
                     laporanViewModel.saveSelectedDate(selectedMonth!!, selectedYear!!)
                     lifecycleScope.launch {
