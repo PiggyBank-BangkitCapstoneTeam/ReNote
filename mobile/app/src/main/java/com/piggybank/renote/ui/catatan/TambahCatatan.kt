@@ -46,7 +46,7 @@ class TambahCatatan : Fragment() {
         val bottomNavigationView = requireActivity().findViewById<View>(R.id.nav_view)
         bottomNavigationView.visibility = View.GONE
 
-        setupAmountFormatter() // Setup untuk format uang
+        setupAmountFormatter()
 
         binding.iconBack.setOnClickListener {
             lifecycleScope.launch {
@@ -65,9 +65,12 @@ class TambahCatatan : Fragment() {
 
         binding.toggleGroup.setOnCheckedChangeListener { _, checkedId ->
             lifecycleScope.launch {
-                val categories = if (checkedId == R.id.radio_pengeluaran) pengeluaranCategory else pemasukanCategory
+                val isPengeluaran = checkedId == R.id.radio_pengeluaran
+                val categories = if (isPengeluaran) pengeluaranCategory else pemasukanCategory
+
                 withContext(Dispatchers.Main) {
                     setupCategorySpinner(categories)
+                    toggleAdditionalFieldsVisibility(isPengeluaran)
                 }
             }
         }
@@ -125,6 +128,12 @@ class TambahCatatan : Fragment() {
                 binding.spinnerCategory.adapter = adapter
             }
         }
+    }
+
+    private fun toggleAdditionalFieldsVisibility(isPengeluaran: Boolean) {
+        binding.iconCamera.visibility = if (isPengeluaran) View.VISIBLE else View.GONE
+        binding.titleScanResult.visibility = if (isPengeluaran) View.VISIBLE else View.GONE
+        binding.textScanResult.visibility = if (isPengeluaran) View.VISIBLE else View.GONE
     }
 
     private fun showDatePickerDialog() {
