@@ -68,12 +68,12 @@ class TambahCatatan : Fragment() {
 
         binding.toggleGroup.setOnCheckedChangeListener { _, checkedId ->
             lifecycleScope.launch {
-                val isPengeluaran = checkedId == R.id.radio_pengeluaran
-                val categories = if (isPengeluaran) pengeluaranCategory else pemasukanCategory
+                val checkedIsPengeluaran = checkedId == R.id.radio_pengeluaran
+                val categories = if (checkedIsPengeluaran) pengeluaranCategory else pemasukanCategory
 
                 withContext(Dispatchers.Main) {
                     setupCategorySpinner(categories)
-                    toggleAdditionalFieldsVisibility(isPengeluaran)
+                    toggleAdditionalFieldsVisibility(checkedIsPengeluaran)
                 }
             }
         }
