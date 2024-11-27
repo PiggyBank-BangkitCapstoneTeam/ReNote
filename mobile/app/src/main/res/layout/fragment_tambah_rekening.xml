@@ -48,7 +48,8 @@
             android:background="@drawable/edit_text_stroke"
             android:hint="@string/nama_rekening"
             android:inputType="text"
-            android:padding="8dp" />
+            android:padding="8dp"
+            android:autofillHints="name" />
 
         <EditText
             android:id="@+id/input_jumlah_rekening"
@@ -58,14 +59,15 @@
             android:background="@drawable/edit_text_stroke"
             android:padding="8dp"
             android:layout_marginBottom="16dp"
-            android:inputType="text" />
+            android:inputType="numberDecimal|numberSigned"
+            android:autofillHints="money" />
 
         <Button
             android:id="@+id/button_simpan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_button_simpanedit"
-            android:text="@string/simpan"
+            android:text="@string/buat"
             android:textColor="@android:color/white"
             android:layout_gravity="end" />
     </LinearLayout>
