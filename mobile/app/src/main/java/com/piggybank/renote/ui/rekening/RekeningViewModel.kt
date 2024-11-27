@@ -38,8 +38,13 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
             val rekeningEntities = noteDao.getAllRekening()
             if (rekeningEntities.isEmpty()) {
                 noteDao.insertRekening(RekeningEntity(name = "DANA", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "GoPay", uang = 0))
                 noteDao.insertRekening(RekeningEntity(name = "OVO", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "LinkAja", uang = 0))
                 noteDao.insertRekening(RekeningEntity(name = "BCA", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "BRI", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "BNI", uang = 0))
+                noteDao.insertRekening(RekeningEntity(name = "Bank Mandiri", uang = 0))
             }
             val rekeningListFromDb = noteDao.getAllRekening().map { Rekening(it.name, it.uang) }
             _rekeningList.value = rekeningListFromDb
