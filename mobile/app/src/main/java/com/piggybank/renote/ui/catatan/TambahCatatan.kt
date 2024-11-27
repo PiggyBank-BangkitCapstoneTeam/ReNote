@@ -2,6 +2,8 @@ package com.piggybank.renote.ui.catatan
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +19,9 @@ import com.piggybank.renote.ui.rekening.RekeningViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.NumberFormat
 import java.util.Calendar
+import java.util.Locale
 
 class TambahCatatan : Fragment() {
 
@@ -41,6 +45,8 @@ class TambahCatatan : Fragment() {
 
         val bottomNavigationView = requireActivity().findViewById<View>(R.id.nav_view)
         bottomNavigationView.visibility = View.GONE
+
+        setupAmountFormatter() // Setup untuk format uang
 
         binding.iconBack.setOnClickListener {
             lifecycleScope.launch {
@@ -69,7 +75,8 @@ class TambahCatatan : Fragment() {
         binding.buttonCreate.setOnClickListener {
             lifecycleScope.launch {
                 val kategori = binding.spinnerCategory.selectedItem.toString()
-                val nominal = binding.inputAmount.text.toString()
+                val nominalFormatted = binding.inputAmount.text.toString()
+                val nominal = nominalFormatted.replace("[,.]".toRegex(), "").toLong().toString()
                 val deskripsi = binding.inputDescription.text.toString()
                 val isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
 
@@ -143,6 +150,33 @@ class TambahCatatan : Fragment() {
         )
 
         datePickerDialog.show()
+    }
+
+    private fun setupAmountFormatter() {
+        binding.inputAmount.addTextChangedListener(object : TextWatcher {
+            private var currentText = ""
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.toString() != currentText) {
+                    binding.inputAmount.removeTextChangedListener(this)
+
+                    val cleanString = s.toString().replace("[,.]".toRegex(), "")
+                    if (cleanString.isNotEmpty()) {
+                        val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
+                            .format(cleanString.toDouble())
+                        currentText = formatted
+                        binding.inputAmount.setText(formatted)
+                        binding.inputAmount.setSelection(formatted.length)
+                    }
+
+                    binding.inputAmount.addTextChangedListener(this)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     override fun onDestroyView() {
