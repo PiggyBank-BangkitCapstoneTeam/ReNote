@@ -38,28 +38,35 @@ const addNote = RouteHandler<NoteModelRequestBody>((req) => {
 	if (!kategori) {
 		return {
 			status: 400,
-			message: "Kategori note tidak boleh kosong"
+			message: "Kategori note harus ada pada request body"
 		};
 	}
 
-	if (!nominal) {
+	if (typeof nominal === "undefined") {
 		return {
 			status: 400,
-			message: "Nominal note tidak boleh kosong"
+			message: "Nominal note harus ada pada request body"
 		};
+	}
+
+	if (nominal < 0) {
+		return {
+			status: 400,
+			message: "Nominal note harus lebih besar atau sama dengan 0"
+		}
 	}
 
 	if (!deskripsi) {
 		return {
 			status: 400,
-			message: "Deskripsi note tidak boleh kosong"
+			message: "Deskripsi note harus ada pada request body"
 		};
 	}
 
 	if (!tanggal) {
 		return {
 			status: 400,
-			message: "Tanggal note tidak boleh kosong"
+			message: "Tanggal note harus ada pada request body"
 		};
 	}
 
@@ -121,21 +128,27 @@ const updateNote = RouteHandler<NoteModelUpdateRequestBody>((req) => {
 		};
 	}
 
-	// Logic to update note to the database
 	let nominal = req.body.nominal;
 	let deskripsi = req.body.deskripsi;
 
-	if (!nominal) {
+	if (typeof nominal === "undefined") {
 		return {
 			status: 400,
-			message: "Nominal note tidak boleh kosong"
+			message: "Nominal note harus ada pada request body"
+		};
+	}
+
+	if (nominal < 0) {
+		return {
+			status: 400,
+			message: "Nominal note harus lebih besar atau sama dengan 0"
 		};
 	}
 
 	if (!deskripsi) {
 		return {
 			status: 400,
-			message: "Deskripsi note tidak boleh kosong"
+			message: "Deskripsi note harus ada pada request body"
 		};
 	}
 

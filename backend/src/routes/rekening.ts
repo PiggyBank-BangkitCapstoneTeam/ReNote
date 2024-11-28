@@ -10,7 +10,7 @@ const getAllRekening = RouteHandler((req) => {
 		return {
 			id: rekening.id,
 			name: rekening.name,
-			uang: rekening.uang.toString()
+			uang: rekening.uang
 		};
 	});
 
@@ -35,14 +35,21 @@ const addRekening = RouteHandler<RekeningModelRequestBody>((req) => {
 	if (!name) {
 		return {
 			status: 400,
-			message: "Nama rekening tidak boleh kosong"
+			message: "Nama rekening harus ada pada request body"
 		};
 	}
 
-	if (!uang) {
+	if (typeof uang === "undefined") {
 		return {
 			status: 400,
-			message: "Jumlah uang dalam rekening tidak boleh kosong"
+			message: "Jumlah uang dalam rekening harus ada pada request body"
+		};
+	}
+
+	if (uang < 0) {
+		return {
+			status: 400,
+			message: "Jumlah uang dalam rekening harus lebih besar atau sama dengan 0"
 		};
 	}
 
@@ -50,7 +57,7 @@ const addRekening = RouteHandler<RekeningModelRequestBody>((req) => {
 		id: nanoid(),
 		user_id: req.FirebaseUserData.uid,
 		name: name,
-		uang: BigInt(uang)
+		uang: uang
 	});
 
 	return {
@@ -73,7 +80,7 @@ const getRekeningById = RouteHandler((req) => {
 	const data: RekeningModelResponseBody = {
 		id: rekening.id,
 		name: rekening.name,
-		uang: rekening.uang.toString()
+		uang: rekening.uang
 	};
 
 	return {
@@ -98,11 +105,11 @@ const updateRekening = RouteHandler<RekeningModelUpdateRequestBody>((req) => {
 	if (!uang) {
 		return {
 			status: 400,
-			message: "Jumlah uang dalam rekening tidak boleh kosong"
+			message: "Jumlah uang dalam rekening harus ada pada request body"
 		};
 	}
 
-	rekening.uang = BigInt(uang);
+	rekening.uang = uang;
 
 	return {
 		status: 200,

@@ -3,7 +3,7 @@ export type NoteModel = {
 	user_id: string;
 
 	kategori: string;
-	nominal: string;
+	nominal: number;
 	deskripsi: string;
 	tanggal: string;
 }
@@ -18,7 +18,7 @@ export function createModelSQL() {
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		user_id VARCHAR(64) NOT NULL,
 		kategori VARCHAR(64) NOT NULL,
-		nominal VARCHAR(32) NOT NULL,
+		nominal UNSIGNED INT NOT NULL,
 		deskripsi VARCHAR(1024) NOT NULL,
 		tanggal VARCHAR(32) NOT NULL
 	)`;
