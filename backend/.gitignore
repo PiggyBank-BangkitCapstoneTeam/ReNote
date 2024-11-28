@@ -2,3 +2,6 @@ node_modules/
 service-account.json
 .env
 build/
+
+# Ignore Service Account JSON file
+service-account.json

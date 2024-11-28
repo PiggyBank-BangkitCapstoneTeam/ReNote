@@ -1,12 +1,17 @@
 import express from "express";
 import FirebaseAuth from "./lib/firebase-auth.js";
 import RouteHandler from "./lib/route_helper.js";
+import { createModelSQL } from "./models/index.js";
+import GCP_CloudSQL from "./lib/gcp-cloudsql.js";
 import dotenv from "dotenv";
 
 // Load environment variable dari file .env
 dotenv.config();
 
 const app = express();
+// const CloudSQL = new GCP_CloudSQL();
+// CloudSQL.InitializePool();
+// CloudSQL.Connect();
 
 // Otomatis parse JSON yang diterima dari request body
 app.use(express.json());
@@ -23,7 +28,7 @@ app.get("/", RouteHandler(() => {
 if (process.env.ENVIRONMENT === "production") {
 	// Proses verifikasi Firebase Authentication
 	const firebaseAuth = new FirebaseAuth();
-	app.use(firebaseAuth.VerifyIdToken);
+	app.use((req, res, next) => { firebaseAuth.VerifyIdToken(req, res, next); });
 }
 else {
 	// Fake/Simulasi Firebase Authentication

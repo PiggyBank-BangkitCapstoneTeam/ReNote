@@ -43,11 +43,22 @@ export default class {
 				next();
 			})
 			.catch((error) => {
-				response.status(401).send({
-					message: "Hak akses ditolak"
-				});
+				let errorInfo: Partial<{ code: string, message: string}> = error.errorInfo;
 
-				console.log(`${request.method} ${request.url}: 401 Token otorisasi ditolak, alasan: ${error}`);
+				if (!errorInfo) {
+					response.status(401).send({ message: "Hak akses ditolak" }).end();
+					console.log(`${request.method} ${request.url}: 401 Token otorisasi ditolak, alasan: ${error}`);
+					return;
+				}
+
+				if (errorInfo.code === "auth/id-token-expired") {
+					response.status(401).send({ message: "Hak akses ditolak, token sudah kedaluwarsa" }).end();
+					console.log(`${request.method} ${request.url}: 401 Token otorisasi expired`);
+					return;
+				}
+
+				response.status(401).send({ message: "Hak akses ditolak" }).end();
+				console.log(`${request.method} ${request.url}: 401 Token otorisasi ditolak, alasan: ${errorInfo.message}`);
 			});
 	}
 }

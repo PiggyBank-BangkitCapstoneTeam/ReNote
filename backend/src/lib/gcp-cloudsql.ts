@@ -44,23 +44,22 @@ export default class GCP_CloudSQL {
 		GCP_CloudSQL.Connection = undefined;
 	}
 
-	/** Mendapatkan SQL Connection dari pool, pastikan untuk release() setelah selesai */
-	private async GetConnection() {
+	public async GetConnection() {
 		if (!GCP_CloudSQL.Pool) {
 			throw new Error("Koneksi Pool belum dibuat, panggil InitializePool() terlebih dahulu");
 		}
 
-		const conn = await GCP_CloudSQL.Pool.getConnection();
+		if (!GCP_CloudSQL.Connection) {
+			GCP_CloudSQL.Connection = await GCP_CloudSQL.Pool.getConnection();
+		}
 
-		return conn;
+		return GCP_CloudSQL.Connection;
 	}
 
-	public async InitializeTable() {
-		const conn = await this.GetConnection();
-
-		await conn.query("CREATE TABLE IF NOT EXISTS item (id INT AUTO_INCREMENT PRIMARY KEY, nama VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL)");
-
-		console.log("Tabel item berhasil dibuat");
-		conn.release();
+	public GetConnectionCallback(callback: (conn: mysql.PoolConnection) => void) {
+		this.GetConnection().then(conn => {
+			callback(conn);
+			conn.release();
+		});
 	}
 }
