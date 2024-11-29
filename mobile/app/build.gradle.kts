@@ -70,6 +70,6 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.play.services.auth)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.androidx.credentials.v130)
+    implementation(libs.androidx.credentials.play.services.auth.v130)
 }
