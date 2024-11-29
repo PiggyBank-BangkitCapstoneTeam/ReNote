@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "600413958940",
+    "project_id": "renote-e54a6",
+    "storage_bucket": "renote-e54a6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600413958940:android:e26f5ee769e60b03bb40d9",
+        "android_client_info": {
+          "package_name": "com.piggybank.renote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "600413958940-4n1dlg85f25rjvohvbh99eps7cqkovkv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.piggybank.renote",
+            "certificate_hash": "f9ce7fc8a931539bf969761b321c059d8b0b41e9"
+          }
+        },
+        {
+          "client_id": "600413958940-rkpok3r7qhuqibkgkb2v1mhht401r2sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQcolaZQ5rFOp3MfxF6PQWXLRZPUh0de8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "600413958940-rkpok3r7qhuqibkgkb2v1mhht401r2sn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
