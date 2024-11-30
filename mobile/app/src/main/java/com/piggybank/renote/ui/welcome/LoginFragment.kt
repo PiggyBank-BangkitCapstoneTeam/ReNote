@@ -108,9 +108,13 @@ class LoginFragment : Fragment() {
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
+        val loadingScreen = LoadingScreen(requireContext())
+        loadingScreen.show()
+
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
+                loadingScreen.dismiss()
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
                     navigateToMainActivity()
@@ -119,6 +123,7 @@ class LoginFragment : Fragment() {
                 }
             }
     }
+
 
     private fun navigateToMainActivity() {
         val intent = Intent(requireContext(), MainActivity::class.java)

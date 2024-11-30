@@ -33,7 +33,6 @@ class ScreenActivity : AppCompatActivity() {
             }
             true
         }
-        checkLoginStatus()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -42,25 +41,11 @@ class ScreenActivity : AppCompatActivity() {
         if (hasFocus) {
             Handler(Looper.getMainLooper()).postDelayed({
                 startExitAnimation()
-            }, 5000L)
-        }
-    }
-
-    private fun checkLoginStatus() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            // User is already logged in
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        } else {
-            // Navigate to WelcomeActivity for login
-            startActivity(Intent(this, WelcomeActivity::class.java))
-            finish()
+            }, 3000L)
         }
     }
 
     private fun startEntryAnimation() {
-
         val fadeInLogo = ObjectAnimator.ofFloat(binding.logo, "alpha", 0f, 1f).apply {
             duration = 1000
         }
@@ -99,15 +84,18 @@ class ScreenActivity : AppCompatActivity() {
             playTogether(fadeOutLogo, fadeOutText)
             start()
             addListener(onEnd = {
-                moveMainActivity()
+                navigateNextActivity()
             })
         }
     }
 
-    private fun moveMainActivity() {
-        Intent(this, WelcomeActivity::class.java).also {
-            startActivity(it)
-            finish()
+    private fun navigateNextActivity() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+        } else {
+            startActivity(Intent(this, WelcomeActivity::class.java))
         }
+        finish()
     }
 }
