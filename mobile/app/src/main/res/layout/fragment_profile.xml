@@ -44,10 +44,11 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
+
+    <com.piggybank.renote.ui.Akun.ImageProfile
         android:id="@+id/foto_profile"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_marginTop="32dp"
         android:contentDescription="@string/foto_profile"
         android:scaleType="centerCrop"
@@ -59,8 +60,8 @@
 
     <ImageView
         android:id="@+id/addIcon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/circle_background"

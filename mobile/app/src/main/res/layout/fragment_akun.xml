@@ -1,5 +1,4 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -23,12 +22,13 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck" />
 
-    <ImageView
+    <com.piggybank.renote.ui.Akun.ImageProfile
         android:id="@+id/userImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_marginTop="24dp"
         android:contentDescription="@string/profile_gambar"
+        android:scaleType="centerCrop"
         android:src="@drawable/profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,12 +38,12 @@
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
-        android:layout_marginTop="8dp"
         android:text="@string/nama"
-        android:textSize="18sp"
         android:textColor="@android:color/black"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userImage" />
@@ -66,11 +66,11 @@
             android:id="@+id/menu_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:drawableEndCompat="@drawable/baseline_arrow_right"
             android:drawablePadding="16dp"
             android:padding="16dp"
             android:text="@string/profile"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            app:drawableEndCompat="@drawable/baseline_arrow_right" />
 
         <View
             android:layout_width="match_parent"
@@ -81,11 +81,11 @@
             android:id="@+id/menu_bahasa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:drawableEndCompat="@drawable/baseline_arrow_right"
             android:drawablePadding="16dp"
             android:padding="16dp"
             android:text="@string/bahasa"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            app:drawableEndCompat="@drawable/baseline_arrow_right" />
 
         <View
             android:layout_width="match_parent"
@@ -96,11 +96,11 @@
             android:id="@+id/menu_bantuan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:drawableEndCompat="@drawable/baseline_arrow_right"
             android:drawablePadding="16dp"
             android:padding="16dp"
             android:text="@string/bantuan"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            app:drawableEndCompat="@drawable/baseline_arrow_right" />
 
         <View
             android:layout_width="match_parent"
@@ -111,11 +111,11 @@
             android:id="@+id/menu_tentang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:drawableEndCompat="@drawable/baseline_arrow_right"
             android:drawablePadding="16dp"
             android:padding="16dp"
             android:text="@string/tentang"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            app:drawableEndCompat="@drawable/baseline_arrow_right" />
 
         <View
             android:layout_width="match_parent"

@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.piggybank.renote.R
@@ -66,14 +67,24 @@ class AkunFragment : Fragment() {
         if (!userImagePath.isNullOrEmpty()) {
             val file = File(userImagePath)
             if (file.exists()) {
-                binding.userImage.setImageURI(Uri.fromFile(file))
+                binding.userImage.apply {
+                    setImageURI(Uri.fromFile(file))
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                }
             } else {
-                binding.userImage.setImageResource(R.drawable.profile)
+                binding.userImage.apply {
+                    setImageResource(R.drawable.profile)
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                }
             }
         } else {
-            binding.userImage.setImageResource(R.drawable.profile)
+            binding.userImage.apply {
+                setImageResource(R.drawable.profile)
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
         }
     }
+
 
     override fun onResume() {
         super.onResume()
