@@ -138,7 +138,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "67p2PFajyKsIMNb1kxzK1",
+									"value": "",
 									"description": "ID Rekening pada Database"
 								}
 							]
@@ -264,7 +264,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Bank Jago\",\n    \"uang\": 12345678901234567890\n}",
+							"raw": "{\n    \"name\": \"Bank Jago\",\n    \"uang\": 1234567890\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -347,7 +347,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Bank SuS\",\n    \"uang\": 1234\n}",
+							"raw": "{\n    \"uang\": 1234567\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -366,7 +366,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "67p2PFajyKsIMNb1kxzK1",
+									"value": "",
 									"description": "ID Rekening pada Database"
 								}
 							]
@@ -436,6 +436,70 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"status\": 200,\n    \"message\": \"Rekening berhasil diupdate\"\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Bank SuS\",\n    \"uang\": 1234\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/rekening/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "67p2PFajyKsIMNb1kxzK1",
+											"description": "ID Rekening pada Database"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:05:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Rekening tidak ditemukan\"\n}"
 						}
 					]
 				},
@@ -456,7 +520,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "67p2PFajyKsIMNb1kxzK1",
+									"value": "",
 									"description": "ID Rekening pada Database"
 								}
 							]
@@ -517,6 +581,61 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"status\": 200,\n    \"message\": \"Rekening berhasil dihapus\"\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/rekening/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"rekening",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "67p2PFajyKsIMNb1kxzK1",
+											"description": "ID Rekening pada Database"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:05:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Rekening tidak ditemukan\"\n}"
 						}
 					]
 				}
@@ -654,7 +773,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "6MDjdg653_cAS7NkmolgO"
+									"value": ""
 								}
 							]
 						}
@@ -713,6 +832,60 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"6MDjdg653_cAS7NkmolgO\",\n        \"kategori\": \"pengeluaran\",\n        \"nominal\": \"8000\",\n        \"deskripsi\": \"Beli milk tea\",\n        \"tanggal\": \"27-11-2024\"\n    }\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/note/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6MDjdg653_cAS7NkmolgO"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:04:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Note tidak ditemukan\"\n}"
 						}
 					]
 				},
@@ -806,7 +979,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli milk tea\"\n}",
+							"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli minuman (milk tea)\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -825,7 +998,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "6MDjdg653_cAS7NkmolgO"
+									"value": ""
 								}
 							]
 						}
@@ -893,6 +1066,69 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"status\": 200,\n    \"message\": \"Note berhasil diubah\"\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli milk tea\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/note/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6MDjdg653_cAS7NkmolgO"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:04:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Note tidak ditemukan\"\n}"
 						}
 					]
 				},
@@ -913,7 +1149,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "6MDjdg653_cAS7NkmolgO"
+									"value": ""
 								}
 							]
 						}
@@ -972,6 +1208,60 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"status\": 200,\n    \"message\": \"Note berhasil dihapus\"\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/note/:id",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "6MDjdg653_cAS7NkmolgO"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Nov 2024 20:04:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Note tidak ditemukan\"\n}"
 						}
 					]
 				}
@@ -1041,6 +1331,42 @@
 					"body": "{\n    \"status\": 200,\n    \"message\": \"Selamat Datang PiggyBank's ReNote Backend API\"\n}"
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{FIREBASE_SESSION_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"let token = pm.environment.get(\"FIREBASE_SESSION_TOKEN\");",
+					"",
+					"if (token.includes(\"\\\"\")) {",
+					"    throw new Error(JSON.stringify(\"FIREBASE_SESSION_TOKEN memiliki simbol \\\"\"));",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
