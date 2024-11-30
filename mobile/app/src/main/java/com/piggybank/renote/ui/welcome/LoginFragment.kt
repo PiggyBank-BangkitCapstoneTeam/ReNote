@@ -61,13 +61,13 @@ class LoginFragment : Fragment() {
         val enterAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.enter_animation)
         binding.root.startAnimation(enterAnimation)
 
-        val loadingDialog = LoadingDialog(requireContext())
+        val loadingScreen = LoadingScreen(requireContext())
 
         binding.Loginwithgmail.setOnClickListener {
             if (NetworkUtils.isNetworkAvailable(requireContext())) {
-                loadingDialog.show()
+                loadingScreen.show()
                 initiateGoogleSignIn { isSuccess ->
-                    loadingDialog.dismiss()
+                    loadingScreen.dismiss()
                     if (!isSuccess) {
                         Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
                     }
