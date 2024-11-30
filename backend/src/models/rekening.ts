@@ -14,9 +14,9 @@ export type RekeningModelResponseBody = Omit<RekeningModel, "user_id">;
 
 export function createModelSQL() {
 	return `CREATE TABLE IF NOT EXISTS rekening (
-		id INT AUTO_INCREMENT PRIMARY KEY,
+		id CHAR(32) PRIMARY KEY,
 		user_id VARCHAR(64) NOT NULL,
 		name VARCHAR(64) NOT NULL,
-		uang UNSIGNED INT NOT NULL
-	)`;
+		uang INT UNSIGNED NOT NULL
+	)`.replace(/\n/g, " ").replace(/\t/g, "");
 }

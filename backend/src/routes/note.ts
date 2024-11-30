@@ -1,12 +1,25 @@
+import { ResultSetHeader } from "mysql2";
 import RouteHandler from "../lib/route_helper.js";
 import { NoteModel, NoteModelRequestBody, NoteModelResponseBody, NoteModelUpdateRequestBody } from "../models/note.js";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
-//TODO: Hapus array ini nanti
-let Notes: NoteModel[] = [];
+const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 32);
 
-const getAllNote = RouteHandler((req) => {
-	const data: NoteModelResponseBody[] = Notes.map((note) => {
+const getAllNote = RouteHandler(async(req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
+
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.query<NoteModel>("SELECT * FROM note WHERE user_id = ?", [req.FirebaseUserData.uid]);
+	conn.release();
+
+	const data: NoteModelResponseBody[] = result.map((note) => {
 		return {
 			id: note.id,
 			kategori: note.kategori,
@@ -22,12 +35,14 @@ const getAllNote = RouteHandler((req) => {
 	};
 });
 
-const addNote = RouteHandler<NoteModelRequestBody>((req) => {
+const addNote = RouteHandler<NoteModelRequestBody>(async(req) => {
 	if (!req.FirebaseUserData) {
-		return {
-			status: 401,
-			message: "Anda tidak diizinkan menambahkan catatan"
-		};
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
+
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
 	}
 
 	let kategori = req.body.kategori;
@@ -70,14 +85,19 @@ const addNote = RouteHandler<NoteModelRequestBody>((req) => {
 		};
 	}
 
-	Notes.push({
-		id: nanoid(),
-		user_id: req.FirebaseUserData.uid,
-		kategori: kategori,
-		nominal: nominal,
-		deskripsi: deskripsi,
-		tanggal: tanggal
-	});
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.execute<ResultSetHeader>(
+		"INSERT INTO note (id, user_id, kategori, nominal, deskripsi, tanggal) VALUES (?, ?, ?, ?, ?, ?)",
+		[nanoid(), req.FirebaseUserData.uid, kategori, nominal, deskripsi, tanggal]
+	);
+	conn.release();
+
+	if (result.affectedRows === 0) {
+		return {
+			status: 500,
+			message: "Gagal menambahkan note"
+		};
+	}
 
 	return {
 		status: 201,
@@ -85,16 +105,36 @@ const addNote = RouteHandler<NoteModelRequestBody>((req) => {
 	};
 });
 
-const getNoteById = RouteHandler((req) => {
-	const id = req.params.id;
-	const note = Notes.find((note) => note.id === id);
+const getNoteById = RouteHandler(async (req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
 
-	if (!note) {
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
+	const id = req.params.id;
+	if (!id) {
+		return {
+			status: 400,
+			message: "ID rekening harus ada pada parameter URL"
+		};
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.query<NoteModel>("SELECT * FROM note WHERE id = ? AND user_id = ?", [id, req.FirebaseUserData.uid]);
+	conn.release();
+
+	if (result.length === 0) {
 		return {
 			status: 404,
 			message: "Note tidak ditemukan"
 		};
 	}
+
+	const note = result[0];
 
 	const mappedNote: NoteModelResponseBody = {
 		id: note.id,
@@ -110,21 +150,21 @@ const getNoteById = RouteHandler((req) => {
 	};
 });
 
-const updateNote = RouteHandler<NoteModelUpdateRequestBody>((req) => {
+const updateNote = RouteHandler<NoteModelUpdateRequestBody>(async (req) => {
 	if (!req.FirebaseUserData) {
-		return {
-			status: 401,
-			message: "Anda tidak diizinkan mengubah catatan"
-		};
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
+
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
 	}
 
 	const id = req.params.id;
-	const note = Notes.find((note) => note.id === id);
-
-	if (!note) {
+	if (!id) {
 		return {
-			status: 404,
-			message: "Note tidak ditemukan"
+			status: 400,
+			message: "ID note harus ada pada parameter URL"
 		};
 	}
 
@@ -152,8 +192,19 @@ const updateNote = RouteHandler<NoteModelUpdateRequestBody>((req) => {
 		};
 	}
 
-	note.nominal = nominal;
-	note.deskripsi = deskripsi;
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.execute<ResultSetHeader>(
+		"UPDATE note SET nominal = ?, deskripsi = ? WHERE id = ? AND user_id = ?",
+		[nominal, deskripsi, id, req.FirebaseUserData.uid]
+	);
+	conn.release();
+
+	if (result.affectedRows === 0) {
+		return {
+			status: 404,
+			message: "Note tidak ditemukan"
+		};
+	}
 
 	return {
 		status: 200,
@@ -161,25 +212,37 @@ const updateNote = RouteHandler<NoteModelUpdateRequestBody>((req) => {
 	};
 });
 
-const deleteNote = RouteHandler((req) => {
+const deleteNote = RouteHandler(async (req) => {
 	if (!req.FirebaseUserData) {
-		return {
-			status: 401,
-			message: "Anda tidak diizinkan menghapus catatan"
-		};
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
+
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
 	}
 
 	const id = req.params.id;
-	const noteIndex = Notes.findIndex((note) => note.id === id);
+	if (!id) {
+		return {
+			status: 400,
+			message: "ID note harus ada pada parameter URL"
+		};
+	}
 
-	if (noteIndex === -1) {
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.execute<ResultSetHeader>(
+		"DELETE FROM note WHERE id = ? AND user_id = ?", 
+		[id, req.FirebaseUserData.uid]
+	);
+	conn.release();
+
+	if (result.affectedRows === 0) {
 		return {
 			status: 404,
 			message: "Note tidak ditemukan"
 		};
 	}
-
-	Notes.splice(noteIndex, 1);
 
 	return {
 		status: 200,

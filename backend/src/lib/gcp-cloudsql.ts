@@ -6,33 +6,45 @@ export default class GCP_CloudSQL {
 	private static Connection?: mysql.PoolConnection;
 
 	public async InitializePool() {
-		const PoolDetails = {
-			instanceConnectionName: process.env.CLOUD_SQL_CONNECTION_NAME || "",
-			ipType: process.env.CLOUD_SQL_CONNECTION_IP_TYPE || "",
-
-			user: process.env.CLOUD_SQL_DATABASE_USERNAME || "",
-			password: process.env.CLOUD_SQL_DATABASE_PASSWORD || "",
-			database: process.env.CLOUD_SQL_DATABASE_NAME || "",
-		}
-
 		const connector = new Connector();
-		const clientOpts = await connector.getOptions({
-			instanceConnectionName: PoolDetails.instanceConnectionName,
-			ipType: PoolDetails.ipType as IpAddressTypes
-		});
+
+		let clientOpts;
+		try {
+			clientOpts = await connector.getOptions({
+				instanceConnectionName: process.env.CloudSQL_ConnectionName || "",
+				ipType: (process.env.CloudSQL_IpAddressType || "") as (IpAddressTypes | undefined)
+			});
+		}
+		catch (err: any) {
+			if (err.message) {
+				if (err.message.includes("not in an appropriate state to handle the request")) {
+					throw new Error("Cloud SQL tidak siap untuk menerima koneksi, apakah sudah dinyalakan dan siap?");
+				}
+			}
+
+			console.error("Gagal mendapatkan opsi koneksi Cloud SQL");
+			throw err;
+		}
+		
 
 		GCP_CloudSQL.Pool = mysql.createPool({
 			...clientOpts,
-			...PoolDetails
+
+			user: process.env.CloudSQL_Username,
+			password: process.env.CloudSQL_Password,
+			database: process.env.CloudSQL_Database,
 		});
 	}
 
 	/** Buat koneksi ke Cloud SQL */
 	public async Connect() {
 		if (!GCP_CloudSQL.Pool) { throw new Error("Pool belum dibuat"); }
-		GCP_CloudSQL.Pool.connect();
+		
+		const conn = await GCP_CloudSQL.Pool.getConnection();
 
-		console.log("Terhubung ke Cloud SQL");
+		await conn.connect();
+		await conn.ping();
+		conn.release();
 	}
 
 	/** Putuskan koneksi ke Cloud SQL */
@@ -56,6 +68,7 @@ export default class GCP_CloudSQL {
 		return GCP_CloudSQL.Connection;
 	}
 
+	/** A variant of GetConnection that automatically releases the connection after execution is done */
 	public GetConnectionCallback(callback: (conn: mysql.PoolConnection) => void) {
 		this.GetConnection().then(conn => {
 			callback(conn);

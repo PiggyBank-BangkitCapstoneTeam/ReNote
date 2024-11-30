@@ -52,8 +52,6 @@ const decoratorFunction = <T = any>(fn: DecoratedFunction<T>) => (req: GenericRe
 	let ExecutionResult: ReturnType<DecoratedFunction<T>>;
 	try {
 		ExecutionResult = fn.apply(REQUEST_CONTEXT, [req, res, next]);
-		REQUEST_CONTEXT.REQUEST_ENDTIME = new Date();
-		REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS = REQUEST_CONTEXT.REQUEST_ENDTIME.getTime() - REQUEST_CONTEXT.REQUEST_STARTTIME.getTime();
 	}
 	catch (error) {
 		console.error(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP 500 ${req.method} '${req.url}' error: ${error}`);
@@ -67,7 +65,11 @@ const decoratorFunction = <T = any>(fn: DecoratedFunction<T>) => (req: GenericRe
 	if (ExecutionResult instanceof Promise) {
         ExecutionResult
             .then((PromiseExecutionResult) => {
+				REQUEST_CONTEXT.REQUEST_ENDTIME = new Date();
+				REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS = REQUEST_CONTEXT.REQUEST_ENDTIME.getTime() - REQUEST_CONTEXT.REQUEST_STARTTIME.getTime();
+
 				HandleExecutionResult(REQUEST_CONTEXT, PromiseExecutionResult, req, res);
+				console.log(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP ${res.statusCode} ${req.method} '${req.url}' ${REQUEST_CONTEXT.RESPONSE_SIZE_BYTES} bytes, ${REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS} ms`);
             })
             .catch((error) => {
                 console.error(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP 500 ${req.method} '${req.url}' error: ${error}`);
@@ -79,6 +81,8 @@ const decoratorFunction = <T = any>(fn: DecoratedFunction<T>) => (req: GenericRe
         return;
     }
 
+	REQUEST_CONTEXT.REQUEST_ENDTIME = new Date();
+	REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS = REQUEST_CONTEXT.REQUEST_ENDTIME.getTime() - REQUEST_CONTEXT.REQUEST_STARTTIME.getTime();
 	HandleExecutionResult(REQUEST_CONTEXT, ExecutionResult, req, res);
 
 	console.log(`[${REQUEST_CONTEXT.REQUEST_STARTTIME.toISOString()}] HTTP ${res.statusCode} ${req.method} '${req.url}' ${REQUEST_CONTEXT.RESPONSE_SIZE_BYTES} bytes, ${REQUEST_CONTEXT.REQUEST_PROCESSING_TIME_MS} ms`);

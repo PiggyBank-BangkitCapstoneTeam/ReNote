@@ -1,12 +1,28 @@
+import { ResultSetHeader } from "mysql2";
 import RouteHandler from "../lib/route_helper.js";
 import { RekeningModel, RekeningModelRequestBody, RekeningModelResponseBody, RekeningModelUpdateRequestBody } from "../models/rekening.js";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
-//TODO: Hapus array ini nanti
-let Rekening: RekeningModel[] = [];
+const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 32);
 
-const getAllRekening = RouteHandler((req) => {
-	const data: RekeningModelResponseBody[] = Rekening.map((rekening) => {
+const getAllRekening = RouteHandler(async (req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
+
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.query<RekeningModel>(
+		"SELECT * FROM rekening WHERE user_id = ?",
+		[req.FirebaseUserData.uid]
+	);
+	conn.release();
+
+	const data = result.map((rekening) => {
 		return {
 			id: rekening.id,
 			name: rekening.name,
@@ -20,15 +36,16 @@ const getAllRekening = RouteHandler((req) => {
 	};
 });
 
-const addRekening = RouteHandler<RekeningModelRequestBody>((req) => {
+const addRekening = RouteHandler<RekeningModelRequestBody>(async (req) => {
 	if (!req.FirebaseUserData) {
-		return {
-			status: 401,
-			message: "Anda tidak diizinkan menambahkan rekening"
-		};
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
 	}
 
-	// Logic to add struk to the database
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
 	let name = req.body.name;
 	let uang = req.body.uang;
 
@@ -53,12 +70,19 @@ const addRekening = RouteHandler<RekeningModelRequestBody>((req) => {
 		};
 	}
 
-	Rekening.push({
-		id: nanoid(),
-		user_id: req.FirebaseUserData.uid,
-		name: name,
-		uang: uang
-	});
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.execute<ResultSetHeader>(
+		"INSERT INTO rekening (id, user_id, name, uang) VALUES (?, ?, ?, ?)",
+		[nanoid(), req.FirebaseUserData.uid, name, uang]
+	);
+	conn.release();
+
+	if (result.affectedRows === 0) {
+		return {
+			status: 500,
+			message: "Gagal menambahkan rekening"
+		};
+	}
 
 	return {
 		status: 201,
@@ -66,16 +90,39 @@ const addRekening = RouteHandler<RekeningModelRequestBody>((req) => {
 	};
 });
 
-const getRekeningById = RouteHandler((req) => {
-	let id = req.params.id;
-	let rekening = Rekening.find((rekening) => rekening.id === id);
+const getRekeningById = RouteHandler(async (req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
 
-	if (!rekening) {
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
+	let id = req.params.id;
+	if (!id) {
+		return {
+			status: 400,
+			message: "ID rekening harus ada pada parameter URL"
+		};
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.query<RekeningModel>(
+		"SELECT * FROM rekening WHERE id = ? AND user_id = ?",
+		[id, req.FirebaseUserData.uid]
+	);
+	conn.release();
+
+	if (result.length === 0) {
 		return {
 			status: 404,
 			message: "Rekening tidak ditemukan"
 		};
 	}
+
+	const rekening = result[0];
 
 	const data: RekeningModelResponseBody = {
 		id: rekening.id,
@@ -89,14 +136,21 @@ const getRekeningById = RouteHandler((req) => {
 	};
 });
 
-const updateRekening = RouteHandler<RekeningModelUpdateRequestBody>((req) => {
-	let id = req.params.id;
-	let rekening = Rekening.find((rekening) => rekening.id === id);
+const updateRekening = RouteHandler<RekeningModelUpdateRequestBody>(async (req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
 
-	if (!rekening) {
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
+	let id = req.params.id;
+	if (!id) {
 		return {
-			status: 404,
-			message: "Rekening tidak ditemukan"
+			status: 400,
+			message: "ID rekening harus ada pada parameter URL"
 		};
 	}
 
@@ -109,7 +163,19 @@ const updateRekening = RouteHandler<RekeningModelUpdateRequestBody>((req) => {
 		};
 	}
 
-	rekening.uang = uang;
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.execute<ResultSetHeader>(
+		"UPDATE rekening SET uang = ? WHERE id = ? AND user_id = ?",
+		[uang, id, req.FirebaseUserData.uid]
+	);
+	conn.release();
+
+	if (result.affectedRows === 0) {
+		return {
+			status: 404,
+			message: "Rekening tidak ditemukan"
+		};
+	}
 
 	return {
 		status: 200,
@@ -117,18 +183,37 @@ const updateRekening = RouteHandler<RekeningModelUpdateRequestBody>((req) => {
 	};
 });
 
-const deleteRekening = RouteHandler((req) => {
-	let id = req.params.id;
-	let rekeningIndex = Rekening.findIndex((rekening) => rekening.id === id);
+const deleteRekening = RouteHandler(async (req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
 
-	if (rekeningIndex === -1) {
+	if (!req.CloudSQL) {
+		return { status: 500, message: "Koneksi database tidak tersedia" };
+	}
+
+	let id = req.params.id;
+	if (!id) {
+		return {
+			status: 400,
+			message: "ID rekening harus ada pada parameter URL"
+		};
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.execute<ResultSetHeader>(
+		"DELETE FROM rekening WHERE id = ? AND user_id = ?",
+		[id, req.FirebaseUserData.uid]
+	);
+	conn.release();
+
+	if (result.affectedRows === 0) {
 		return {
 			status: 404,
 			message: "Rekening tidak ditemukan"
 		};
 	}
-
-	Rekening.splice(rekeningIndex, 1);
 
 	return {
 		status: 200,

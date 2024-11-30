@@ -9,9 +9,32 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-// const CloudSQL = new GCP_CloudSQL();
-// CloudSQL.InitializePool();
-// CloudSQL.Connect();
+const CloudSQL = new GCP_CloudSQL();
+
+async function InitializeDatabase() {
+	console.log("Menyiapkan koneksi database di CloudSQL...");
+	await CloudSQL.InitializePool();
+
+	console.log("Menghubungkan ke Cloud SQL...");
+	await CloudSQL.Connect();
+	console.log("Terhubung ke Cloud SQL");
+
+
+	console.log("Inisialisasi database dimulai...");
+	const conn = await CloudSQL.GetConnection();
+	await createModelSQL(conn);
+	conn.release();
+	console.log("Inisialisasi database selesai");
+}
+
+if (process.env.CloudSQL_Enabled === "true") {
+	await InitializeDatabase();
+
+	app.use((req, res, next) => {
+		req.CloudSQL = CloudSQL;
+		next();
+	});
+}
 
 // Otomatis parse JSON yang diterima dari request body
 app.use(express.json());
@@ -32,7 +55,7 @@ if (process.env.ENVIRONMENT === "production") {
 }
 else {
 	// Fake/Simulasi Firebase Authentication
-	app.use(RouteHandler((req, res, next) => {
+	app.use((req, res, next) => {
 		req.FirebaseUserData = {
 			aud: "1234567890",
 			auth_time: 1234567890,
@@ -51,7 +74,7 @@ else {
 		};
 		
 		next();
-	}));
+	});
 }
 
 
