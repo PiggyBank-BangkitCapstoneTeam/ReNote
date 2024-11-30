@@ -156,10 +156,17 @@ const updateRekening = RouteHandler<RekeningModelUpdateRequestBody>(async (req) 
 
 	let uang = req.body.uang;
 
-	if (!uang) {
+	if (typeof uang === "undefined") {
 		return {
 			status: 400,
 			message: "Jumlah uang dalam rekening harus ada pada request body"
+		};
+	}
+
+	if (uang < 0) {
+		return {
+			status: 400,
+			message: "Jumlah uang dalam rekening harus lebih besar atau sama dengan 0"
 		};
 	}
 
