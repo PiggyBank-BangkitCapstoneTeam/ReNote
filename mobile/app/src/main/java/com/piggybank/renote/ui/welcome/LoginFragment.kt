@@ -26,10 +26,7 @@ class LoginFragment : Fragment() {
 
         val enterAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.enter_animation)
         binding.root.startAnimation(enterAnimation)
-
-
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

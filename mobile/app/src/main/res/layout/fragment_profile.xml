@@ -109,20 +109,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputNama" />
 
-    <EditText
+    <TextView
         android:id="@+id/inputGmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:hint="@string/masukkan_gmail"
-        android:inputType="textEmailAddress"
         android:padding="12dp"
-        android:background="@drawable/edit_text_stroke"
+        android:background="@drawable/rounded_output"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/labelGmail"
         app:layout_constraintEnd_toEndOf="parent" />
+
 
     <Button
         android:id="@+id/btnSimpan"
