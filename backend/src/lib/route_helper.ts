@@ -96,7 +96,7 @@ function HandleExecutionResult(REQUEST_CONTEXT: RouteContext, ExecutionResult: D
 	}
 
 	// Jika tipe response adalah raw buffer, langsung kirim sebagai body (HTTP 200 OK)
-	if (ExecutionResult instanceof Buffer) {
+	if (Buffer.isBuffer(ExecutionResult)) {
 		res.status(200).end(ExecutionResult);
 		return;
 	}
