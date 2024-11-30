@@ -15,6 +15,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentProfileBinding
+import java.io.File
+import java.io.FileOutputStream
 
 class ProfileFragment : Fragment() {
 
@@ -22,27 +24,16 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var sharedPref: SharedPreferences
+    private var temporaryImagePath: String? = null
 
     private val pickImage =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    try {
-                        val cursor = requireContext().contentResolver.query(uri, null, null, null, null)
-                        cursor?.use {
-                            val sizeIndex = it.getColumnIndex(MediaStore.Images.Media.SIZE)
-                            it.moveToFirst()
-                            val fileSize = it.getLong(sizeIndex)
-                            if (fileSize <= 2 * 1024 * 1024) {
-                                binding.fotoProfile.setImageURI(uri)
-                                saveImageToSharedPreferences(uri)
-                            } else {
-                                Toast.makeText(requireContext(), "Ukuran file melebihi 2MB", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(requireContext(), "Gagal memuat gambar", Toast.LENGTH_SHORT).show()
+                    updateImageView(uri)
+                    temporaryImagePath = saveImageToInternalStorage(uri)
+                    if (temporaryImagePath.isNullOrEmpty()) {
+                        Toast.makeText(requireContext(), "Gagal menyimpan gambar", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -83,7 +74,11 @@ class ProfileFragment : Fragment() {
             val inputNama = binding.inputNama.text.toString()
             if (inputNama.isNotBlank()) {
                 saveNameToSharedPreferences(inputNama)
-                Toast.makeText(requireContext(), "Nama berhasil disimpan!", Toast.LENGTH_SHORT).show()
+
+                // Simpan gambar baru ke SharedPreferences
+                temporaryImagePath?.let { saveImageToSharedPreferences(it) }
+                Toast.makeText(requireContext(), "Data berhasil disimpan!", Toast.LENGTH_SHORT).show()
+
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             } else {
                 Toast.makeText(requireContext(), "Nama tidak boleh kosong!", Toast.LENGTH_SHORT).show()
@@ -91,9 +86,37 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun saveImageToSharedPreferences(uri: Uri) {
+    private fun deleteOldProfileImage() {
+        val oldImagePath = sharedPref.getString("userImage", null)
+        if (!oldImagePath.isNullOrEmpty() && oldImagePath != temporaryImagePath) {
+            val oldFile = File(oldImagePath)
+            if (oldFile.exists()) {
+                oldFile.delete()
+            }
+        }
+    }
+
+    private fun saveImageToInternalStorage(uri: Uri): String? {
+        return try {
+            deleteOldProfileImage()
+
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            val file = File(requireContext().filesDir, "profile_image_temp.jpg") // Simpan gambar sementara
+            val outputStream = FileOutputStream(file)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun saveImageToSharedPreferences(filePath: String) {
         with(sharedPref.edit()) {
-            putString("userImage", uri.toString())
+            putString("userImage", filePath)
             apply()
         }
     }
@@ -107,21 +130,20 @@ class ProfileFragment : Fragment() {
 
     private fun loadUserData() {
         val userName = sharedPref.getString("userName", "")
-        val userImageUri = sharedPref.getString("userImage", null)
+        val userImagePath = sharedPref.getString("userImage", null)
 
         if (!userName.isNullOrBlank()) {
             binding.inputNama.setText(userName)
         }
 
-        if (!userImageUri.isNullOrEmpty()) {
-            try {
-                val uri = Uri.parse(userImageUri)
-                binding.fotoProfile.setImageURI(uri)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                binding.fotoProfile.setImageResource(R.drawable.profile)
-            }
+        if (!userImagePath.isNullOrEmpty()) {
+            updateImageView(Uri.fromFile(File(userImagePath)))
         }
+    }
+
+    private fun updateImageView(uri: Uri) {
+        binding.fotoProfile.setImageURI(uri)
+        binding.fotoProfile.invalidate()
     }
 
     override fun onDestroyView() {

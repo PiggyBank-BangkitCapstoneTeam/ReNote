@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentAkunBinding
+import java.io.File
 
 class AkunFragment : Fragment() {
 
@@ -61,13 +62,12 @@ class AkunFragment : Fragment() {
     }
 
     private fun updateUserImage() {
-        val userImageUri = sharedPref.getString("userImage", null)
-        if (!userImageUri.isNullOrEmpty()) {
-            try {
-                val uri = Uri.parse(userImageUri)
-                binding.userImage.setImageURI(uri)
-            } catch (e: Exception) {
-                e.printStackTrace()
+        val userImagePath = sharedPref.getString("userImage", null)
+        if (!userImagePath.isNullOrEmpty()) {
+            val file = File(userImagePath)
+            if (file.exists()) {
+                binding.userImage.setImageURI(Uri.fromFile(file))
+            } else {
                 binding.userImage.setImageResource(R.drawable.profile)
             }
         } else {
