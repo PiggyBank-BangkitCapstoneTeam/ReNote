@@ -93,4 +93,7 @@
         \nsesuai dengan kalander aslinya
     </string>
     <string name="image_second">image second</string>
+
+    <string name="no_internet">No Internet Connection</string>
+
 </resources>

@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.addListener
+import com.google.firebase.auth.FirebaseAuth
 import com.piggybank.renote.databinding.ActivityScreenBinding
 
 class ScreenActivity : AppCompatActivity() {
@@ -32,6 +33,7 @@ class ScreenActivity : AppCompatActivity() {
             }
             true
         }
+        checkLoginStatus()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -41,6 +43,19 @@ class ScreenActivity : AppCompatActivity() {
             Handler(Looper.getMainLooper()).postDelayed({
                 startExitAnimation()
             }, 5000L)
+        }
+    }
+
+    private fun checkLoginStatus() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            // User is already logged in
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        } else {
+            // Navigate to WelcomeActivity for login
+            startActivity(Intent(this, WelcomeActivity::class.java))
+            finish()
         }
     }
 
