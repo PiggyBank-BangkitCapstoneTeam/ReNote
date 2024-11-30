@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc -p tsconfig.json && node build/index.js",
+    "start": "node build/index.js",
+    "build": "npx tsc -p tsconfig.json",
+    "build-and-start": "npm run build && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
