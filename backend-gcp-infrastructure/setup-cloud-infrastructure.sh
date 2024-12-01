@@ -2,8 +2,8 @@
 
 #region Variabel untuk nilai nilai default
 GCP_PROJECT_ID="$(gcloud config get-value project)"
-DEFAULT_SQL_ROOT_PASSWORD="renote-mysql-root"
-DEFAULT_SQL_BACKEND_API_PASSWORD="renote-mysql-backend-api"
+DEFAULT_SQL_ROOT_PASSWORD="" # biarkan kosong jika ingin generate password random
+DEFAULT_SQL_BACKEND_API_PASSWORD="" # biarkan kosong jika ingin generate password random
 
 DEFAULT_REGION="asia-southeast2"
 DEFAULT_ZONE="$DEFAULT_REGION-b"
@@ -64,6 +64,48 @@ setup_echo "normal" "Membuat cache untuk sesi ini..."
 mkdir renote-infrastructure-setup-cache/
 cd renote-infrastructure-setup-cache/
 
+# Pastikan ada gcloud
+setup_echo "normal" "Memeriksa gcloud..."
+gcloud version > /dev/null
+if [ $? -ne 0 ]; then
+	setup_echo "error" "gcloud tidak ditemukan, harap install gcloud terlebih dahulu lalu run script lagi"
+	setup_echo "info" "Tips: https://cloud.google.com/sdk/docs/install"
+	exit 1
+fi
+
+# Pastikan ada openssl
+setup_echo "normal" "Memeriksa openssl..."
+openssl version > /dev/null
+if [ $? -ne 0 ]; then
+	setup_echo "error" "openssl tidak ditemukan, harap install openssl terlebih dahulu lalu run script lagi"
+	setup_echo "info" "Tips: sudo apt update && sudo apt install openssl -y"
+	exit 1
+fi
+
+# Generate password untuk MySQL root user jika tidak diisi
+if [ -z "$DEFAULT_SQL_ROOT_PASSWORD" ]; then
+	setup_echo "info" "Password MySQL root user tidak diisi, generate password random..."
+	DEFAULT_SQL_ROOT_PASSWORD="$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-24)"
+fi
+
+# Pastikan DEFAULT_SQL_ROOT_PASSWORD sudah diisi
+if [ -z "$DEFAULT_SQL_ROOT_PASSWORD" ]; then
+	setup_echo "error" "Gagal generate password MySQL root user, exiting..."
+	exit 1
+fi
+
+# Generate password untuk MySQL backend user jika tidak diisi
+if [ -z "$DEFAULT_SQL_BACKEND_API_PASSWORD" ]; then
+	setup_echo "info" "Password MySQL backend user tidak diisi, generate password random..."
+	DEFAULT_SQL_BACKEND_API_PASSWORD="$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-24)"
+fi
+
+# Pastikan DEFAULT_SQL_BACKEND_API_PASSWORD sudah diisi
+if [ -z "$DEFAULT_SQL_BACKEND_API_PASSWORD" ]; then
+	setup_echo "error" "Gagal generate password MySQL backend user, exiting..."
+	exit 1
+fi
+
 # Test otentikasi Cloud Shell
 setup_echo "normal" "Mencoba otentikasi Cloud Shell..."
 gcloud auth print-access-token > /dev/null
@@ -94,10 +136,15 @@ gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 	--member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
 	--role="roles/cloudsql.client"
 
+# Grant the service account the "Compute Engine Admin" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+	--member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+	--role="roles/compute.admin"
+
 # Grant the service account the "Storage Object User" role
 gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 	--member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
-	--role="roles/storage.objectAdmin"
+	--role="roles/storage.objectUser"
 
 # Grant the service account the "Firebase Authentication Viewer" role
 gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
@@ -157,6 +204,15 @@ gcloud compute firewall-rules create renote-allow-ssh-browser \
 	--action="ALLOW" \
 	--rules="tcp:22" \
 	--source-ranges="35.235.240.0/20" \
+	--target-tags="backend-api-server"
+
+gcloud compute firewall-rules create renote-allow-ssh-public \
+	--direction="INGRESS" \
+	--priority="65534" \
+	--network="renote-network" \
+	--action="ALLOW" \
+	--rules="tcp:22" \
+	--source-ranges="0.0.0.0/0" \
 	--target-tags="backend-api-server"
 
 gcloud compute firewall-rules create renote-allow-api-access \
@@ -232,6 +288,8 @@ gcloud sql users create "backend-api" \
 	--host="%" \
 	--password="$DEFAULT_SQL_BACKEND_API_PASSWORD" \
 	--type="BUILT_IN"
+
+sleep 5
 #endregion
 
 #region Cloud Storage
@@ -258,6 +316,10 @@ fi
 sudo apt update
 sudo apt upgrade -y
 sudo apt install curl bash git -y
+
+# Cek instance name untuk compute engine ini
+INSTANCE_NAME=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
+INSTANCE_ZONE=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google")
 
 # Setup backend user without no password (system)
 sudo useradd --system --create-home --shell /bin/bash backend
@@ -307,6 +369,76 @@ sudo systemctl daemon-reload
 sudo systemctl enable renote-backend-api.service
 sudo systemctl start renote-backend-api.service
 
+# Add the compute engine to the backend-api-server tag for firewall rules
+gcloud compute instances add-tags "$INSTANCE_NAME" --tags="backend-api-server" --zone="$INSTANCE_ZONE"
+
+# Wait until /tmp/backend-api.env is uploaded
+ELAPSED_WAITING_FOR_ENV=0
+while [ ! -f "/tmp/backend-api.env" ]; do
+	sleep 10
+	ELAPSED_WAITING_FOR_ENV=$((ELAPSED_WAITING_FOR_ENV+10))
+
+	if [ $ELAPSED_WAITING_FOR_ENV -gt 600 ]; then
+		echo "Timeout waiting for /tmp/backend-api.env, exiting..."
+		exit 1
+	fi
+
+	echo "Waiting for /tmp/backend-api.env to be uploaded... ($ELAPSED_WAITING_FOR_ENV detik / 600 detik)"
+done
+
+# Move the .env file to /opt/ReNote/backend/
+sudo mv /tmp/backend-api.env /opt/ReNote/backend/.env
+
+# Make sure the env is owned by backend user
+sudo chown backend:backend /opt/ReNote/backend/.env
+
+# Wait until /tmp/backend-sak.json is uploaded
+ELAPSED_WAITING_FOR_SAK=0
+while [ ! -f "/tmp/backend-sak.json" ]; do
+	sleep 10
+	ELAPSED_WAITING_FOR_SAK=$((ELAPSED_WAITING_FOR_SAK+10))
+
+	if [ $ELAPSED_WAITING_FOR_SAK -gt 600 ]; then
+		echo "Timeout waiting for /tmp/backend-sak.json, exiting..."
+		exit 1
+	fi
+
+	echo "Waiting for /tmp/backend-sak.json to be uploaded... ($ELAPSED_WAITING_FOR_SAK detik / 600 detik)"
+done
+
+# Move the service account key to /opt/ReNote/backend/
+sudo mv /tmp/backend-sak.json /opt/ReNote/backend/service-account.json
+
+# Make sure the service account key is owned by backend user
+sudo chown backend:backend /opt/ReNote/backend/service-account.json
+
+# Restart the renote-backend-api service
+sudo systemctl restart renote-backend-api.service
+
+EOF
+
+# Buat file .env untuk backend-api
+setup_echo "normal" "Membuat file .env untuk backend-api..."
+
+cat << EOF > backend-api.env
+ENVIRONMENT=development
+
+FIREBASE_apiKey="AIza..."
+FIREBASE_authDomain="....firebaseapp.com"
+FIREBASE_projectId="..."
+FIREBASE_storageBucket="....firebasestorage.app"
+FIREBASE_messagingSenderId="..."
+FIREBASE_appId=".:...:web:..."
+
+GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
+
+CloudSQL_Enabled="true"
+CloudSQL_ConnectionName="$(gcloud sql instances describe renote-mysql --format="value(connectionName)")"
+CloudSQL_IpAddressType="PRIVATE"
+CloudSQL_Username="backend-api"
+CloudSQL_Password="$DEFAULT_SQL_BACKEND_API_PASSWORD"
+CloudSQL_Database="renote"
+
 EOF
 
 # Create a Compute Engine for the Backend API
@@ -318,8 +450,7 @@ gcloud compute instances create backend-api \
 	--maintenance-policy="MIGRATE" \
 	--provisioning-model="STANDARD" \
 	--service-account="backend-service-account@$GCP_PROJECT_ID.iam.gserviceaccount.com" \
-	--no-scopes \
-	--tags="backend-api-server" \
+	--scopes="compute-rw,storage-rw,service-control,service-management,sql-admin" \
 	--create-disk="auto-delete=yes,boot=yes,device-name=instance-20241130-102327,image=projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20241115,mode=rw,size=10,type=pd-balanced" \
 	--no-shielded-secure-boot \
 	--shielded-vtpm \
@@ -327,6 +458,35 @@ gcloud compute instances create backend-api \
 	--labels="goog-ec-src=vm_add-gcloud" \
 	--reservation-affinity="any" \
 	--metadata-from-file="startup-script=backend-api-compute-engine-startup.sh"
+
+# Tunggu hingga compute engine selesai dibuat dan ada tag "backend-api-server"
+setup_echo "normal" "Menunggu hingga setup script selesai..."
+BACKEND_API_WAITING_ELAPSED=0
+while true; do
+	INSTANCE_TAGS=$(gcloud compute instances describe backend-api --zone="$DEFAULT_ZONE" --format="value(tags.items)")
+	
+	if [[ $INSTANCE_TAGS == *"backend-api-server"* ]]; then
+		break
+	fi
+
+	if [ $BACKEND_API_WAITING_ELAPSED -ge 600 ]; then
+		setup_echo "error" "Setup script untuk compute engine Backend API memakan waktu terlalu lama, exiting..."
+		exit 1
+	fi
+
+	setup_echo "info" "Menunggu hingga setup script selesai... ($BACKEND_API_WAITING_ELAPSED detik / 600 detik)"
+
+	sleep 10
+	BACKEND_API_WAITING_ELAPSED=$((BACKEND_API_WAITING_ELAPSED+10))
+done
+
+# Copy the .env file to the Backend API Compute Engine
+setup_echo "normal" "Mengirim file .env ke compute engine Backend API..."
+gcloud compute scp backend-api.env backend-api:/tmp/backend-api.env --zone="$DEFAULT_ZONE"
+
+# Copy the service account key to the Backend API Compute Engine
+setup_echo "normal" "Mengirim service account key ke compute engine Backend API..."
+gcloud compute scp backend-sak.json backend-api:/tmp/backend-sak.json --zone="$DEFAULT_ZONE"
 
 #endregion
 
