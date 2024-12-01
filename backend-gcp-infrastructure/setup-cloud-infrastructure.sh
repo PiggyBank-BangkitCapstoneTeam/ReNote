@@ -4,6 +4,9 @@
 GCP_PROJECT_ID="$(gcloud config get-value project)"
 DEFAULT_SQL_ROOT_PASSWORD="renote-mysql-root"
 DEFAULT_SQL_BACKEND_API_PASSWORD="renote-mysql-backend-api"
+
+DEFAULT_REGION="asia-southeast2"
+DEFAULT_ZONE="$DEFAULT_REGION-b"
 #endregion
 
 # Matikan output gcloud agar lebih rapi
@@ -126,7 +129,7 @@ gcloud compute networks subnets create renote-network-internal \
 	--range="192.168.0.0/28" \
 	--stack-type="IPV4_ONLY" \
 	--network="renote-network" \
-	--region="asia-southeast2" \
+	--region="$DEFAULT_REGION" \
 	--enable-private-ip-google-access
 
 # Setup default firewall rules
@@ -170,8 +173,8 @@ setup_echo "normal" "Melakukan konfigurasi IP Static untuk compute engine Backen
 gcloud compute addresses create backend-api \
 	--description="Reserved Internal IP for Backend API Compute Engine" \
 	--addresses="192.168.0.2" \
-	--region="asia-southeast2" \
-	--subnet="projects/$GCP_PROJECT_ID/regions/asia-southeast2/subnetworks/renote-network-internal" \
+	--region="$DEFAULT_REGION" \
+	--subnet="projects/$GCP_PROJECT_ID/regions/$DEFAULT_REGION/subnetworks/renote-network-internal" \
 	--purpose="GCE_ENDPOINT"
 
 
@@ -212,7 +215,7 @@ setup_echo "normal" "Membuat Cloud SQL (MySQL) instance (dapat memakan waktu beb
 gcloud sql instances create renote-mysql \
 	--database-version="MYSQL_8_4" \
 	--tier="db-g1-small" \
-	--region="asia-southeast2" \
+	--region="$DEFAULT_REGION" \
 	--network="renote-network" \
 	--no-assign-ip \
 	--root-password="$DEFAULT_SQL_ROOT_PASSWORD" \
@@ -249,7 +252,7 @@ cat << "EOF" >> backend-api-compute-engine-startup.sh
 # Jika sudah ada /opt/ReNote, jangan lanjutkan script
 if [ -d "/opt/ReNote" ]; then
 	echo "Folder /opt/ReNote sudah ada, setup tidak akan dilanjutkan"
-	exit 1
+	exit 0
 fi
 
 sudo apt update
@@ -280,6 +283,12 @@ cd backend-gcp-infrastructure/
 sudo chmod 744 backend-api-autosetup.sh
 sudo su -c "bash /opt/ReNote/backend-gcp-infrastructure/backend-api-autosetup.sh" backend
 
+# Check the output of the script
+if [ $? -ne 0 ]; then
+	echo "backend-api-autosetup.sh failed, exiting..."
+	exit 1
+fi
+
 # Check if /opt/ReNote/Backend/renote-backend-api.service exists
 if [ ! -f "/opt/ReNote/backend/renote-backend-api.service" ]; then
 	echo "backend-api-autosetup.sh failed to create renote-backend-api.service, exiting..."
@@ -297,12 +306,13 @@ sudo systemctl daemon-reload
 # Enable and start the renote-backend-api service
 sudo systemctl enable renote-backend-api.service
 sudo systemctl start renote-backend-api.service
+
 EOF
 
 # Create a Compute Engine for the Backend API
 setup_echo "normal" "Membuat compute engine untuk Backend API (dapat memakan waktu beberapa menit)..."
 gcloud compute instances create backend-api \
-	--zone="asia-southeast2-b" \
+	--zone="$DEFAULT_ZONE" \
 	--machine-type="e2-small" \
 	--network-interface="network-tier=PREMIUM,private-network-ip=192.168.0.2,stack-type=IPV4_ONLY,subnet=renote-network-internal" \
 	--maintenance-policy="MIGRATE" \

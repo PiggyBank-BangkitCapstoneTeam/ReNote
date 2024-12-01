@@ -14,13 +14,34 @@ fi
 
 cd /opt/ReNote
 
-# Install Node.js dan NPM
+# Install Node.js dan NPM menggunakan Node Version Manager (NVM)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-source ~/.bashrc
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 nvm install 22
 
+# Check if installation is successful
+if [ $? -ne 0 ]; then
+    echo "Gagal menginstall Node.js dan NPM, setup tidak akan dilanjutkan"
+    exit 1
+fi
+
 node --version
+
+# Check apakah node bisa dijalankan
+if [ $? -ne 0 ]; then
+	echo "Gagal spawn Node.js, setup tidak akan dilanjutkan"
+	exit 1
+fi
+
 npm --version
+
+# Check apakah npm bisa dijalankan
+if [ $? -ne 0 ]; then
+	echo "Gagal spawn NPM, setup tidak akan dilanjutkan"
+	exit 1
+fi
 
 # Go to the backend folder
 cd /opt/ReNote/backend/
