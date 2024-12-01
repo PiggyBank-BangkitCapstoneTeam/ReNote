@@ -256,15 +256,47 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install curl bash git -y
 
+# Setup backend user without no password (system)
+sudo useradd --system --create-home --shell /bin/bash backend
+sudo usermod -aG sudo backend
+
 sudo mkdir -p /opt/
 cd /opt/
 sudo git clone https://github.com/PiggyBank-BangkitCapstoneTeam/ReNote
 cd ReNote/
 sudo git checkout cc-backend
-cd backend-gcp-infrastructure
 
-sudo chmod 544 backend-api-autosetup.sh 
-./backend-api-autosetup.sh
+# Ganti ownership folder /opt/ReNote ke user backend
+sudo chown -R backend:backend /opt/ReNote
+
+# Atur permission semua folder di /opt/ReNote ke 755
+find /opt/ReNote -type d -print0 | sudo xargs -0 chmod 755
+
+# Atur permission semua file di /opt/ReNote ke 644
+find /opt/ReNote -type f -print0 | sudo xargs -0 chmod 644
+
+cd backend-gcp-infrastructure/
+
+sudo chmod 744 backend-api-autosetup.sh
+sudo su -c "bash /opt/ReNote/backend-gcp-infrastructure/backend-api-autosetup.sh" backend
+
+# Check if /opt/ReNote/Backend/renote-backend-api.service exists
+if [ ! -f "/opt/ReNote/backend/renote-backend-api.service" ]; then
+	echo "backend-api-autosetup.sh failed to create renote-backend-api.service, exiting..."
+	exit 1
+fi
+
+cd /opt/ReNote/backend
+
+# Move the systemd service to /etc/systemd/system/
+sudo mv renote-backend-api.service /etc/systemd/system/
+
+# Reload the systemd daemon
+sudo systemctl daemon-reload
+
+# Enable and start the renote-backend-api service
+sudo systemctl enable renote-backend-api.service
+sudo systemctl start renote-backend-api.service
 EOF
 
 # Create a Compute Engine for the Backend API
