@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentAkunBinding
 import java.io.File
@@ -36,8 +37,7 @@ class AkunFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        updateUserName()
-        updateUserImage()
+        updateUser()
 
         binding.menuProfile.setOnClickListener {
             findNavController().navigate(R.id.action_akunFragment_to_profileFragment)
@@ -52,18 +52,18 @@ class AkunFragment : Fragment() {
         }
 
         binding.menuBahasa.setOnClickListener {
-            val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
-            startActivity(intent)
+            startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
         }
     }
 
-    private fun updateUserName() {
-        val userName = sharedPref.getString("userName", getString(R.string.nama))
-        binding.userName.text = userName ?: getString(R.string.nama)
-    }
+    private fun updateUser() {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val userId = firebaseUser?.uid ?: "default"
 
-    private fun updateUserImage() {
-        val userImagePath = sharedPref.getString("userImage", null)
+        val userName = sharedPref.getString("${userId}_userName", getString(R.string.nama))
+        binding.userName.text = userName ?: getString(R.string.nama)
+
+        val userImagePath = sharedPref.getString("${userId}_userImage", null)
         if (!userImagePath.isNullOrEmpty()) {
             val file = File(userImagePath)
             if (file.exists()) {
@@ -72,24 +72,24 @@ class AkunFragment : Fragment() {
                     scaleType = ImageView.ScaleType.CENTER_CROP
                 }
             } else {
-                binding.userImage.apply {
-                    setImageResource(R.drawable.profile)
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                }
+                setDefaultProfileImage()
             }
         } else {
-            binding.userImage.apply {
-                setImageResource(R.drawable.profile)
-                scaleType = ImageView.ScaleType.CENTER_CROP
-            }
+            setDefaultProfileImage()
         }
     }
 
 
+    private fun setDefaultProfileImage() {
+        binding.userImage.apply {
+            setImageResource(R.drawable.profile)
+            scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        updateUserName()
-        updateUserImage()
+        updateUser()
     }
 
     override fun onDestroyView() {

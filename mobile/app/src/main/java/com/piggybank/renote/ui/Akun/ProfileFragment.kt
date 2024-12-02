@@ -97,7 +97,7 @@ class ProfileFragment : Fragment() {
             deleteOldProfileImage()
 
             val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val file = File(requireContext().filesDir, "profile_image_temp.jpg") // Simpan gambar sementara
+            val file = File(requireContext().filesDir, "${getFirebaseUser()?.uid}_profile_image.jpg")
             val outputStream = FileOutputStream(file)
             inputStream?.copyTo(outputStream)
             inputStream?.close()
@@ -111,56 +111,45 @@ class ProfileFragment : Fragment() {
     }
 
     private fun saveImageToSharedPreferences(filePath: String) {
+        val userId = getFirebaseUser()?.uid ?: return
         with(sharedPref.edit()) {
-            putString("userImage", filePath)
+            putString("${userId}_userImage", filePath)
             apply()
         }
     }
 
     private fun saveNameToSharedPreferences(name: String) {
+        val userId = getFirebaseUser()?.uid ?: return
         with(sharedPref.edit()) {
-            putString("userName", name)
-            apply()
-        }
-    }
-
-    private fun saveGmailToSharedPreferences(email: String) {
-        with(sharedPref.edit()) {
-            putString("userEmail", email)
+            putString("${userId}_userName", name)
             apply()
         }
     }
 
     private fun loadUserData() {
-        val userName = sharedPref.getString("userName", "")
-        val userImagePath = sharedPref.getString("userImage", null)
-        val userEmail = sharedPref.getString("userEmail", "")
+        val userId = getFirebaseUser()?.uid ?: return
+        val userName = sharedPref.getString("${userId}_userName", "")
+        val userImagePath = sharedPref.getString("${userId}_userImage", null)
+        val userEmail = getFirebaseUser()?.email
 
-        if (!userName.isNullOrBlank()) {
-            binding.inputNama.setText(userName)
-        }
+        binding.inputNama.setText(userName)
 
         if (!userImagePath.isNullOrEmpty()) {
             updateImageView(Uri.fromFile(File(userImagePath)))
+        } else {
+            binding.fotoProfile.setImageResource(R.drawable.profile)
         }
 
-        if (!userEmail.isNullOrBlank()) {
-            binding.inputGmail.text = userEmail
-        } else {
-            getFirebaseUser()?.let { user ->
-                saveGmailToSharedPreferences(user.email ?: "")
-                binding.inputGmail.text = user.email ?: ""
-            }
-        }
+        binding.inputGmail.text = userEmail ?: ""
     }
 
     private fun getFirebaseUser(): FirebaseUser? {
-        val firebaseAuth = FirebaseAuth.getInstance()
-        return firebaseAuth.currentUser
+        return FirebaseAuth.getInstance().currentUser
     }
 
     private fun deleteOldProfileImage() {
-        val oldImagePath = sharedPref.getString("userImage", null)
+        val userId = getFirebaseUser()?.uid ?: return
+        val oldImagePath = sharedPref.getString("${userId}_userImage", null)
         if (!oldImagePath.isNullOrEmpty() && oldImagePath != temporaryImagePath) {
             val oldFile = File(oldImagePath)
             if (oldFile.exists()) {
@@ -175,14 +164,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logoutUser() {
-        val firebaseAuth = FirebaseAuth.getInstance()
-        firebaseAuth.signOut()
-        with(sharedPref.edit()) {
-            remove("userName")
-            remove("userImage")
-            remove("userEmail")
-            apply()
-        }
+        FirebaseAuth.getInstance().signOut()
         Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(requireContext(), WelcomeActivity::class.java)
@@ -190,7 +172,6 @@ class ProfileFragment : Fragment() {
 
         requireActivity().finish()
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
