@@ -103,7 +103,6 @@ class TambahCatatan : Fragment() {
                 }
 
                 catatanViewModel.addCatatan(selectedDate!!, kategori, adjustedNominal, deskripsi)
-                rekeningViewModel.updateTotalSaldo(adjustedNominal)
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()

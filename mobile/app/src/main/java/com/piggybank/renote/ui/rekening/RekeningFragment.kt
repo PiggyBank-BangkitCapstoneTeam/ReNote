@@ -6,20 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentRekeningBinding
-import kotlinx.coroutines.launch
 
 class RekeningFragment : Fragment() {
-
     private var _binding: FragmentRekeningBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var rekeningViewModel: RekeningViewModel
-
+    private lateinit var userId: String
     private lateinit var adapter: RekeningAdapter
 
     override fun onCreateView(
@@ -27,17 +25,18 @@ class RekeningFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         rekeningViewModel = ViewModelProvider(requireActivity())[RekeningViewModel::class.java]
-
         _binding = FragmentRekeningBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        lifecycleScope.launch {
-            rekeningViewModel.refreshTotalSaldo()
-        }
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        userId = currentUser?.uid ?: ""
 
-        rekeningViewModel.totalSaldo.observe(viewLifecycleOwner) { totalSaldo ->
-            binding.totalSaldo.text = rekeningViewModel.formatCurrency(totalSaldo)
-        }
+        rekeningViewModel.setUserId(userId)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         rekeningViewModel.rekeningList.observe(viewLifecycleOwner) { rekeningList ->
             adapter = RekeningAdapter(
@@ -49,21 +48,22 @@ class RekeningFragment : Fragment() {
                 },
                 rekeningViewModel::formatCurrency
             )
-
             binding.rekeningList.layoutManager = LinearLayoutManager(requireContext())
             binding.rekeningList.adapter = adapter
+        }
+
+        rekeningViewModel.totalSaldo.observe(viewLifecycleOwner) { totalSaldo ->
+            binding.totalSaldo.text = rekeningViewModel.formatCurrency(totalSaldo)
         }
 
         binding.rekeningAdd.setOnClickListener {
             findNavController().navigate(R.id.action_rekeningFragment_to_tambahRekening)
         }
-
-        return root
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
+

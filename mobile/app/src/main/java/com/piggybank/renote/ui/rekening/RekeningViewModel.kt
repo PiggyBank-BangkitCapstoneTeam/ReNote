@@ -18,122 +18,101 @@ class RekeningViewModel(application: Application) : AndroidViewModel(application
     private val _rekeningList = MutableLiveData<List<Rekening>>()
     val rekeningList: LiveData<List<Rekening>> = _rekeningList
 
-    private val _totalSaldo = MutableLiveData<Int>().apply {
-        value = _rekeningList.value?.sumOf { it.uang } ?: 0
-    }
+    private val _totalSaldo = MutableLiveData<Int>().apply { value = 0 }
     val totalSaldo: LiveData<Int> = _totalSaldo
 
     private val _activeRekening = MutableLiveData<Rekening?>()
+
+    private var currentUserId: String? = null
+
+    fun setUserId(userId: String) {
+        currentUserId = userId
+        loadRekeningForUser(userId)
+    }
 
     fun setActiveRekening(rekening: Rekening) {
         _activeRekening.value = rekening
     }
 
-    init {
-        loadRekeningFromDatabase()
+    private fun loadRekeningForUser(userId: String) {
+        viewModelScope.launch {
+            val rekeningEntities = noteDao.getAllRekeningForUser(userId)
+            if (rekeningEntities.isEmpty()) {
+                insertDefaultRekening(userId)
+            } else {
+                _rekeningList.value = rekeningEntities.map { Rekening(it.name, it.uang) }
+                _totalSaldo.value = rekeningEntities.sumOf { it.uang }
+            }
+        }
     }
 
-    private fun loadRekeningFromDatabase() {
-        viewModelScope.launch {
-            val rekeningEntities = noteDao.getAllRekening()
-            if (rekeningEntities.isEmpty()) {
-                noteDao.insertRekening(RekeningEntity(name = "DANA", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "GoPay", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "OVO", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "LinkAja", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "BCA", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "BRI", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "BNI", uang = 0))
-                noteDao.insertRekening(RekeningEntity(name = "Bank Mandiri", uang = 0))
-            }
-            val rekeningListFromDb = noteDao.getAllRekening().map { Rekening(it.name, it.uang) }
-            _rekeningList.value = rekeningListFromDb
-            _totalSaldo.value = rekeningListFromDb.sumOf { it.uang }
-        }
+    private suspend fun insertDefaultRekening(userId: String) {
+        val defaultRekening = listOf(
+            RekeningEntity(userId = userId, name = "DANA", uang = 0),
+            RekeningEntity(userId = userId, name = "GoPay", uang = 0),
+            RekeningEntity(userId = userId, name = "OVO", uang = 0),
+            RekeningEntity(userId = userId, name = "LinkAja", uang = 0),
+            RekeningEntity(userId = userId, name = "BCA", uang = 0),
+            RekeningEntity(userId = userId, name = "BRI", uang = 0),
+            RekeningEntity(userId = userId, name = "BNI", uang = 0),
+            RekeningEntity(userId = userId, name = "Bank Mandiri", uang = 0)
+        )
+        defaultRekening.forEach { noteDao.insertRekening(it) }
+        loadRekeningForUser(userId)
     }
 
     fun addRekening(rekening: Rekening): Boolean {
+        val userId = currentUserId ?: return false
         val existingRekening = _rekeningList.value?.find { it.name.equals(rekening.name, ignoreCase = true) }
-        if (existingRekening != null) {
-            return false
-        }
+        if (existingRekening != null) return false
 
         viewModelScope.launch {
-            noteDao.insertRekening(RekeningEntity(name = rekening.name, uang = rekening.uang))
-
-            val currentSaldo = noteDao.getAllRekening().sumOf { it.uang }
-            setTotalSaldoDirectly(currentSaldo)
-
-            loadRekeningFromDatabase()
+            noteDao.insertRekening(RekeningEntity(userId = userId, name = rekening.name, uang = rekening.uang))
+            loadRekeningForUser(userId)
         }
         return true
     }
 
-    fun updateTotalSaldo(amount: String) {
-        val amountValue = amount.toDoubleOrNull()?.toInt() ?: 0
-        _totalSaldo.value = (_totalSaldo.value ?: 0) + amountValue
-    }
-
-    fun refreshTotalSaldo() {
-        viewModelScope.launch {
-            val currentSaldo = noteDao.getAllRekening().sumOf { it.uang }
-            setTotalSaldoDirectly(currentSaldo)
-        }
-    }
-
-    fun setTotalSaldoDirectly(amount: Int) {
-        _totalSaldo.postValue(amount)
-    }
-
     fun updateRekening(updatedRekening: Rekening): Boolean {
+        val userId = currentUserId ?: return false
         val currentList = _rekeningList.value?.toMutableList() ?: return false
 
         val index = currentList.indexOfFirst { it.name.equals(updatedRekening.name, ignoreCase = true) }
-        if (index == -1) {
-            return false
-        }
+        if (index == -1) return false
 
         viewModelScope.launch {
-            val rekeningEntity = noteDao.getAllRekening().find { it.name.equals(updatedRekening.name, ignoreCase = true) }
+            val rekeningEntity = noteDao.getAllRekeningForUser(userId)
+                .find { it.name.equals(updatedRekening.name, ignoreCase = true) }
             if (rekeningEntity != null) {
                 noteDao.updateRekening(
                     RekeningEntity(
                         id = rekeningEntity.id,
+                        userId = userId,
                         name = updatedRekening.name,
                         uang = updatedRekening.uang
                     )
                 )
+                loadRekeningForUser(userId)
             }
-
-            val currentSaldo = noteDao.getAllRekening().sumOf { it.uang }
-            setTotalSaldoDirectly(currentSaldo)
-
-            loadRekeningFromDatabase()
         }
-
         return true
     }
 
     fun deleteRekening(rekening: Rekening): Boolean {
+        val userId = currentUserId ?: return false
         val currentList = _rekeningList.value?.toMutableList() ?: return false
 
         val index = currentList.indexOfFirst { it.name.equals(rekening.name, ignoreCase = true) }
-        if (index == -1) {
-            return false
-        }
+        if (index == -1) return false
 
         viewModelScope.launch {
-            val rekeningEntity = noteDao.getAllRekening().find { it.name.equals(rekening.name, ignoreCase = true) }
+            val rekeningEntity = noteDao.getAllRekeningForUser(userId)
+                .find { it.name.equals(rekening.name, ignoreCase = true) }
             if (rekeningEntity != null) {
                 noteDao.deleteRekening(rekeningEntity)
+                loadRekeningForUser(userId)
             }
-
-            val currentSaldo = noteDao.getAllRekening().sumOf { it.uang }
-            setTotalSaldoDirectly(currentSaldo)
-
-            loadRekeningFromDatabase()
         }
-
         return true
     }
 

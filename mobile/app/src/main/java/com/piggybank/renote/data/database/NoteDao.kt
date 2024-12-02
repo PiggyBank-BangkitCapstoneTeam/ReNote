@@ -22,6 +22,9 @@ interface NoteDao {
     suspend fun deleteNote(note: NoteEntity)
 
     // Rekening
+    @Query("SELECT * FROM rekening WHERE userId = :userId")
+    suspend fun getAllRekeningForUser(userId: String): List<RekeningEntity>
+
     @Insert
     suspend fun insertRekening(rekening: RekeningEntity)
 
