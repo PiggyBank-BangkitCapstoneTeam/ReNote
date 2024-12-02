@@ -250,10 +250,155 @@ const deleteNote = RouteHandler(async (req) => {
 	};
 });
 
+const getFotoStruk = RouteHandler(async(req, res) => {
+	if (!req.FirebaseUserData) {
+        // Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+        throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+    }
+
+	if (!req.CloudSQL) {
+		return {
+			status: 500,
+			message: "Koneksi Cloud Storage ke bucket user media tidak tersedia"
+		};
+	}
+
+	if (!req.CloudStorage_UserMediaBucket) {
+		return {
+			status: 500,
+			message: "Koneksi Cloud Storage ke bucket user media tidak tersedia"
+		};
+	}
+
+	const id = req.params.id;
+	if (!id) {
+		return {
+			status: 400,
+			message: "ID note harus ada pada parameter URL"
+		};
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.query<Pick<NoteModel, "photo_id">>(
+        "SELECT photo_id FROM note WHERE id =? AND user_id =?",
+        [id, req.FirebaseUserData.uid]
+    );
+	conn.release();
+
+	if (result.length === 0) {
+		return {
+			status: 404,
+			message: "Note tidak ditemukan"
+		};
+	}
+
+	const photo_id = result[0].photo_id;
+
+	if (!photo_id) {
+		return {
+			status: 404,
+			message: "Foto struk tidak ditemukan"
+		};
+	}
+
+	const file = req.CloudStorage_UserMediaBucket.file(photo_id);
+
+	return {
+		status: 200,
+		data: {
+			id: photo_id,
+			url: file.publicUrl()
+		}
+	};
+});
+
+const uploadFotoStruk = RouteHandler(async(req) => {
+	if (!req.FirebaseUserData) {
+		// Seharusnya tidak sampai ke sini dikarenakan sudah dihandle oleh Firebase Authentication
+		throw new Error("lib/firebase-auth.ts tidak berjalan dengan baik");
+	}
+
+	if (!req.CloudSQL) {
+		return {
+			status: 500,
+			message: "Koneksi database tidak tersedia"
+		};
+	}
+
+	if (!req.CloudStorage_UserMediaBucket) {
+		return {
+			status: 500,
+			message: "Koneksi Cloud Storage ke bucket user media tidak tersedia"
+		};
+	}
+
+	let photo = req.file;
+
+	if (!photo) {
+		return {
+			status: 400,
+			message: "File foto harus ada pada request body (sebagai form-data dengan key 'foto')"
+		};
+	}
+
+	const id = req.params.id;
+
+	if (!id) {
+		return {
+			status: 400,
+			message: "id harus ada pada request body"
+		};
+	}
+
+	const conn = await req.CloudSQL.GetConnection();
+	const [result] = await conn.query<Pick<NoteModel, "id">>("SELECT id FROM note WHERE id = ? AND user_id = ?", [id, req.FirebaseUserData.uid]);
+
+	if (result.length === 0) {
+		return {
+			status: 404,
+			message: "Note tidak ditemukan, tidak dapat menambahkan foto struk"
+		};
+	}
+	const photo_id = nanoid();
+	const file = req.CloudStorage_UserMediaBucket.file(photo_id);
+	
+	const is_file_exists = await file.exists();
+	if (is_file_exists[0]) {
+		await file.delete();
+	}
+
+	await file.save(photo.buffer, {
+		metadata: {
+			contentType: photo.mimetype,
+			"Cache-Control": "private, max-age=43200"
+		}
+	});
+
+	const [result2] = await conn.execute<ResultSetHeader>("UPDATE note SET photo_id = ? WHERE id = ? AND user_id = ?", [photo_id, id, req.FirebaseUserData.uid]);
+	conn.release();
+
+	if (result2.affectedRows === 0) {
+		return {
+			status: 500,
+			message: "Gagal generate URL foto struk"
+		};
+	}
+
+	return {
+		status: 200,
+		data: {
+			id: photo_id,
+			url: file.publicUrl()
+		}
+	};
+});
+
 export default {
 	getAllNote,
 	addNote,
 	getNoteById,
 	updateNote,
+	getFotoStruk,
+	uploadFotoStruk,
 	deleteNote
 };

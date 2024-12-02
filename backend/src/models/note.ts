@@ -6,6 +6,7 @@ export type NoteModel = {
 	nominal: number;
 	deskripsi: string;
 	tanggal: string;
+	photo_id?: string;
 }
 
 export type NoteModelResponseBody = Omit<NoteModel, "user_id">;
@@ -20,6 +21,7 @@ export function createModelSQL() {
 		kategori VARCHAR(64) NOT NULL,
 		nominal INT UNSIGNED NOT NULL,
 		deskripsi VARCHAR(1024) NOT NULL,
-		tanggal VARCHAR(32) NOT NULL
+		tanggal VARCHAR(32) NOT NULL,
+		photo_id VARCHAR(128)
 	)`.replace(/\n/g, " ").replace(/\t/g, "");
 }

@@ -21,14 +21,17 @@
   "homepage": "https://github.com/TIRTAGT/BangkitAcademy2024_CC-49#readme",
   "dependencies": {
     "@google-cloud/cloud-sql-connector": "^1.4.0",
+    "@google-cloud/storage": "^7.14.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "firebase-admin": "^13.0.1",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.4",
     "nanoid": "^5.0.9"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.9.1",
     "typescript": "^5.7.2"
   }

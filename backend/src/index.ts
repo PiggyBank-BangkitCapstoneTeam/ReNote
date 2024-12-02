@@ -4,12 +4,23 @@ import RouteHandler from "./lib/route_helper.js";
 import { createModelSQL } from "./models/index.js";
 import GCP_CloudSQL from "./lib/gcp-cloudsql.js";
 import dotenv from "dotenv";
+import multer from "multer";
+import { Storage } from "@google-cloud/storage";
 
 // Load environment variable dari file .env
 dotenv.config();
 
 const app = express();
+const file_upload_storage = multer.memoryStorage();
+const file_upload = multer({
+	storage: file_upload_storage,
+	limits: {
+		fileSize: 10 * 1024 * 1024, // 10 MB
+		files: 1
+	}
+});
 const CloudSQL = new GCP_CloudSQL();
+const CloudStorage = new Storage();
 
 async function InitializeDatabase() {
 	console.log("Menyiapkan koneksi database di CloudSQL...");
@@ -32,6 +43,26 @@ if (process.env.CloudSQL_Enabled === "true") {
 
 	app.use((req, res, next) => {
 		req.CloudSQL = CloudSQL;
+		next();
+	});
+}
+
+if (process.env.CloudStorage_Enabled === "true") {
+	const CloudStorage_UserMediaBucket = process.env.CloudStorage_UserMediaBucket;
+
+	// Jika kosong atau ada gs:// di depannya, maka tidak valid
+	if (!CloudStorage_UserMediaBucket) {
+		throw new Error("Cloud Storage diaktifkan tetapi CloudStorage_UserMediaBucket tidak diisi");
+	}
+
+	// Jika ada gs:// di depannya, tetap tidak valid
+	if (CloudStorage_UserMediaBucket.startsWith("gs://")) {
+		throw new Error("CloudStorage_UserMediaBucket tidak diawali dengan gs://");
+	}
+
+	app.use((req, res, next) => {
+		req.CloudStorage = CloudStorage;
+		req.CloudStorage_UserMediaBucket = CloudStorage.bucket(CloudStorage_UserMediaBucket);
 		next();
 	});
 }
@@ -86,6 +117,8 @@ app.get("/kumpulan_note", NoteRequestHandler.getAllNote);
 app.post("/note", NoteRequestHandler.addNote);
 app.get("/note/:id", NoteRequestHandler.getNoteById);
 app.put("/note/:id", NoteRequestHandler.updateNote);
+app.get("/note/:id/struk", NoteRequestHandler.getFotoStruk);
+app.post("/note/:id/struk", file_upload.single("foto"), NoteRequestHandler.uploadFotoStruk);
 app.delete("/note/:id", NoteRequestHandler.deleteNote);
 
 import RekeningRequestHandler from "./routes/rekening.js";
@@ -104,6 +137,14 @@ app.use(RouteHandler(() => {
 		message: "Halaman tidak ditemukan"
 	}
 }));
+
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+	console.error(err);
+	res.status(500).json({
+		status: 500,
+		message: "Terjadi kesalahan pada server"
+	});
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

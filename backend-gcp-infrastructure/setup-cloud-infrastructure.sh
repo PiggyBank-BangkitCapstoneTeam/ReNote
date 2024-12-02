@@ -5,9 +5,14 @@ GCP_PROJECT_ID="$(gcloud config get-value project)"
 DEFAULT_SQL_ROOT_PASSWORD="" # biarkan kosong jika ingin generate password random
 DEFAULT_SQL_BACKEND_API_PASSWORD="" # biarkan kosong jika ingin generate password random
 
+# Untuk memastikan nama bucket unik, kita menggunakan Project ID sebagai postfix
+DEFAULT_CLOUD_STORAGE_BUCKET_NAME="renote-usermedia-$GCP_PROJECT_ID"
+
 DEFAULT_REGION="asia-southeast2"
 DEFAULT_ZONE="$DEFAULT_REGION-b"
 #endregion
+
+#region Pre-init preparations
 
 # Matikan output gcloud agar lebih rapi
 export CLOUDSDK_CORE_DISABLE_PROMPTS=1
@@ -113,6 +118,8 @@ if [ $? -ne 0 ]; then
 	setup_echo "error" "Gagal melakukan otentikasi gcloud, run script lagi jika ingin mencoba lagi"
 	exit 1
 fi
+
+#endregion
 
 #region Service Account
 
@@ -293,7 +300,19 @@ sleep 5
 #endregion
 
 #region Cloud Storage
-#TODO: Setup Cloud Storage bucket buat nyimpen file dari user
+
+# Create a Cloud Storage bucket for user media
+gcloud storage buckets create "gs://$DEFAULT_CLOUD_STORAGE_BUCKET_NAME" \
+	--location="$DEFAULT_REGION" \
+	--uniform-bucket-level-access \
+	--no-public-access-prevention \
+	--soft-delete-duration="0"
+
+# Allow everyone to read any object in the user media bucket
+gcloud storage buckets add-iam-policy-binding "gs://$DEFAULT_CLOUD_STORAGE_BUCKET_NAME" \
+	--member="allUsers" \
+	--role="roles/storage.objectViewer"
+	
 #endregion
 
 #region Memorystore (Redis)
@@ -438,6 +457,9 @@ CloudSQL_IpAddressType="PRIVATE"
 CloudSQL_Username="backend-api"
 CloudSQL_Password="$DEFAULT_SQL_BACKEND_API_PASSWORD"
 CloudSQL_Database="renote"
+
+CloudStorage_Enabled="true"
+CloudStorage_UserMediaBucket="gs://$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
 
 EOF
 
