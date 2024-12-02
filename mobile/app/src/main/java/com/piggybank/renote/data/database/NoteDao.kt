@@ -12,8 +12,8 @@ interface NoteDao {
     @Insert
     suspend fun insertNote(note: NoteEntity)
 
-    @Query("SELECT * FROM notes WHERE tanggal = :date")
-    suspend fun getNotesByDate(date: String): List<NoteEntity>
+    @Query("SELECT * FROM notes WHERE tanggal = :date AND userId = :userId")
+    suspend fun getNotesByDateAndUser(date: String, userId: String): List<NoteEntity>
 
     @Update
     suspend fun updateNote(note: NoteEntity)

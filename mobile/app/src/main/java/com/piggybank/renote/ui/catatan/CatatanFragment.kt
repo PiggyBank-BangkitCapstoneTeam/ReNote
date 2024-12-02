@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentCatatanBinding
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +30,8 @@ class CatatanFragment : Fragment() {
 
     private lateinit var catatanAdapter: CatatanAdapter
     private val catatanViewModel: CatatanViewModel by activityViewModels()
+
+    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,21 +55,6 @@ class CatatanFragment : Fragment() {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
 
-        // Set observer
-        catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
-            catatanAdapter.submitList(catatanList)
-        }
-
-        catatanViewModel.totalPemasukan.observe(viewLifecycleOwner) { pemasukan ->
-            val formattedPemasukan = NumberFormat.getNumberInstance(Locale.getDefault()).format(pemasukan)
-            binding.textPemasukan.text = getString(R.string.pemasukan_text, formattedPemasukan)
-        }
-
-        catatanViewModel.totalPengeluaran.observe(viewLifecycleOwner) { pengeluaran ->
-            val formattedPengeluaran = NumberFormat.getNumberInstance(Locale.getDefault()).format(pengeluaran)
-            binding.textPengeluaran.text = getString(R.string.pengeluaran_text, formattedPengeluaran)
-        }
-
         binding.catatanAdd.setOnClickListener {
             lifecycleScope.launch {
                 catatanViewModel.clearSelectedCatatan()
@@ -84,9 +73,15 @@ class CatatanFragment : Fragment() {
         return binding.root
     }
 
-
     private fun updateUIForDate(date: Calendar) {
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         lifecycleScope.launch {
+            catatanViewModel.setUserId(currentUser.uid)
             catatanViewModel.updateDataForDate(date)
 
             catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
@@ -143,7 +138,6 @@ class CatatanFragment : Fragment() {
         super.onResume()
         updateUIForDate(selectedDate)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -25,41 +25,49 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
     val totalPengeluaran: LiveData<Int> = _totalPengeluaran
 
     var selectedCatatan: Catatan? = null
+    private var userId: String? = null // Tambahkan userId di ViewModel
 
     private var saldoChangeListener: ((Int) -> Unit)? = null
 
-    fun updateDataForDate(date: Calendar) {
-        val dateKey = getDateKey(date)
-        viewModelScope.launch {
-            val notes = noteDao.getNotesByDate(dateKey)
-            val catatanList = notes.map {
-                Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
-            }
-            _catatanList.postValue(catatanList)
-
-            val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
-            val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
-
-            _totalPemasukan.postValue(pemasukan)
-            _totalPengeluaran.postValue(pengeluaran)
-        }
+    fun setUserId(id: String) {
+        userId = id
     }
 
+    fun updateDataForDate(date: Calendar) {
+        val dateKey = getDateKey(date)
+        userId?.let { user ->
+            viewModelScope.launch {
+                val notes = noteDao.getNotesByDateAndUser(dateKey, user)
+                val catatanList = notes.map {
+                    Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+                }
+                _catatanList.postValue(catatanList)
+
+                val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
+                val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
+
+                _totalPemasukan.postValue(pemasukan)
+                _totalPengeluaran.postValue(pengeluaran)
+            }
+        } ?: error("User ID not set")
+    }
 
     fun updateDataForMonth(month: String, year: String) {
-        viewModelScope.launch {
-            val notes = noteDao.getNotesByMonthAndYear(month, year)
-            val catatanList = notes.map {
-                Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+        userId?.let { user ->
+            viewModelScope.launch {
+                val notes = noteDao.getNotesByMonthAndYear(month, year)
+                val catatanList = notes.map {
+                    Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+                }
+                _catatanList.postValue(catatanList)
+
+                val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
+                val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
+
+                _totalPemasukan.postValue(pemasukan)
+                _totalPengeluaran.postValue(pengeluaran)
             }
-            _catatanList.postValue(catatanList)
-
-            val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
-            val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
-
-            _totalPemasukan.postValue(pemasukan)
-            _totalPengeluaran.postValue(pengeluaran)
-        }
+        } ?: error("User ID not set")
     }
 
     fun addCatatan(date: Calendar, kategori: String, nominal: String, deskripsi: String) {
@@ -70,7 +78,8 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
             kategori = kategori,
             nominal = nominalValue,
             deskripsi = deskripsi,
-            tanggal = dateKey
+            tanggal = dateKey,
+            userId = userId ?: error("User ID not set") // Pastikan userId tersedia
         )
 
         viewModelScope.launch {
@@ -84,43 +93,48 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         selectedCatatan?.let { catatan ->
             val nominalValue = newNominal.replace("[^\\d-]".toRegex(), "").toIntOrNull() ?: return
 
-            viewModelScope.launch {
-                val existingNote = noteDao.getNotesByDate(catatan.tanggal).find {
-                    it.deskripsi == catatan.deskripsi && it.kategori == catatan.kategori
-                }
-
-                existingNote?.let { noteEntity ->
-                    val updatedNote = noteEntity.copy(
-                        nominal = nominalValue,
-                        deskripsi = newDeskripsi
-                    )
-                    noteDao.updateNote(updatedNote)
-
-                    val updatedDate = Calendar.getInstance().apply {
-                        val parts = updatedNote.tanggal.split("-")
-                        set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+            userId?.let { user ->
+                viewModelScope.launch {
+                    val notes = noteDao.getNotesByDateAndUser(catatan.tanggal, user)
+                    val existingNote = notes.find {
+                        it.deskripsi == catatan.deskripsi && it.kategori == catatan.kategori
                     }
-                    updateDataForDate(updatedDate)
+
+                    existingNote?.let { noteEntity ->
+                        val updatedNote = noteEntity.copy(
+                            nominal = nominalValue,
+                            deskripsi = newDeskripsi
+                        )
+                        noteDao.updateNote(updatedNote)
+
+                        val updatedDate = Calendar.getInstance().apply {
+                            val parts = updatedNote.tanggal.split("-")
+                            set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                        }
+                        updateDataForDate(updatedDate)
+                    }
                 }
-            }
+            } ?: error("User ID not set")
         }
     }
 
-
     fun deleteSelectedCatatan(date: Calendar) {
         selectedCatatan?.let { catatan ->
-            viewModelScope.launch {
-                val existingNote = noteDao.getNotesByDate(catatan.tanggal).find {
-                    it.deskripsi == catatan.deskripsi && it.kategori == catatan.kategori
-                }
+            userId?.let { user ->
+                viewModelScope.launch {
+                    val notes = noteDao.getNotesByDateAndUser(catatan.tanggal, user)
+                    val existingNote = notes.find {
+                        it.deskripsi == catatan.deskripsi && it.kategori == catatan.kategori
+                    }
 
-                existingNote?.let { noteEntity ->
-                    noteDao.deleteNote(noteEntity)
-                    updateDataForDate(date)
-                    saldoChangeListener?.invoke(-catatan.nominal)
-                    clearSelectedCatatan()
+                    existingNote?.let { noteEntity ->
+                        noteDao.deleteNote(noteEntity)
+                        updateDataForDate(date)
+                        saldoChangeListener?.invoke(-catatan.nominal)
+                        clearSelectedCatatan()
+                    }
                 }
-            }
+            } ?: error("User ID not set")
         }
     }
 
@@ -132,3 +146,4 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         selectedCatatan = null
     }
 }
+
