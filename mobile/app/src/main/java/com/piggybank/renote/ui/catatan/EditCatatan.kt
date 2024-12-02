@@ -58,6 +58,7 @@ class EditCatatan : Fragment() {
                 val newNominalFormatted = binding.inputAmount.text.toString()
                 val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toLongOrNull()
                 val newDeskripsi = binding.inputDescription.text.toString()
+
                 if (newNominal != null && newDeskripsi.isNotBlank() && selectedCatatan != null) {
                     catatanViewModel.editCatatan(newNominal.toString(), newDeskripsi)
                     withContext(Dispatchers.Main) {
@@ -66,11 +67,16 @@ class EditCatatan : Fragment() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Nominal atau deskripsi tidak valid!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Nominal atau deskripsi tidak valid! Pastikan input benar.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
         }
+
 
         binding.deleteIcon.setOnClickListener {
             lifecycleScope.launch {
@@ -108,12 +114,20 @@ class EditCatatan : Fragment() {
                     binding.inputAmount.removeTextChangedListener(this)
 
                     val cleanString = s.toString().replace("[,.]".toRegex(), "")
-                    if (cleanString.isNotEmpty()) {
-                        val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
-                            .format(cleanString.toDouble())
-                        currentText = formatted
-                        binding.inputAmount.setText(formatted)
-                        binding.inputAmount.setSelection(formatted.length)
+                    if (cleanString.isNotEmpty() && cleanString != "-") {
+                        try {
+                            val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
+                                .format(cleanString.toDouble())
+                            currentText = formatted
+                            binding.inputAmount.setText(formatted)
+                            binding.inputAmount.setSelection(formatted.length)
+                        } catch (e: NumberFormatException) {
+                            // Jika terjadi error parsing angka, kosongkan input
+                            currentText = ""
+                            binding.inputAmount.setText("")
+                        }
+                    } else {
+                        currentText = s.toString() // Tetapkan input jika kosong atau hanya "-"
                     }
 
                     binding.inputAmount.addTextChangedListener(this)
@@ -123,6 +137,7 @@ class EditCatatan : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
     }
+
 
     private fun formatCurrency(value: String): String {
         return NumberFormat.getNumberInstance(Locale("in", "ID")).format(value.toLong())
