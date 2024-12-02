@@ -28,9 +28,6 @@ interface NoteDao {
     @Insert
     suspend fun insertRekening(rekening: RekeningEntity)
 
-    @Query("SELECT * FROM rekening")
-    suspend fun getAllRekening(): List<RekeningEntity>
-
     @Update
     suspend fun updateRekening(rekening: RekeningEntity)
 
