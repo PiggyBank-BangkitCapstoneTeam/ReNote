@@ -25,7 +25,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
     val totalPengeluaran: LiveData<Int> = _totalPengeluaran
 
     var selectedCatatan: Catatan? = null
-    private var userId: String? = null // Tambahkan userId di ViewModel
+    private var userId: String? = null
 
     private var saldoChangeListener: ((Int) -> Unit)? = null
 
@@ -81,7 +81,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
             nominal = nominalValue,
             deskripsi = deskripsi,
             tanggal = dateKey,
-            userId = userId ?: error("User ID not set") // Pastikan userId tersedia
+            userId = userId ?: error("User ID not set")
         )
 
         viewModelScope.launch {

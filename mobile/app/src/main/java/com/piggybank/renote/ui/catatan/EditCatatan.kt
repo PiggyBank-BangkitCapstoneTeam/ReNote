@@ -122,12 +122,11 @@ class EditCatatan : Fragment() {
                             binding.inputAmount.setText(formatted)
                             binding.inputAmount.setSelection(formatted.length)
                         } catch (e: NumberFormatException) {
-                            // Jika terjadi error parsing angka, kosongkan input
                             currentText = ""
                             binding.inputAmount.setText("")
                         }
                     } else {
-                        currentText = s.toString() // Tetapkan input jika kosong atau hanya "-"
+                        currentText = s.toString()
                     }
 
                     binding.inputAmount.addTextChangedListener(this)
