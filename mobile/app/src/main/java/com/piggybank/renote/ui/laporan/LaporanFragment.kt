@@ -92,6 +92,7 @@ class LaporanFragment : Fragment() {
                     binding.pieChartPemasukan.visibility = View.VISIBLE
                     binding.pieChartPengeluaran.visibility = View.GONE
                 }
+
                 R.id.radio_pengeluaran -> {
                     binding.pieChartPemasukan.visibility = View.GONE
                     binding.pieChartPengeluaran.visibility = View.VISIBLE
@@ -105,7 +106,7 @@ class LaporanFragment : Fragment() {
     }
 
     private fun observeCatatanChanges() {
-        catatanViewModel.catatanList.observe(viewLifecycleOwner) {
+        catatanViewModel.catatanList.observe(viewLifecycleOwner) { _ ->
             lifecycleScope.launch {
                 updatePieCharts()
             }
@@ -131,25 +132,16 @@ class LaporanFragment : Fragment() {
     }
 
     private suspend fun updatePieCharts() = withContext(Dispatchers.Default) {
-        val selectedDate = laporanViewModel.selectedDate.value ?: return@withContext
-        val (selectedMonth, selectedYear) = selectedDate
+        val catatanList = catatanViewModel.catatanList.value ?: emptyList()
 
-        catatanViewModel.updateDataForMonth(
-            convertMonthToNumber(selectedMonth).toString().padStart(2, '0'),
-            selectedYear
-        )
+        val pemasukanCounts = mutableMapOf<String, Int>()
+        val pengeluaranCounts = mutableMapOf<String, Int>()
 
-        val filteredCatatan = catatanViewModel.catatanList.value ?: emptyList()
-
-        val pemasukanCounts = mutableMapOf<String, Float>()
-        val pengeluaranCounts = mutableMapOf<String, Float>()
-
-        filteredCatatan.forEach { catatan ->
-            val value = catatan.nominal.toDouble().toFloat()
-            if (value >= 0) {
-                pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0f) + value
+        catatanList.forEach { catatan ->
+            if (catatan.nominal >= 0) {
+                pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0) + 1
             } else {
-                pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0f) + -value
+                pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0) + 1
             }
         }
 
@@ -157,11 +149,11 @@ class LaporanFragment : Fragment() {
         val totalPengeluaran = pengeluaranCounts.values.sum()
 
         val pemasukanData = pemasukanCounts.map { (kategori, count) ->
-            PieEntry((count / totalPemasukan) * 100, kategori)
+            PieEntry((count.toFloat() / totalPemasukan) * 100, kategori)
         }
 
         val pengeluaranData = pengeluaranCounts.map { (kategori, count) ->
-            PieEntry((count / totalPengeluaran) * 100, kategori)
+            PieEntry((count.toFloat() / totalPengeluaran) * 100, kategori)
         }
 
         withContext(Dispatchers.Main) {
@@ -169,7 +161,6 @@ class LaporanFragment : Fragment() {
             setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
         }
     }
-
 
     private fun setupPieChart(pieChart: PieChart, data: List<PieEntry>, colors: List<Int>) {
         val dataSet = PieDataSet(data, "").apply {
@@ -221,7 +212,8 @@ class LaporanFragment : Fragment() {
         var selectedMonth: String? = defaultMonth
         var selectedYear: String? = defaultYear
 
-        val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
+        val yearAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         yearSpinner.adapter = yearAdapter
         yearSpinner.setSelection(years.indexOf(defaultYear))
@@ -236,14 +228,16 @@ class LaporanFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("OK") { _, _ ->
                 if (!selectedMonth.isNullOrEmpty() && !selectedYear.isNullOrEmpty()) {
-                    val fullMonthName = monthMap[selectedMonth] ?: selectedMonth
-                    val displayDate = "$fullMonthName $selectedYear"
-                    binding.dateDropdown.text = displayDate
+                    val monthNumber = convertMonthToNumber(selectedMonth!!)
                     laporanViewModel.saveSelectedDate(selectedMonth!!, selectedYear!!)
+
+                    catatanViewModel.updateDataForMonthAll(monthNumber.toString(), selectedYear!!)
+
                     lifecycleScope.launch {
                         updatePieCharts()
                     }
-                    Toast.makeText(context, "Dipilih: $displayDate", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(context, "Dipilih: $selectedMonth $selectedYear", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Silakan pilih bulan dan tahun.", Toast.LENGTH_SHORT).show()
                 }
@@ -251,6 +245,7 @@ class LaporanFragment : Fragment() {
             .setNegativeButton("Batal", null)
             .show()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

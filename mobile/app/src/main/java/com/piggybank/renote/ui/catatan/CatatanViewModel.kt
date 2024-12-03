@@ -52,20 +52,14 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         } ?: error("User ID not set")
     }
 
-    fun updateDataForMonth(month: String, year: String) {
+    fun updateDataForMonthAll(month: String, year: String) {
         userId?.let { user ->
             viewModelScope.launch {
-                val notes = noteDao.getNotesByMonthAndYear(month, year)
+                val notes = noteDao.getNotesByMonthAndYear(month, year).filter { it.userId == user }
                 val catatanList = notes.map {
                     Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
                 }
                 _catatanList.postValue(catatanList)
-
-                val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
-                val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
-
-                _totalPemasukan.postValue(pemasukan)
-                _totalPengeluaran.postValue(pengeluaran)
             }
         } ?: error("User ID not set")
     }

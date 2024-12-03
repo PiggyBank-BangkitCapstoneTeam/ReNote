@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.piggybank.renote.R
 import com.piggybank.renote.databinding.FragmentTambahBinding
-import com.piggybank.renote.ui.rekening.RekeningViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,7 +28,6 @@ class TambahCatatan : Fragment() {
     private val binding get() = _binding!!
 
     private val catatanViewModel: CatatanViewModel by activityViewModels()
-    private val rekeningViewModel: RekeningViewModel by activityViewModels()
 
     private var selectedDate: Calendar? = null
 
