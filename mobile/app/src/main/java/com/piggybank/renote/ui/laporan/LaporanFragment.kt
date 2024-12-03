@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -131,22 +130,26 @@ class LaporanFragment : Fragment() {
         }
     }
 
-    private suspend fun updatePieCharts() = withContext(Dispatchers.Default) {
-        val catatanList = catatanViewModel.catatanList.value ?: emptyList()
+    private suspend fun updatePieCharts() = withContext(Dispatchers.IO) {
+        val selectedDate = laporanViewModel.selectedDate.value ?: return@withContext
+        val (month, year) = selectedDate
 
-        val pemasukanCounts = mutableMapOf<String, Int>()
-        val pengeluaranCounts = mutableMapOf<String, Int>()
+        catatanViewModel.updateDataForMonthAll(convertMonthToNumber(month).toString(), year)
 
-        catatanList.forEach { catatan ->
-            if (catatan.nominal >= 0) {
-                pemasukanCounts[catatan.kategori] = (pemasukanCounts[catatan.kategori] ?: 0) + 1
-            } else {
-                pengeluaranCounts[catatan.kategori] = (pengeluaranCounts[catatan.kategori] ?: 0) + 1
-            }
-        }
+        val catatanList = catatanViewModel.catatanList.value ?: return@withContext
+
+        val pemasukanCounts = catatanList.filter { it.nominal >= 0 }
+            .groupingBy { it.kategori }
+            .eachCount()
+
+        val pengeluaranCounts = catatanList.filter { it.nominal < 0 }
+            .groupingBy { it.kategori }
+            .eachCount()
 
         val totalPemasukan = pemasukanCounts.values.sum()
         val totalPengeluaran = pengeluaranCounts.values.sum()
+
+        if (totalPemasukan == 0 && totalPengeluaran == 0) return@withContext
 
         val pemasukanData = pemasukanCounts.map { (kategori, count) ->
             PieEntry((count.toFloat() / totalPemasukan) * 100, kategori)
@@ -157,8 +160,12 @@ class LaporanFragment : Fragment() {
         }
 
         withContext(Dispatchers.Main) {
-            setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
-            setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
+            if (binding.pieChartPemasukan.data == null || binding.pieChartPemasukan.data.entryCount != pemasukanData.size) {
+                setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
+            }
+            if (binding.pieChartPengeluaran.data == null || binding.pieChartPengeluaran.data.entryCount != pengeluaranData.size) {
+                setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
+            }
         }
     }
 
@@ -236,10 +243,6 @@ class LaporanFragment : Fragment() {
                     lifecycleScope.launch {
                         updatePieCharts()
                     }
-
-                    Toast.makeText(context, "Dipilih: $selectedMonth $selectedYear", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "Silakan pilih bulan dan tahun.", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Batal", null)
