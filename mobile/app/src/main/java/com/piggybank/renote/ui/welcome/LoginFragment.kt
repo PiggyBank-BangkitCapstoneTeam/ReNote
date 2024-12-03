@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,7 +25,6 @@ class LoginFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var signInClient: SignInClient
 
-    // Register ActivityResultLauncher for Google Sign-In
     private val signInLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             if (result.resultCode == android.app.Activity.RESULT_OK) {
@@ -57,9 +55,6 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val enterAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.enter_animation)
-        binding.root.startAnimation(enterAnimation)
 
         val loadingScreen = LoadingScreen(requireContext())
 
