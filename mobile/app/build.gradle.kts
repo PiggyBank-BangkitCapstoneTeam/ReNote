@@ -72,4 +72,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.androidx.credentials.v130)
     implementation(libs.androidx.credentials.play.services.auth.v130)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+    implementation(libs.logging.interceptor)
 }
