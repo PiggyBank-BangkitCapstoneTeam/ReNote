@@ -16,7 +16,7 @@ const file_upload = multer({
 	storage: file_upload_storage,
 	limits: {
 		fileSize: 10 * 1024 * 1024, // 10 MB
-		files: 1
+		files: 2
 	}
 });
 const CloudSQL = new GCP_CloudSQL();
@@ -118,7 +118,7 @@ app.post("/note", NoteRequestHandler.addNote);
 app.get("/note/:id", NoteRequestHandler.getNoteById);
 app.put("/note/:id", NoteRequestHandler.updateNote);
 app.get("/note/:id/struk", NoteRequestHandler.getFotoStruk);
-app.post("/note/:id/struk", file_upload.single("foto"), NoteRequestHandler.uploadFotoStruk);
+app.post("/note/:id/struk", file_upload.array("foto"), NoteRequestHandler.uploadFotoStruk);
 app.delete("/note/:id", NoteRequestHandler.deleteNote);
 
 import RekeningRequestHandler from "./routes/rekening.js";

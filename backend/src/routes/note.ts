@@ -332,12 +332,35 @@ const uploadFotoStruk = RouteHandler(async(req) => {
 		};
 	}
 
-	let photo = req.file;
+	let photos = req.files;
 
-	if (!photo) {
+	if (!photos) {
 		return {
 			status: 400,
 			message: "File foto harus ada pada request body (sebagai form-data dengan key 'foto')"
+		};
+	}
+
+	// Jika sebuah objek multipart, ambil key 'foto'
+	if (!Array.isArray(photos)) {
+		photos = photos["foto"];
+	}
+
+	// Jika arraynya kosong
+	if (photos.length !== 1) {
+		return {
+			status: 400,
+			message: "Hanya satu foto struk yang dapat diupload"
+		};
+	}
+
+	const photo = photos[0];
+
+	// Batasi hanya boleh upload gambar
+	if (!photo.mimetype.startsWith("image/")) {
+		return {
+			status: 400,
+			message: "File yang diupload harus berupa gambar"
 		};
 	}
 
@@ -351,7 +374,7 @@ const uploadFotoStruk = RouteHandler(async(req) => {
 	}
 
 	const conn = await req.CloudSQL.GetConnection();
-	const [result] = await conn.query<Pick<NoteModel, "id">>("SELECT id FROM note WHERE id = ? AND user_id = ?", [id, req.FirebaseUserData.uid]);
+	const [result] = await conn.query<Pick<NoteModel, "photo_id">>("SELECT photo_id FROM note WHERE id = ? AND user_id = ?", [id, req.FirebaseUserData.uid]);
 
 	if (result.length === 0) {
 		return {
@@ -359,13 +382,17 @@ const uploadFotoStruk = RouteHandler(async(req) => {
 			message: "Note tidak ditemukan, tidak dapat menambahkan foto struk"
 		};
 	}
+	const old_photo_id = result[0].photo_id;
+	if (old_photo_id) {
+		const old_file = req.CloudStorage_UserMediaBucket.file(old_photo_id);
+		if (await old_file.exists()) {
+			await old_file.delete();
+		}
+	}
+
 	const photo_id = nanoid();
 	const file = req.CloudStorage_UserMediaBucket.file(photo_id);
-	
-	const is_file_exists = await file.exists();
-	if (is_file_exists[0]) {
-		await file.delete();
-	}
+
 
 	await file.save(photo.buffer, {
 		metadata: {

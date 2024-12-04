@@ -459,7 +459,7 @@ CloudSQL_Password="$DEFAULT_SQL_BACKEND_API_PASSWORD"
 CloudSQL_Database="renote"
 
 CloudStorage_Enabled="true"
-CloudStorage_UserMediaBucket="gs://$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
+CloudStorage_UserMediaBucket="$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
 
 EOF
 
