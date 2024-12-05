@@ -95,5 +95,6 @@
     <string name="image_second">image second</string>
 
     <string name="no_internet">No Internet Connection</string>
+    <string name="foto_diambil">Telah Foto</string>
 
 </resources>

@@ -1,7 +1,11 @@
 package com.piggybank.renote.ui.catatan
 
+import android.Manifest
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -9,6 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -34,6 +41,26 @@ class TambahCatatan : Fragment() {
     private val pemasukanCategory = listOf("Pilih Kategori", "Gaji", "Investasi", "Paruh Waktu", "Lain-lain")
     private val pengeluaranCategory = listOf("Pilih Kategori", "Parkir", "Makanan dan Minuman", "Transportasi", "Hiburan", "Kesehatan", "Lain-lain")
 
+    private val requestCameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            openCamera()
+        } else {
+            Toast.makeText(requireContext(), "Izin kamera diperlukan untuk menggunakan fitur ini.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val captureImageLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            binding.textScanResult.text = getString(R.string.foto_diambil)
+        } else {
+            Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,6 +72,18 @@ class TambahCatatan : Fragment() {
         bottomNavigationView.visibility = View.GONE
 
         setupAmountFormatter()
+
+        binding.iconCamera.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                openCamera()
+            } else {
+                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
 
         binding.iconBack.setOnClickListener {
             lifecycleScope.launch {
@@ -112,6 +151,16 @@ class TambahCatatan : Fragment() {
 
         return binding.root
     }
+
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            captureImageLauncher.launch(intent)
+        } else {
+            Toast.makeText(requireContext(), "Kamera tidak tersedia.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setupCategorySpinner(categories: List<String>) {
         lifecycleScope.launch {
             val adapter = withContext(Dispatchers.Default) {
