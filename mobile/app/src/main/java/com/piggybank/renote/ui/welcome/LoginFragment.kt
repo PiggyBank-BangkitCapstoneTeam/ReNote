@@ -14,9 +14,14 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.piggybank.renote.R
+import com.piggybank.renote.data.response.LoginResponse
+import com.piggybank.renote.data.retrofit.ApiConfig
 import com.piggybank.renote.databinding.FragmentLoginBinding
 import com.piggybank.renote.ui.NetworkUtils
 import com.piggybank.renote.ui.main.MainActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Suppress("DEPRECATION")
 class LoginFragment : Fragment() {
@@ -112,13 +117,40 @@ class LoginFragment : Fragment() {
                 loadingScreen.dismiss()
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
-                    navigateToMainActivity()
+                    fetchLoginMessage()
                 } else {
                     Toast.makeText(requireContext(), "Authentication Failed", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
+    private fun fetchLoginMessage() {
+        val randomToken = "RandomGeneratedToken"
+
+        val client = ApiConfig.getApiService(randomToken)
+        client.getLoginMessage().enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(
+                call: Call<LoginResponse>,
+                response: Response<LoginResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    Toast.makeText(
+                        requireContext(),
+                        loginResponse?.message ?: "Welcome to ReNote!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    navigateToMainActivity()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to fetch message", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 
     private fun navigateToMainActivity() {
         val intent = Intent(requireContext(), MainActivity::class.java)
