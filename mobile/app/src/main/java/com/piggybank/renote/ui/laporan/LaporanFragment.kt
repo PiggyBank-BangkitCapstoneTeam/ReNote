@@ -105,7 +105,7 @@ class LaporanFragment : Fragment() {
     }
 
     private fun observeCatatanChanges() {
-        catatanViewModel.catatanList.observe(viewLifecycleOwner) { _ ->
+        catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
             lifecycleScope.launch {
                 updatePieCharts()
             }
@@ -160,10 +160,13 @@ class LaporanFragment : Fragment() {
         }
 
         withContext(Dispatchers.Main) {
-            if (binding.pieChartPemasukan.data == null || binding.pieChartPemasukan.data.entryCount != pemasukanData.size) {
+            if (binding.pieChartPemasukan.data == null ||
+                binding.pieChartPemasukan.data.entryCount != pemasukanData.size) {
                 setupPieChart(binding.pieChartPemasukan, pemasukanData, pemasukanColors)
             }
-            if (binding.pieChartPengeluaran.data == null || binding.pieChartPengeluaran.data.entryCount != pengeluaranData.size) {
+
+            if (binding.pieChartPengeluaran.data == null ||
+                binding.pieChartPengeluaran.data.entryCount != pengeluaranData.size) {
                 setupPieChart(binding.pieChartPengeluaran, pengeluaranData, pengeluaranColors)
             }
         }
