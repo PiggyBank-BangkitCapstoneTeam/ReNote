@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.piggybank.renote.R
 import com.piggybank.renote.util.NotificationReceiver
@@ -110,6 +114,14 @@ class NotifikasiFragment : Fragment() {
     }
 
     private fun scheduleNotification(message: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+            return
+        }
+
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, selectedHour)
             set(Calendar.MINUTE, selectedMinute)
@@ -136,7 +148,6 @@ class NotifikasiFragment : Fragment() {
 
         val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Gunakan setRepeating untuk menjadwalkan alarm harian
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
