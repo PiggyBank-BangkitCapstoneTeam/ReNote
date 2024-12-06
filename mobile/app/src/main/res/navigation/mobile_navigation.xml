@@ -49,6 +49,9 @@
             android:id="@+id/action_akunFragment_to_profileFragment"
             app:destination="@id/navigation_profile" />
         <action
+            android:id="@+id/action_akunFragment_to_notfikasiFragment"
+            app:destination="@id/navigation_notifikasi" />
+        <action
             android:id="@+id/action_akunFragment_to_bantuanFragment"
             app:destination="@id/navigation_bantuan" />
         <action
@@ -89,6 +92,12 @@
         android:name="com.piggybank.renote.ui.Akun.BantuanFragment"
         android:label="@string/bantuan"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_notifikasi"
+        android:name="com.piggybank.renote.ui.Akun.NotifikasiFragment"
+        android:label="@string/notifikasi"
+        tools:layout="@layout/fragment_notifikasi" />
 
     <fragment
         android:id="@+id/navigation_tentang"

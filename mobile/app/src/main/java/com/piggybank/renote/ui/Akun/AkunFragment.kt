@@ -43,6 +43,10 @@ class AkunFragment : Fragment() {
             findNavController().navigate(R.id.action_akunFragment_to_profileFragment)
         }
 
+        binding.menuNotifikasi.setOnClickListener {
+            findNavController().navigate(R.id.action_akunFragment_to_notfikasiFragment)
+        }
+
         binding.menuBantuan.setOnClickListener {
             findNavController().navigate(R.id.action_akunFragment_to_bantuanFragment)
         }

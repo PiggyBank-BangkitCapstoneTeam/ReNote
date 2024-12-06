@@ -93,6 +93,21 @@
             android:background="@android:color/darker_gray" />
 
         <TextView
+            android:id="@+id/menu_notifikasi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:text="@string/notifikasi"
+            android:textSize="18sp"
+            app:drawableEndCompat="@drawable/baseline_arrow_right" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
             android:id="@+id/menu_bantuan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

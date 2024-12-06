@@ -96,5 +96,12 @@
 
     <string name="no_internet">No Internet Connection</string>
     <string name="foto_diambil">Telah Foto</string>
+    <string name="notifikasi">Notifikasi</string>
+    <string name="atur_waktu">00:00</string>
+    <string name="isi_text_notifikasi">Text Notifikasi</string>
+    <string name="atur_notifikasi">Set Notifikasi</string>
+    <string name="deskripsi_jam">deskripsi jam</string>
+    <string name="atur_waktu_pengingat">Atur Waktu Pengingat</string>
+    <string name="hentikan_notifikasi">Hentikan Notifikasi</string>
 
 </resources>
