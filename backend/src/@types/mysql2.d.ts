@@ -1,4 +1,5 @@
 import mysql from "mysql2/promise";
+import mysqlcore from "mysql2";
 
 declare module "mysql2/promise" {
 	export type QueryResult = mysql.OkPacket | mysql.ResultSetHeader | mysql.ResultSetHeader[] | mysql.RowDataPacket[] | mysql.RowDataPacket[][] | mysql.OkPacket[] | mysql.ProcedureCallPacket;
@@ -19,5 +20,13 @@ declare module "mysql2/promise" {
 		execute<T extends QueryResult>(options: QueryOptions): Promise<[T, FieldPacket[]]>;
 		execute<T extends QueryResult>(options: QueryOptions, values: any): Promise<[T, FieldPacket[]]>;
 		//#endregion
+	}
+}
+
+declare module "mysql2" {
+	export interface Pool extends mysqlcore.Pool {
+		_allConnections: string[];
+		_freeConnections: string[];
+		_connectionQueue: string[];
 	}
 }

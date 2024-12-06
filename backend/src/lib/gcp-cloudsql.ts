@@ -4,6 +4,7 @@ import { Connector, IpAddressTypes } from "@google-cloud/cloud-sql-connector";
 export default class GCP_CloudSQL {
 	private static Pool?: mysql.Pool;
 	private static Connection?: mysql.PoolConnection;
+	private static StateReportTimer?: NodeJS.Timeout;
 
 	public async InitializePool() {
 		const connector = new Connector();
@@ -33,6 +34,10 @@ export default class GCP_CloudSQL {
 			user: process.env.CloudSQL_Username,
 			password: process.env.CloudSQL_Password,
 			database: process.env.CloudSQL_Database,
+
+			enableKeepAlive: true,
+			keepAliveInitialDelay: 60 * 1000,
+			idleTimeout: 1 * 60 * 1000 // Tutup koneksi jika sudah 15 menit idle
 		});
 	}
 
@@ -45,6 +50,21 @@ export default class GCP_CloudSQL {
 		await conn.connect();
 		await conn.ping();
 		conn.release();
+		
+		if (GCP_CloudSQL.StateReportTimer) {
+			clearInterval(GCP_CloudSQL.StateReportTimer);
+            GCP_CloudSQL.StateReportTimer = undefined;
+		}
+
+		GCP_CloudSQL.StateReportTimer = setInterval(() => {
+			if (!GCP_CloudSQL.Pool) { return; }
+
+			let TotalConnection = GCP_CloudSQL.Pool.pool._allConnections.length;
+			let ConnectionFree = GCP_CloudSQL.Pool.pool._freeConnections.length;
+			let PendingQueryCount = GCP_CloudSQL.Pool.pool._connectionQueue.length;
+
+			console.log(`[Cloud SQL Status] Free Connection: ${ConnectionFree}, Queued: ${PendingQueryCount}, Total: ${TotalConnection}`);
+		}, 60 * 1000); // Cek setiap 1 menit
 	}
 
 	/** Putuskan koneksi ke Cloud SQL */
@@ -54,6 +74,11 @@ export default class GCP_CloudSQL {
 		await GCP_CloudSQL.Pool.end();
 		GCP_CloudSQL.Pool = undefined;
 		GCP_CloudSQL.Connection = undefined;
+
+		if (GCP_CloudSQL.StateReportTimer) {
+            clearInterval(GCP_CloudSQL.StateReportTimer);
+            GCP_CloudSQL.StateReportTimer = undefined;
+        }
 	}
 
 	public async GetConnection() {
