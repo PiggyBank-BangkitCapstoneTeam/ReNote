@@ -103,5 +103,7 @@
     <string name="deskripsi_jam">deskripsi jam</string>
     <string name="atur_waktu_pengingat">Atur Waktu Pengingat</string>
     <string name="hentikan_notifikasi">Hentikan Notifikasi</string>
+    <string name="butuh_bantuan">Butuh Bantuan?</string>
+    <string name="send_button">Kirim Pesan</string>
 
 </resources>
