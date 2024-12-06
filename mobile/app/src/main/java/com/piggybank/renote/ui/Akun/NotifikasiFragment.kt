@@ -5,9 +5,7 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,6 +44,14 @@ class NotifikasiFragment : Fragment() {
         messageInput = view.findViewById(R.id.messageInput)
         val setAlarmButton = view.findViewById<Button>(R.id.setAlarmButton)
         val cancelAlarmButton = view.findViewById<Button>(R.id.cancelAlarmButton)
+
+        val (savedHour, savedMinute, savedMessage) = loadNotificationData()
+        if (savedHour != -1 && savedMinute != -1 && savedMessage != null) {
+            selectedHour = savedHour
+            selectedMinute = savedMinute
+            timeText.text = String.format(Locale.getDefault(), "%02d:%02d", savedHour, savedMinute)
+            messageInput.setText(savedMessage)
+        }
 
         timeText.setOnClickListener {
             showTimePickerDialog()
@@ -108,31 +114,17 @@ class NotifikasiFragment : Fragment() {
             set(Calendar.HOUR_OF_DAY, selectedHour)
             set(Calendar.MINUTE, selectedMinute)
             set(Calendar.SECOND, 0)
-        }
 
-        if (calendar.timeInMillis <= System.currentTimeMillis()) {
-            Toast.makeText(requireContext(), "Waktu yang dipilih telah berlalu", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = requireContext().getSystemService(AlarmManager::class.java)
-            if (!alarmManager.canScheduleExactAlarms()) {
-                Toast.makeText(
-                    requireContext(),
-                    "Izin untuk menjadwalkan alarm yang tepat diperlukan",
-                    Toast.LENGTH_SHORT
-                ).show()
-                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                startActivity(intent)
-                return
+            if (timeInMillis <= System.currentTimeMillis()) {
+                add(Calendar.DAY_OF_YEAR, 1)
             }
         }
+
+        saveNotificationData(selectedHour, selectedMinute, message)
 
         val intent = Intent(requireContext(), NotificationReceiver::class.java).apply {
             putExtra("TITLE", "ReNote")
             putExtra("MESSAGE", message)
-            putExtra("TIME", timeText.text.toString())
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -143,12 +135,16 @@ class NotifikasiFragment : Fragment() {
         )
 
         val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExact(
+
+        // Gunakan setRepeating untuk menjadwalkan alarm harian
+        alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
-        Toast.makeText(requireContext(), "Notifikasi telah dijadwalkan", Toast.LENGTH_SHORT).show()
+
+        Toast.makeText(requireContext(), "Notifikasi telah dijadwalkan setiap hari", Toast.LENGTH_SHORT).show()
     }
 
     private fun cancelNotification() {
@@ -164,5 +160,23 @@ class NotifikasiFragment : Fragment() {
         alarmManager.cancel(pendingIntent)
 
         Toast.makeText(requireContext(), "Notifikasi telah dibatalkan", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun saveNotificationData(hour: Int, minute: Int, message: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().apply {
+            putInt("HOUR", hour)
+            putInt("MINUTE", minute)
+            putString("MESSAGE", message)
+            apply()
+        }
+    }
+
+    private fun loadNotificationData(): Triple<Int, Int, String?> {
+        val sharedPreferences = requireContext().getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE)
+        val hour = sharedPreferences.getInt("HOUR", -1)
+        val minute = sharedPreferences.getInt("MINUTE", -1)
+        val message = sharedPreferences.getString("MESSAGE", null)
+        return Triple(hour, minute, message)
     }
 }
