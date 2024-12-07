@@ -116,18 +116,24 @@ class LoginFragment : Fragment() {
             .addOnCompleteListener(requireActivity()) { task ->
                 loadingScreen.dismiss()
                 if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Login Successful", Toast.LENGTH_SHORT).show()
-                    fetchLoginMessage()
+                    firebaseAuth.currentUser?.getIdToken(true)
+                        ?.addOnSuccessListener { result ->
+                            val firebaseIdToken = result.token
+                            if (firebaseIdToken != null) {
+                                sendTokenToApi(firebaseIdToken)
+                            }
+                        }
+                        ?.addOnFailureListener {
+                            Toast.makeText(requireContext(), "Failed to retrieve token", Toast.LENGTH_SHORT).show()
+                        }
                 } else {
                     Toast.makeText(requireContext(), "Authentication Failed", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    private fun fetchLoginMessage() {
-        val randomToken = "RandomGeneratedToken"
-
-        val client = ApiConfig.getApiService(randomToken)
+    private fun sendTokenToApi(token: String) {
+        val client = ApiConfig.getApiService(token)
         client.getLoginMessage().enqueue(object : Callback<LoginResponse> {
             override fun onResponse(
                 call: Call<LoginResponse>,
@@ -140,6 +146,7 @@ class LoginFragment : Fragment() {
                         loginResponse?.message ?: "Welcome to ReNote!",
                         Toast.LENGTH_LONG
                     ).show()
+                    saveTokenLocally(token)
                     navigateToMainActivity()
                 } else {
                     Toast.makeText(requireContext(), "Failed to fetch message", Toast.LENGTH_SHORT).show()
@@ -150,6 +157,15 @@ class LoginFragment : Fragment() {
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun saveTokenLocally(token: String) {
+        val sharedPreferences =
+            requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("userToken", token)
+            apply()
+        }
     }
 
     private fun navigateToMainActivity() {
