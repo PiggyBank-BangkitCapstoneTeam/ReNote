@@ -1,4 +1,3 @@
 package com.piggybank.renote.ui
 
-class ViewModelFactory {
-}
+class ViewModelFactory

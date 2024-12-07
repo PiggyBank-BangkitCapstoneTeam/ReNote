@@ -1,0 +1,109 @@
+<resources>
+    <string name="app_name">ReNote</string>
+    <string name="menu_akun">Akun</string>
+    <string name="menu_catatan">Catatan</string>
+    <string name="menu_rekening">Rekening</string>
+    <string name="menu_laporan">Laporan</string>
+    <string name="icon_calendar">Calendar</string>
+
+    <string name="input_pemasukan">Pemasukan\n0</string>
+    <string name="input_pengeluaran">Pengeluaran\n0</string>
+    <string name="input_total">Total\n0</string>
+
+    <string name="riwayat">Riwayat</string>
+    <string name="kategori">Kategori</string>
+    <string name="deskripsi_transaksi">Deskripsi transaksi</string>
+    <string name="jumlah_nominal">Jumlah Nominal</string>
+    <string name="arrow_icon">arrow icon</string>
+    <string name="tambah">Tambah</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="camera_icon">Ikon Camera</string>
+    <string name="back_icon">Ikon kembali</string>
+    <string name="buat">Buat</string>
+    <string name="tanggal">Pilih Tanggal</string>
+    <string name="hasil_scan">Hasil Scan</string>
+    <string name="pengeluaran">Pengeluaran</string>
+    <string name="pemasukan">Pemasukan</string>
+    <string name="total_saldo">Rp. 0</string>
+    <string name="total_saldo_rekening">Rp. %1$s</string>
+    <string name="tittle_totalSaldo">Total Saldo</string>
+    <string name="nama_rekening">Nama Rekening</string>
+    <string name="jumlah_rekening">Jumlah Rekening</string>
+    <string name="edit">Simpan</string>
+    <string name="laporan_bulanan">Month 2024</string>
+    <string name="diagram_lingkaran">diagram lingkaran</string>
+    <string name="persentase">100%</string>
+    <string name="tentang">Tentang</string>
+    <string name="ganti_bahasa">Ganti Bahasa</string>
+    <string name="ganti_tema">Ganti Tema</string>
+    <string name="profile">Profile</string>
+    <string name="profile_gambar">Profile Gambar</string>
+    <string name="simpan">Simpan</string>
+    <string name="edit_rekening">Edit Rekening</string>
+    <string name="edit_catatan">Edit Catatan</string>
+    <string name="hapus">Hapus</string>
+    <string name="my_rekening">My Rekening</string>
+    <string name="date_display">%1$s %2$s</string>
+
+    <string name="pemasukan_text">Pemasukan\n Rp %1$s</string>
+    <string name="pengeluaran_text">Pengeluaran\n Rp %1$s</string>
+
+
+    <string name="date_format">%1$d/%2$d/%3$d</string>
+    <string name="status_active">Active</string>
+
+    <string name="pilih_bulantahun">Kalender</string>
+    <string name="bulan">Bulan</string>
+    <string name="bantuan">Bantuan</string>
+    <string name="back_button">Back button</string>
+    <string name="foto_profile">foto profile</string>
+    <string name="ganti_gambar">Ganti Gambar</string>
+    <string name="masukkan_nama">Masukkan Nama</string>
+    <string name="gmail">Gmail</string>
+    <string name="masukkan_gmail">Masukkan Gmail</string>
+    <string name="nama">Nama</string>
+    <string name="logout">Logout</string>
+    <string name="bahasa">Bahasa</string>
+    <string name="aplikasi_logo">Aplikasi Logo</string>
+    <string name="app_version">Versi 1.0.0</string>
+    <string name="piggybank">oleh Piggybank</string>
+
+
+    <string name="welcome">Selamat Datang</string>
+    <string name="desc_welcome">
+        Catat Semua Pengeluaranmu Dan Jadilah
+        \nOrang Yang Hemat
+    </string>
+    <string name="logo_matahari">logo matahari</string>
+    <string name="logo_book">logo book</string>
+    <string name="slider">slider</string>
+    <string name="daftar_akun">Daftar Akun</string>
+    <string name="logo_google">Logo Google</string>
+    <string name="deskripsi_daftar_akun">
+        Daftarkan akunmu melalui Gmail
+    </string>
+    <string name="deskripsi_rinci">
+        Ayo mari mendaftar aplikasi ReNote
+        Atur keuangan mu, catat keuanganmu
+        sesuaikan dengan kata hatimu
+    </string>
+    <string name="data_diri">Data Diri</string>
+    <string name="pemasukan_desc">
+        Kamu juga bisa mencatatan pemasukan
+        \nsesuai dengan kalander aslinya
+    </string>
+    <string name="image_second">image second</string>
+
+    <string name="no_internet">No Internet Connection</string>
+    <string name="foto_diambil">Telah Foto</string>
+    <string name="notifikasi">Notifikasi</string>
+    <string name="atur_waktu">00:00</string>
+    <string name="isi_text_notifikasi">Text Notifikasi</string>
+    <string name="atur_notifikasi">Set Notifikasi</string>
+    <string name="deskripsi_jam">deskripsi jam</string>
+    <string name="atur_waktu_pengingat">Atur Waktu Pengingat</string>
+    <string name="hentikan_notifikasi">Hentikan Notifikasi</string>
+    <string name="butuh_bantuan">Butuh Bantuan?</string>
+    <string name="send_button">Kirim Pesan</string>
+
+</resources>
