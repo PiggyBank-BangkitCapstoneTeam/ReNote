@@ -52,9 +52,9 @@ class BantuanFragment : Fragment() {
     }
 
     private fun loadMessages() {
-        messages.add(Message("Admin", "Selamat datang di bantuan!", "07/12/2024"))
-        messages.add(Message("User", "Saya butuh bantuan dengan aplikasi.", "07/12/2024"))
-        messages.add(Message("Admin", "Tentu, bagaimana kami bisa membantu Anda?", "07/12/2024"))
+        messages.add(Message("Admin", "Selamat datang di bantuan!", "13/12/2024"))
+        messages.add(Message("User", "Saya butuh bantuan dengan aplikasi.", "13/12/2024"))
+        messages.add(Message("Admin", "Tentu, bagaimana kami bisa membantu Anda?", "13/12/2024"))
 
         messageAdapter.notifyItemInserted(messages.size - 1)
     }
