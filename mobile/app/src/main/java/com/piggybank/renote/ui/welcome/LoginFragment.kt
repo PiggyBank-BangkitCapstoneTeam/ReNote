@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.piggybank.renotes.R
+import com.piggybank.renotes.data.pref.UserPreference
 import com.piggybank.renotes.data.response.LoginResponse
 import com.piggybank.renotes.data.retrofit.ApiConfig
 import com.piggybank.renotes.databinding.FragmentLoginBinding
@@ -160,12 +161,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun saveTokenLocally(token: String) {
-        val sharedPreferences =
-            requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putString("userToken", token)
-            apply()
-        }
+        val userPreference = UserPreference(requireContext())
+        userPreference.saveToken(token)
     }
 
     private fun navigateToMainActivity() {

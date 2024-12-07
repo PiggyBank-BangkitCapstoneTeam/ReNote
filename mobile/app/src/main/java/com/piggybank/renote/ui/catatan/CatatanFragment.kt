@@ -12,12 +12,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
+import com.piggybank.renote.data.response.GetAllNoteResponse
 import com.piggybank.renotes.R
+import com.piggybank.renotes.data.pref.UserPreference
+import com.piggybank.renotes.data.retrofit.ApiConfig
 import com.piggybank.renotes.databinding.FragmentCatatanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -30,8 +35,7 @@ class CatatanFragment : Fragment() {
 
     private lateinit var catatanAdapter: CatatanAdapter
     private val catatanViewModel: CatatanViewModel by activityViewModels()
-
-    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private lateinit var userPreference: UserPreference
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,21 +43,14 @@ class CatatanFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCatatanBinding.inflate(inflater, container, false)
+        userPreference = UserPreference(requireContext())
+        setupRecyclerView()
+        fetchNotesFromApi()
+        return binding.root
+    }
 
-        catatanAdapter = CatatanAdapter { catatan ->
-            lifecycleScope.launch {
-                catatanViewModel.selectedCatatan = catatan
-                withContext(Dispatchers.Main) {
-                    findNavController().navigate(R.id.navigation_editCatatan)
-                }
-            }
-        }
-
-        binding.transactionRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = catatanAdapter
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.catatanAdd.setOnClickListener {
             lifecycleScope.launch {
@@ -69,19 +66,70 @@ class CatatanFragment : Fragment() {
         }
 
         updateUIForDate(selectedDate)
+    }
 
-        return binding.root
+    private fun setupRecyclerView() {
+        catatanAdapter = CatatanAdapter { catatan ->
+            lifecycleScope.launch {
+                catatanViewModel.selectedCatatan = catatan
+                withContext(Dispatchers.Main) {
+                    findNavController().navigate(R.id.navigation_editCatatan)
+                }
+            }
+        }
+
+        binding.transactionRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = catatanAdapter
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        }
+    }
+
+    private fun fetchNotesFromApi() {
+        val token = userPreference.getToken()
+        if (token != null) {
+            val client = ApiConfig.getApiService(token)
+            client.getAllNotes().enqueue(object : Callback<GetAllNoteResponse> {
+                override fun onResponse(
+                    call: Call<GetAllNoteResponse>,
+                    response: Response<GetAllNoteResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val notes = response.body()?.data?.mapNotNull {
+                            it?.let { dataItem ->
+                                Catatan(
+                                    kategori = dataItem.kategori ?: "",
+                                    nominal = dataItem.nominal ?: 0,
+                                    deskripsi = dataItem.deskripsi ?: "",
+                                    tanggal = dataItem.tanggal ?: ""
+                                )
+                            }
+                        } ?: emptyList()
+
+                        catatanAdapter.submitList(notes)
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to fetch notes", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<GetAllNoteResponse>, t: Throwable) {
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        } else {
+            Toast.makeText(requireContext(), "No token found, please log in", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun updateUIForDate(date: Calendar) {
-        val currentUser = firebaseAuth.currentUser
+        val currentUser = userPreference.getToken()
         if (currentUser == null) {
             Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
             return
         }
 
         lifecycleScope.launch {
-            catatanViewModel.setUserId(currentUser.uid)
+            catatanViewModel.setUserId(currentUser)
             catatanViewModel.updateDataForDate(date)
 
             catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
