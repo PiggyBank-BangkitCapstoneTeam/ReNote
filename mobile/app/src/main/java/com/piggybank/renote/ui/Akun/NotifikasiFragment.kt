@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.Akun
+package com.piggybank.renotes.ui.Akun
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -19,8 +19,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.piggybank.renote.R
-import com.piggybank.renote.util.NotificationReceiver
+import com.piggybank.renotes.R
+import com.piggybank.renotes.util.NotificationReceiver
 import java.util.Calendar
 import java.util.Locale
 

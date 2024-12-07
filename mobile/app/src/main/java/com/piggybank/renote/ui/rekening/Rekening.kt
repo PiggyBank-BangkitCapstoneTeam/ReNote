@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.rekening
+package com.piggybank.renotes.ui.rekening
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

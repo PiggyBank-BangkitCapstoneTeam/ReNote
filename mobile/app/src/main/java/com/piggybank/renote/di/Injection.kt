@@ -1,3 +1,3 @@
-package com.piggybank.renote.di
+package com.piggybank.renotes.di
 
 class Injection

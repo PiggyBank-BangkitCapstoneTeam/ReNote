@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.Akun
+package com.piggybank.renotes.ui.Akun
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.piggybank.renote.R
+import com.piggybank.renotes.R
 
 class BantuanFragment : Fragment() {
 

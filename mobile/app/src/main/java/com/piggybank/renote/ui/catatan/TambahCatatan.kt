@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.catatan
+package com.piggybank.renotes.ui.catatan
 
 import android.Manifest
 import android.app.DatePickerDialog
@@ -20,8 +20,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentTambahBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentTambahBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

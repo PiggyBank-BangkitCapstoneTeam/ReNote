@@ -1,12 +1,12 @@
-package com.piggybank.renote.ui.rekening
+package com.piggybank.renotes.ui.rekening
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.piggybank.renote.data.database.NoteRoomDatabase
-import com.piggybank.renote.data.database.RekeningEntity
+import com.piggybank.renotes.data.database.NoteRoomDatabase
+import com.piggybank.renotes.data.database.RekeningEntity
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale

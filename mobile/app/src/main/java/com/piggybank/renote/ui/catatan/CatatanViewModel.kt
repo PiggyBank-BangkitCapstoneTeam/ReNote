@@ -1,13 +1,13 @@
-package com.piggybank.renote.ui.catatan
+package com.piggybank.renotes.ui.catatan
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.piggybank.renote.data.database.NoteDao
-import com.piggybank.renote.data.database.NoteEntity
-import com.piggybank.renote.data.database.NoteRoomDatabase
+import com.piggybank.renotes.data.database.NoteDao
+import com.piggybank.renotes.data.database.NoteEntity
+import com.piggybank.renotes.data.database.NoteRoomDatabase
 import kotlinx.coroutines.launch
 import java.util.Calendar
 

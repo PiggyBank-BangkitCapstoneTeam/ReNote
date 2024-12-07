@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.welcome
+package com.piggybank.renotes.ui.welcome
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,12 +13,12 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.piggybank.renote.R
-import com.piggybank.renote.data.response.LoginResponse
-import com.piggybank.renote.data.retrofit.ApiConfig
-import com.piggybank.renote.databinding.FragmentLoginBinding
-import com.piggybank.renote.ui.NetworkUtils
-import com.piggybank.renote.ui.main.MainActivity
+import com.piggybank.renotes.R
+import com.piggybank.renotes.data.response.LoginResponse
+import com.piggybank.renotes.data.retrofit.ApiConfig
+import com.piggybank.renotes.databinding.FragmentLoginBinding
+import com.piggybank.renotes.ui.NetworkUtils
+import com.piggybank.renotes.ui.main.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

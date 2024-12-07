@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.catatan
+package com.piggybank.renotes.ui.catatan
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -13,8 +13,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentCatatanBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentCatatanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

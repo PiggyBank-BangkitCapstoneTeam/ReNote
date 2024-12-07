@@ -1,4 +1,4 @@
-package com.piggybank.renote.data.response
+package com.piggybank.renotes.data.response
 
 import com.google.gson.annotations.SerializedName
 

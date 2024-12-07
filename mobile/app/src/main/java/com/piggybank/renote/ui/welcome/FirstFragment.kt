@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.welcome
+package com.piggybank.renotes.ui.welcome
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentFirstBinding // Import the generated binding class
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentFirstBinding // Import the generated binding class
 
 class FirstFragment : Fragment() {
 

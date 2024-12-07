@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.Akun
+package com.piggybank.renotes.ui.Akun
 
 import android.app.Activity
 import android.content.Intent
@@ -13,8 +13,8 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentAkunBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentAkunBinding
 import java.io.File
 
 class AkunFragment : Fragment() {

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_catatan"
-        android:name="com.piggybank.renote.ui.catatan.CatatanFragment"
+        android:name="com.piggybank.renotes.ui.catatan.CatatanFragment"
         android:label="@string/menu_catatan"
         tools:layout="@layout/fragment_catatan">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/navigation_rekening"
-        android:name="com.piggybank.renote.ui.rekening.RekeningFragment"
+        android:name="com.piggybank.renotes.ui.rekening.RekeningFragment"
         android:label="@string/menu_rekening"
         tools:layout="@layout/fragment_rekening">
         <action
@@ -30,19 +30,19 @@
 
     <fragment
         android:id="@+id/navigation_tambahRekening"
-        android:name="com.piggybank.renote.ui.rekening.TambahRekening"
+        android:name="com.piggybank.renotes.ui.rekening.TambahRekening"
         android:label="Tambah Rekening"
         tools:layout="@layout/fragment_tambah_rekening" />
 
     <fragment
         android:id="@+id/navigation_laporan"
-        android:name="com.piggybank.renote.ui.laporan.LaporanFragment"
+        android:name="com.piggybank.renotes.ui.laporan.LaporanFragment"
         android:label="@string/menu_laporan"
         tools:layout="@layout/fragment_laporan" />
 
     <fragment
         android:id="@+id/navigation_akun"
-        android:name="com.piggybank.renote.ui.Akun.AkunFragment"
+        android:name="com.piggybank.renotes.ui.Akun.AkunFragment"
         android:label="@string/menu_akun"
         tools:layout="@layout/fragment_akun">
         <action
@@ -61,47 +61,47 @@
 
     <fragment
         android:id="@+id/navigation_tambahCatatan"
-        android:name="com.piggybank.renote.ui.catatan.TambahCatatan"
+        android:name="com.piggybank.renotes.ui.catatan.TambahCatatan"
         android:label="Detail"
         tools:layout="@layout/fragment_tambah" />
 
     <fragment
         android:id="@+id/navigation_editCatatan"
-        android:name="com.piggybank.renote.ui.catatan.EditCatatan"
+        android:name="com.piggybank.renotes.ui.catatan.EditCatatan"
         android:label="Edit Catatan"
         tools:layout="@layout/fragment_edit_catatan" />
 
     <fragment
         android:id="@+id/navigation_editRekening"
-        android:name="com.piggybank.renote.ui.rekening.EditRekeningFragment"
+        android:name="com.piggybank.renotes.ui.rekening.EditRekeningFragment"
         android:label="Edit Rekening"
         tools:layout="@layout/fragment_edit_rekening">
         <argument
             android:name="rekening"
-            app:argType="com.piggybank.renote.ui.rekening.Rekening" />
+            app:argType="com.piggybank.renotes.ui.rekening.Rekening" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.piggybank.renote.ui.Akun.ProfileFragment"
+        android:name="com.piggybank.renotes.ui.Akun.ProfileFragment"
         android:label="@string/profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_bantuan"
-        android:name="com.piggybank.renote.ui.Akun.BantuanFragment"
+        android:name="com.piggybank.renotes.ui.Akun.BantuanFragment"
         android:label="@string/bantuan"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_notifikasi"
-        android:name="com.piggybank.renote.ui.Akun.NotifikasiFragment"
+        android:name="com.piggybank.renotes.ui.Akun.NotifikasiFragment"
         android:label="@string/notifikasi"
         tools:layout="@layout/fragment_notifikasi" />
 
     <fragment
         android:id="@+id/navigation_tentang"
-        android:name="com.piggybank.renote.ui.Akun.TentangFragment"
+        android:name="com.piggybank.renotes.ui.Akun.TentangFragment"
         android:label="@string/tentang"
         tools:layout="@layout/fragment_tentang" />
 

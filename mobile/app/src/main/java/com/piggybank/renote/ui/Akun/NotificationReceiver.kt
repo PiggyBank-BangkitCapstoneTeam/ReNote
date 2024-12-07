@@ -1,4 +1,4 @@
-package com.piggybank.renote.util
+package com.piggybank.renotes.util
 
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -8,7 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.piggybank.renote.R
+import com.piggybank.renotes.R
 import java.util.Calendar
 
 class NotificationReceiver : BroadcastReceiver() {

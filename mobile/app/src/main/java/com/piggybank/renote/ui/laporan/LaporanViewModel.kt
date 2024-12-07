@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.laporan
+package com.piggybank.renotes.ui.laporan
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

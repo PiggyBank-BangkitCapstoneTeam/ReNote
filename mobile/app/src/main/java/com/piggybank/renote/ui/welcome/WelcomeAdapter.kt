@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.welcome
+package com.piggybank.renotes.ui.welcome
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment

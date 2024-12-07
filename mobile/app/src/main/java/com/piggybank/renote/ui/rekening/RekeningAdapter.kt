@@ -1,11 +1,11 @@
-package com.piggybank.renote.ui.rekening
+package com.piggybank.renotes.ui.rekening
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.piggybank.renote.R
+import com.piggybank.renotes.R
 
 class RekeningAdapter(
     private val rekeningList: List<Rekening>,

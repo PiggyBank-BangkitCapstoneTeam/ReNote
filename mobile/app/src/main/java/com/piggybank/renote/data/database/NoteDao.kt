@@ -1,4 +1,4 @@
-package com.piggybank.renote.data.database
+package com.piggybank.renotes.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete

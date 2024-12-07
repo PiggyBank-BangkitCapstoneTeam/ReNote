@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.Akun
+package com.piggybank.renotes.ui.Akun
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,9 +15,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentProfileBinding
-import com.piggybank.renote.ui.main.WelcomeActivity
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentProfileBinding
+import com.piggybank.renotes.ui.main.WelcomeActivity
 import java.io.File
 import java.io.FileOutputStream
 

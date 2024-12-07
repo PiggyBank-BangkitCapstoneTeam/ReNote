@@ -2,8 +2,8 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.ItemMonthBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.ItemMonthBinding
 
 class MonthAdapter(
     private val months: List<String>,

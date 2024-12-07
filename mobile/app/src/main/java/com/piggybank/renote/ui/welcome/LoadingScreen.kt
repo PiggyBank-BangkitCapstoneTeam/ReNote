@@ -1,9 +1,9 @@
-package com.piggybank.renote.ui.welcome
+package com.piggybank.renotes.ui.welcome
 
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import com.piggybank.renote.R
+import com.piggybank.renotes.R
 
 class LoadingScreen(context: Context) : Dialog(context) {
     init {

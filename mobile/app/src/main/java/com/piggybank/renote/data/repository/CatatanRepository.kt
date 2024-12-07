@@ -1,3 +1,3 @@
-package com.piggybank.renote.data.repository
+package com.piggybank.renotes.data.repository
 
 class CatatanRepository

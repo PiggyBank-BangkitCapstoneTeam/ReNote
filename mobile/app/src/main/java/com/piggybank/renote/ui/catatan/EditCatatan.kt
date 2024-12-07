@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.catatan
+package com.piggybank.renotes.ui.catatan
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentEditCatatanBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentEditCatatanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

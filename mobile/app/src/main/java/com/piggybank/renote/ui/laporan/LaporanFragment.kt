@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.laporan
+package com.piggybank.renotes.ui.laporan
 
 import MonthAdapter
 import android.graphics.Color
@@ -19,9 +19,9 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentLaporanBinding
-import com.piggybank.renote.ui.catatan.CatatanViewModel
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentLaporanBinding
+import com.piggybank.renotes.ui.catatan.CatatanViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

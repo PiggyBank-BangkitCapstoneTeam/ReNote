@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.rekening
+package com.piggybank.renotes.ui.rekening
 
 import android.os.Bundle
 import android.text.Editable
@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.piggybank.renote.R
+import com.piggybank.renotes.R
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale

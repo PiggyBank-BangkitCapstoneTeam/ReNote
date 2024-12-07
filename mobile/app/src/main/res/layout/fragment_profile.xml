@@ -45,7 +45,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <com.piggybank.renote.ui.Akun.ImageProfile
+    <com.piggybank.renotes.ui.Akun.ImageProfile
         android:id="@+id/foto_profile"
         android:layout_width="125dp"
         android:layout_height="125dp"

@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.main
+package com.piggybank.renotes.ui.main
 
 import android.os.Bundle
 import android.view.View
@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.ActivityMainBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 

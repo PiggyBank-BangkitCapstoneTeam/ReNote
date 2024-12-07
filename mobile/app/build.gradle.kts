@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.piggybank.renote"
+    namespace = "com.piggybank.renotes"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.piggybank.renote"
+        applicationId = "com.piggybank.renotes"
         minSdk = 23
         targetSdk = 35
         versionCode = 1

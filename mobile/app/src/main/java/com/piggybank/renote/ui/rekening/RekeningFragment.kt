@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.rekening
+package com.piggybank.renotes.ui.rekening
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.piggybank.renote.R
-import com.piggybank.renote.databinding.FragmentRekeningBinding
+import com.piggybank.renotes.R
+import com.piggybank.renotes.databinding.FragmentRekeningBinding
 
 class RekeningFragment : Fragment() {
     private var _binding: FragmentRekeningBinding? = null

@@ -1,4 +1,4 @@
-package com.piggybank.renote
+package com.piggybank.renotes
 
 import org.junit.Test
 

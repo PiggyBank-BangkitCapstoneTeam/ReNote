@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TextContrastCheck" />
 
-    <com.piggybank.renote.ui.Akun.ImageProfile
+    <com.piggybank.renotes.ui.Akun.ImageProfile
         android:id="@+id/userImage"
         android:layout_width="125dp"
         android:layout_height="125dp"

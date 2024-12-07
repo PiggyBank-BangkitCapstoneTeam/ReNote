@@ -1,4 +1,4 @@
-package com.piggybank.renote.data.retrofit
+package com.piggybank.renotes.data.retrofit
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

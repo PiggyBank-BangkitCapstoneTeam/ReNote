@@ -1,10 +1,10 @@
-package com.piggybank.renote.ui.main
+package com.piggybank.renotes.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
-import com.piggybank.renote.R
-import com.piggybank.renote.ui.welcome.WelcomeAdapter
+import com.piggybank.renotes.R
+import com.piggybank.renotes.ui.welcome.WelcomeAdapter
 
 class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

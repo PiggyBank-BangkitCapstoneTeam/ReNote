@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.catatan
+package com.piggybank.renotes.ui.catatan
 
 data class Catatan(
     val kategori: String,

@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui
+package com.piggybank.renotes.ui
 
 import android.content.Context
 import android.net.ConnectivityManager

@@ -1,4 +1,4 @@
-package com.piggybank.renote.data.database
+package com.piggybank.renotes.data.database
 
 import android.content.Context
 import androidx.room.Database

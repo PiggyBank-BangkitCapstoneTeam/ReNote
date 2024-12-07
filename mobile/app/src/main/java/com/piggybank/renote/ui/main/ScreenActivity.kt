@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.main
+package com.piggybank.renotes.ui.main
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -9,7 +9,7 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.addListener
 import com.google.firebase.auth.FirebaseAuth
-import com.piggybank.renote.databinding.ActivityScreenBinding
+import com.piggybank.renotes.databinding.ActivityScreenBinding
 
 class ScreenActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.piggybank.renote.ui.rekening
+package com.piggybank.renotes.ui.rekening
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.piggybank.renote.databinding.FragmentEditRekeningBinding
+import com.piggybank.renotes.databinding.FragmentEditRekeningBinding
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale

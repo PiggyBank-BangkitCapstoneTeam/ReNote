@@ -1,10 +1,10 @@
-package com.piggybank.renote.ui.catatan
+package com.piggybank.renotes.ui.catatan
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.piggybank.renote.databinding.ItemCatatanBinding
+import com.piggybank.renotes.databinding.ItemCatatanBinding
 import java.text.NumberFormat
 import java.util.Locale
 

@@ -1,11 +1,11 @@
-package com.piggybank.renote.ui.Akun
+package com.piggybank.renotes.ui.Akun
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.piggybank.renote.R
+import com.piggybank.renotes.R
 
 class MessageAdapter(private val messages: List<Message>) :
     RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
