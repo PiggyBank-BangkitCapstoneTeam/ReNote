@@ -141,7 +141,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun getDateKey(date: Calendar): String {
-        return "${date.get(Calendar.YEAR)}-${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.DAY_OF_MONTH)}"
+        return "${date.get(Calendar.DAY_OF_MONTH)}-${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.YEAR)}"
     }
 
     fun clearSelectedCatatan() {
