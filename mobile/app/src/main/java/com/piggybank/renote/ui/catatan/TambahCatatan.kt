@@ -98,7 +98,7 @@ class TambahCatatan : Fragment() {
             showDatePickerDialog()
         }
 
-        val isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
+        var isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
         setupCategorySpinner(if (isPengeluaran) pengeluaranCategory else pemasukanCategory)
 
         toggleAdditionalFieldsVisibility(isPengeluaran)
@@ -109,6 +109,7 @@ class TambahCatatan : Fragment() {
                 val categories = if (checkedIsPengeluaran) pengeluaranCategory else pemasukanCategory
 
                 withContext(Dispatchers.Main) {
+                    isPengeluaran = checkedIsPengeluaran
                     setupCategorySpinner(categories)
                     toggleAdditionalFieldsVisibility(checkedIsPengeluaran)
                 }
@@ -121,8 +122,6 @@ class TambahCatatan : Fragment() {
                 val nominalFormatted = binding.inputAmount.text.toString()
                 val nominal = nominalFormatted.replace("[,.]".toRegex(), "").toLong().toString()
                 val deskripsi = binding.inputDescription.text.toString()
-                val isPengeluaran = binding.toggleGroup.checkedRadioButtonId == R.id.radio_pengeluaran
-
                 val adjustedNominal = if (isPengeluaran) "-$nominal" else nominal
 
                 if (selectedDate == null) {
