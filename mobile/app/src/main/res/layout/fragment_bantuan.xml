@@ -1,12 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".ui.Akun.BantuanFragment">
 
     <RelativeLayout
+        android:id="@+id/titleLayout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="#FFFFFF"
@@ -24,7 +25,7 @@
             app:tint="#000000" />
 
         <TextView
-            android:id="@+id/tittleBantuan"
+            android:id="@+id/titleBantuan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -37,6 +38,14 @@
             android:textSize="18sp"
             android:textStyle="bold" />
     </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messageRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleLayout"
+        android:layout_above="@id/linearLayout"
+        android:background="@android:color/white" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -77,13 +86,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:visibility="gone"
         android:layout_centerVertical="true" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messageRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout"
-        android:background="@android:color/white" />
-
 </RelativeLayout>
