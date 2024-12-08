@@ -24,6 +24,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -95,6 +96,9 @@ class CatatanFragment : Fragment() {
                     response: Response<GetAllNoteResponse>
                 ) {
                     if (response.isSuccessful) {
+                        val selectedDateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            .format(selectedDate.time)
+
                         val notes = response.body()?.data?.mapNotNull {
                             it?.let { dataItem ->
                                 Catatan(
@@ -104,6 +108,8 @@ class CatatanFragment : Fragment() {
                                     tanggal = dataItem.tanggal ?: ""
                                 )
                             }
+                        }?.filter {
+                            it.tanggal == selectedDateString
                         } ?: emptyList()
 
                         catatanAdapter.submitList(notes)
