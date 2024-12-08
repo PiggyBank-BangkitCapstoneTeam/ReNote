@@ -6,6 +6,7 @@ import GCP_CloudSQL from "./lib/gcp-cloudsql.js";
 import dotenv from "dotenv";
 import multer from "multer";
 import { Storage } from "@google-cloud/storage";
+import MemoryStoreRedis from "redis";
 
 // Load environment variable dari file .env
 dotenv.config();
@@ -63,6 +64,39 @@ if (process.env.CloudStorage_Enabled === "true") {
 	app.use((req, res, next) => {
 		req.CloudStorage = CloudStorage;
 		req.CloudStorage_UserMediaBucket = CloudStorage.bucket(CloudStorage_UserMediaBucket);
+		next();
+	});
+}
+
+if (process.env.MemoryStoreRedis_Enabled === "true") {
+	const MemoryStoreRedis_HostName = process.env.MemoryStoreRedis_HostName;
+	const MemoryStoreRedis_Port = process.env.MemoryStoreRedis_Port || "6379";
+
+	if (!MemoryStoreRedis_HostName) {
+		throw new Error("MemoryStore diaktifkan tetapi MemoryStoreRedis_HostName tidak diisi");
+	}
+
+	if (!MemoryStoreRedis_Port) {
+		throw new Error("MemoryStore diaktifkan tetapi MemoryStoreRedis_Port tidak diisi");
+	}
+
+	const MemoryStore = MemoryStoreRedis.createClient({
+		url: `redis://${MemoryStoreRedis_HostName}:${MemoryStoreRedis_Port}`
+	});
+
+	try {
+		await MemoryStore.SET("ReNoteMemoryStore_ConnectionProbe", "probe", {
+			EX: 1,
+		});
+	}
+	catch (error) {
+		console.error("Gagal terhubung ke MemoryStore for Redis");
+		console.error(error);
+		process.exit(1);
+	}
+
+	app.use((req, res, next) => {
+		req.MemoryStore = MemoryStore;
 		next();
 	});
 }

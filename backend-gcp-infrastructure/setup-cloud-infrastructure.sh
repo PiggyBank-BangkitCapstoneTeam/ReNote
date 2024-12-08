@@ -251,8 +251,8 @@ setup_echo "normal" "Membuat VPC Peering untuk Managed Services..."
 gcloud compute addresses create managed-services-peering \
 	--global \
 	--purpose="VPC_PEERING" \
-	--addresses="192.168.10.0" \
-	--prefix-length="24" \
+	--addresses="192.168.16.0" \
+	--prefix-length="20" \
 	--description="Reserved Internal IP for Managed Services Peering" \
 	--network="renote-network"
 
@@ -317,6 +317,20 @@ gcloud storage buckets add-iam-policy-binding "gs://$DEFAULT_CLOUD_STORAGE_BUCKE
 
 #region Memorystore (Redis)
 #TODO: Create Memorystore (Redis) instance buat caching data backend
+setup_echo "normal" "Mengaktifkan Memorystore (Redis) API... (dapat memakan waktu beberapa menit)"
+gcloud services enable redis.googleapis.com
+sleep 5
+
+gcloud redis instances create renote-redis1 \
+	--tier="basic" \
+	--size="1" \
+	--region="$DEFAULT_REGION" \
+	--zone="$DEFAULT_ZONE" \
+	--redis-version="redis_7_0" \
+	--network="projects/$GCP_PROJECT_ID/global/networks/renote-network" \
+	--connect-mode="PRIVATE_SERVICE_ACCESS" \
+	--reserved-ip-range="managed-services-peering" \
+	--display-name="Renote Redis 1"
 #endregion
 
 #region Compute Engine for Backend API
@@ -460,6 +474,10 @@ CloudSQL_Database="renote"
 
 CloudStorage_Enabled="true"
 CloudStorage_UserMediaBucket="$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
+
+MemoryStoreRedis_Enabled="false"
+MemoryStoreRedis_HostName="..."
+MemoryStoreRedis_Port="6379"
 
 EOF
 
