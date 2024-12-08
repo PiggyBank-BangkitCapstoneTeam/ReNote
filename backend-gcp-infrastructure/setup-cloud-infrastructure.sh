@@ -127,10 +127,10 @@ fi
 
 #endregion
 
-#region Service Account
+#region Service Account for Backend API Service
 
 # Create a service account for the Backend API Compute Engine
-setup_echo "normal" "Membuat service account..."
+setup_echo "normal" "Membuat service account untuk Backend Compute Engine..."
 gcloud iam service-accounts create "backend-service-account" \
 	--description="Service Account for Backend API Compute Engine" \
 	--display-name="Backend Service Account"
@@ -166,6 +166,39 @@ gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 	--member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
 	--role="roles/firebaseauth.viewer"
+
+echo
+
+#endregion
+
+#region Service Account for Machine Learning Service
+
+# Create a service account for the Backend API Compute Engine
+setup_echo "normal" "Membuat service account untuk Machine Learning Compute Engine..."
+gcloud iam service-accounts create "maclea-service-account" \
+	--description="Service Account for Machine Learning Compute Engine" \
+	--display-name="Machine Learning Service Account"
+
+ML_SERVICE_ACCOUNT_EMAIL="maclea-service-account@$GCP_PROJECT_ID.iam.gserviceaccount.com"
+
+# Terkadang ada error service-account masih belum terdaftar, jadi tunggu dulu sejenak
+sleep 30
+
+# Create a JSON key to be used to authenticate the service account
+setup_echo "normal" "Membuat JSON key untuk service account \"$ML_SERVICE_ACCOUNT_EMAIL\"..."
+gcloud iam service-accounts keys create "maclea-sak.json" \
+	--iam-account="$ML_SERVICE_ACCOUNT_EMAIL" \
+	--key-file-type="json"
+
+# Grant the service account the "Compute Engine Admin" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+	--member="serviceAccount:$ML_SERVICE_ACCOUNT_EMAIL" \
+	--role="roles/compute.admin"
+
+# Grant the service account the "Storage Object Viewer" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+	--member="serviceAccount:$ML_SERVICE_ACCOUNT_EMAIL" \
+	--role="roles/storage.objectViewer"
 
 echo
 #endregion
@@ -219,8 +252,7 @@ gcloud compute firewall-rules create renote-allow-ssh-browser \
 	--network="renote-network" \
 	--action="ALLOW" \
 	--rules="tcp:22" \
-	--source-ranges="35.235.240.0/20" \
-	--target-tags="backend-api-server"
+	--source-ranges="35.235.240.0/20"
 
 gcloud compute firewall-rules create renote-allow-ssh-public \
 	--direction="INGRESS" \
@@ -249,6 +281,14 @@ gcloud compute addresses create backend-api \
 	--subnet="projects/$GCP_PROJECT_ID/regions/$DEFAULT_REGION/subnetworks/renote-network-internal" \
 	--purpose="GCE_ENDPOINT"
 
+# Reserve internal static IP for the Machine Learning Compute Engine
+setup_echo "normal" "Melakukan konfigurasi IP Static untuk compute engine Machine Learning Service"
+gcloud compute addresses create maclea-api \
+	--description="Reserved Internal IP for Machine Learning Compute Engine" \
+	--addresses="192.168.0.3" \
+	--region="$DEFAULT_REGION" \
+	--subnet="projects/$GCP_PROJECT_ID/regions/$DEFAULT_REGION/subnetworks/renote-network-internal" \
+	--purpose="GCE_ENDPOINT"
 
 # Enable Service Networking API
 setup_echo "normal" "Mengaktifkan Service Networking API..."
@@ -363,7 +403,7 @@ sudo apt install curl bash git -y
 INSTANCE_NAME=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
 INSTANCE_ZONE=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google")
 
-# Setup backend user without no password (system)
+# Setup backend user without password (system)
 sudo useradd --system --create-home --shell /bin/bash backend
 sudo usermod -aG sudo backend
 
@@ -546,6 +586,140 @@ gcloud compute scp backend-api.env backend-api:/tmp/backend-api.env --zone="$DEF
 # Copy the service account key to the Backend API Compute Engine
 setup_echo "normal" "Mengirim service account key ke compute engine Backend API..."
 gcloud compute scp backend-sak.json backend-api:/tmp/backend-sak.json --zone="$DEFAULT_ZONE"
+
+#endregion
+
+#region Compute Engine for Machine Learning Service
+
+setup_echo "normal" "Membuat file startup script untuk compute engine Machine Learning..."
+echo \#\!"/bin/bash" > maclea-compute-engine-startup.sh
+
+cat << "EOF" >> maclea-compute-engine-startup.sh
+
+# Jika sudah ada /opt/ReNote, jangan lanjutkan script
+if [ -d "/opt/ReNote" ]; then
+	echo "Folder /opt/ReNote sudah ada, setup tidak akan dilanjutkan"
+	exit 0
+fi
+
+sudo apt update
+sudo apt upgrade -y
+sudo add-apt-repository --yes ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install -y curl bash git unzip python3.10 python3.10-venv python3.10-dev python3.10-distutils
+
+# Cek instance name untuk compute engine ini
+INSTANCE_NAME=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
+INSTANCE_ZONE=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google")
+
+# Setup backend user without password (system)
+sudo useradd --system --create-home --shell /bin/bash backend
+sudo usermod -aG sudo backend
+
+sudo mkdir -p /opt/
+cd /opt/
+sudo git clone https://github.com/PiggyBank-BangkitCapstoneTeam/ReNote
+cd ReNote/
+
+# Switch ke branch cc-backend
+sudo git checkout ml-master
+
+# Siapkan folder model YOLO
+cd machine-learning/Inference_Model/trained_models/
+sudo mkdir -p YOLO/
+cd YOLO/
+
+# Download file model_train_renfred_1.zip
+sudo wget "https://github.com/PiggyBank-BangkitCapstoneTeam/ReNote/releases/download/v0.1.0-alpha/model_train_renfred_1.zip"
+
+# Unzip file model_train_renfred_1.zip
+sudo unzip "model_train_renfred_1.zip"
+
+# Hapus file zip, karena sudah tidak dibutuhkan lagi
+sudo rm "model_train_renfred_1.zip"
+
+# Kembali ke root folder dari machine-learning
+cd /opt/ReNote/machine-learning/
+
+# Ganti ownership folder /opt/ReNote ke user backend
+sudo chown -R backend:backend /opt/ReNote
+
+# Atur permission semua folder di /opt/ReNote ke 755
+find /opt/ReNote -type d -print0 | sudo xargs -0 chmod 755
+
+# Atur permission semua file di /opt/ReNote ke 644
+find /opt/ReNote -type f -print0 | sudo xargs -0 chmod 644
+
+sudo chmod 744 ml-autosetup.sh
+sudo su -c "bash /opt/ReNote/backend-gcp-infrastructure/ml-autosetup.sh" backend
+
+# Check the output of the script
+if [ $? -ne 0 ]; then
+	echo "ml-autosetup.sh failed, exiting..."
+	exit 1
+fi
+
+# Check if /opt/ReNote/machine-learning/renote-ml.service exists
+if [ ! -f "/opt/ReNote/machine-learning/renote-ml.service" ]; then
+	echo "ml-autosetup.sh failed to create renote-ml.service, exiting..."
+	exit 1
+fi
+
+cd /opt/ReNote/machine-learning/
+
+# Move the systemd service to /etc/systemd/system/
+sudo mv renote-ml.service /etc/systemd/system/
+
+# Reload the systemd daemon
+sudo systemctl daemon-reload
+
+# Enable and start the renote-ml service
+sudo systemctl enable renote-ml.service
+sudo systemctl start renote-ml.service
+
+# Add the compute engine to the backend-ml-server
+gcloud compute instances add-tags "$INSTANCE_NAME" --tags="backend-ml-server" --zone="$INSTANCE_ZONE"
+
+EOF
+
+# Create a Compute Engine for the Backend API
+setup_echo "normal" "Membuat compute engine untuk Machine Learning (dapat memakan waktu beberapa menit)..."
+gcloud compute instances create machine-learning-vm \
+	--zone="$DEFAULT_ZONE" \
+	--machine-type="e2-medium" \
+	--network-interface="network-tier=PREMIUM,private-network-ip=192.168.0.3,stack-type=IPV4_ONLY,subnet=renote-network-internal" \
+	--maintenance-policy="MIGRATE" \
+	--provisioning-model="STANDARD" \
+	--service-account="maclea-service-account@$GCP_PROJECT_ID.iam.gserviceaccount.com" \
+	--scopes="compute-rw,storage-ro,service-control,service-management" \
+	--create-disk="auto-delete=yes,boot=yes,device-name=machine-learning-vm,image=projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20241115,mode=rw,size=20,type=pd-ssd" \
+	--no-shielded-secure-boot \
+	--shielded-vtpm \
+	--shielded-integrity-monitoring \
+	--labels="goog-ec-src=vm_add-gcloud" \
+	--reservation-affinity="any" \
+	--metadata-from-file="startup-script=maclea-compute-engine-startup.sh,ssh-keys=additional-ssh-keys.txt"
+
+# Tunggu hingga compute engine selesai dibuat dan ada tag "backend-ml-server"
+setup_echo "normal" "Menunggu hingga setup script selesai..."
+ML_VM_WAITING_ELAPSED=0
+while true; do
+	INSTANCE_TAGS=$(gcloud compute instances describe machine-learning-vm --zone="$DEFAULT_ZONE" --format="value(tags.items)")
+	
+	if [[ $INSTANCE_TAGS == *"backend-ml-server"* ]]; then
+		break
+	fi
+
+	if [ $ML_VM_WAITING_ELAPSED -ge 600 ]; then
+		setup_echo "error" "Setup script untuk compute engine Machine Learning memakan waktu terlalu lama, exiting..."
+		exit 1
+	fi
+
+	setup_echo "info" "Menunggu hingga setup script selesai... ($BACKEND_API_WAITING_ELAPSED detik / 600 detik)"
+
+	sleep 10
+	ML_VM_WAITING_ELAPSED=$((ML_VM_WAITING_ELAPSED+10))
+done
 
 #endregion
 
