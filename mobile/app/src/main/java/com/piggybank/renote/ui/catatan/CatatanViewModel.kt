@@ -72,13 +72,12 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
     }
 
 
-    fun addCatatan(date: Calendar, kategori: String, nominal: String, deskripsi: String) {
+    fun addCatatan(date: Calendar, kategori: String, nominal: Int, deskripsi: String) {
         val dateKey = getDateKey(date)
-        val nominalValue = nominal.replace("[^\\d-]".toRegex(), "").toIntOrNull() ?: 0
 
         val newNote = NoteEntity(
             kategori = kategori,
-            nominal = nominalValue,
+            nominal = nominal,
             deskripsi = deskripsi,
             tanggal = dateKey,
             userId = userId ?: error("User ID not set")
@@ -87,14 +86,12 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             noteDao.insertNote(newNote)
             updateDataForDate(date)
-            saldoChangeListener?.invoke(nominalValue)
+            saldoChangeListener?.invoke(nominal)
         }
     }
 
-    fun editCatatan(newNominal: String, newDeskripsi: String) {
+    fun editCatatan(newNominal: Int, newDeskripsi: String) {
         selectedCatatan?.let { catatan ->
-            val nominalValue = newNominal.replace("[^\\d-]".toRegex(), "").toIntOrNull() ?: return
-
             userId?.let { user ->
                 viewModelScope.launch {
                     val notes = noteDao.getNotesByDateAndUser(catatan.tanggal, user)
@@ -104,7 +101,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
 
                     existingNote?.let { noteEntity ->
                         val updatedNote = noteEntity.copy(
-                            nominal = nominalValue,
+                            nominal = newNominal,
                             deskripsi = newDeskripsi
                         )
                         noteDao.updateNote(updatedNote)
@@ -119,6 +116,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
             } ?: error("User ID not set")
         }
     }
+
 
     fun deleteSelectedCatatan(date: Calendar) {
         selectedCatatan?.let { catatan ->

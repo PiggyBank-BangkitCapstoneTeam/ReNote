@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -119,10 +120,8 @@ class TambahCatatan : Fragment() {
         binding.buttonCreate.setOnClickListener {
             lifecycleScope.launch {
                 val kategori = binding.spinnerCategory.selectedItem.toString()
-                val nominalFormatted = binding.inputAmount.text.toString()
-                val nominal = nominalFormatted.replace("[,.]".toRegex(), "").toLong().toString()
+                var nominal = getRawAmountValue()
                 val deskripsi = binding.inputDescription.text.toString()
-                val adjustedNominal = if (isPengeluaran) "-$nominal" else nominal
 
                 if (selectedDate == null) {
                     withContext(Dispatchers.Main) {
@@ -131,14 +130,18 @@ class TambahCatatan : Fragment() {
                     return@launch
                 }
 
-                if (kategori == "Pilih Kategori" || nominal.isBlank() || deskripsi.isBlank()) {
+                if (kategori == "Pilih Kategori" || nominal == 0 || deskripsi.isBlank()) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Isi semua data dengan benar!", Toast.LENGTH_SHORT).show()
                     }
                     return@launch
                 }
 
-                catatanViewModel.addCatatan(selectedDate!!, kategori, adjustedNominal, deskripsi)
+                if (isPengeluaran) {
+                    nominal = -nominal
+                }
+
+                catatanViewModel.addCatatan(selectedDate!!, kategori, nominal, deskripsi)
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
@@ -147,7 +150,6 @@ class TambahCatatan : Fragment() {
                 }
             }
         }
-
         return binding.root
     }
 
@@ -197,8 +199,9 @@ class TambahCatatan : Fragment() {
                         set(selectedYear, selectedMonth, selectedDay)
                     }
                     withContext(Dispatchers.Main) {
-                        binding.textDate.text =
-                            getString(R.string.date_format, selectedDay, selectedMonth + 1, selectedYear)
+                        val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                        val formattedDate = sdf.format(selectedDate!!.time)
+                        binding.textDate.text = formattedDate
                     }
                 }
             },
@@ -207,6 +210,8 @@ class TambahCatatan : Fragment() {
 
         datePickerDialog.show()
     }
+
+    private var rawAmountValue: Int = 0
 
     private fun setupAmountFormatter() {
         binding.inputAmount.addTextChangedListener(object : TextWatcher {
@@ -220,8 +225,9 @@ class TambahCatatan : Fragment() {
 
                     val cleanString = s.toString().replace("[,.]".toRegex(), "")
                     if (cleanString.isNotEmpty()) {
+                        rawAmountValue = cleanString.toIntOrNull() ?: 0
                         val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
-                            .format(cleanString.toDouble())
+                            .format(rawAmountValue.toLong())
                         currentText = formatted
                         binding.inputAmount.setText(formatted)
                         binding.inputAmount.setSelection(formatted.length)
@@ -234,6 +240,8 @@ class TambahCatatan : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
     }
+
+    private fun getRawAmountValue(): Int = rawAmountValue
 
     override fun onDestroyView() {
         super.onDestroyView()

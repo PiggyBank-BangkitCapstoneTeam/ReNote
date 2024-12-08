@@ -40,7 +40,7 @@ class EditCatatan : Fragment() {
 
         val selectedCatatan = catatanViewModel.selectedCatatan
         if (selectedCatatan != null) {
-            binding.inputAmount.setText(formatCurrency(selectedCatatan.nominal.toString()))
+            binding.inputAmount.setText(formatCurrency(selectedCatatan.nominal))
             binding.inputDescription.setText(selectedCatatan.deskripsi)
         } else {
             lifecycleScope.launch {
@@ -56,11 +56,11 @@ class EditCatatan : Fragment() {
         binding.buttonEdit.setOnClickListener {
             lifecycleScope.launch {
                 val newNominalFormatted = binding.inputAmount.text.toString()
-                val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toLongOrNull()
+                val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toIntOrNull()
                 val newDeskripsi = binding.inputDescription.text.toString()
 
                 if (newNominal != null && newDeskripsi.isNotBlank() && selectedCatatan != null) {
-                    catatanViewModel.editCatatan(newNominal.toString(), newDeskripsi)
+                    catatanViewModel.editCatatan(newNominal, newDeskripsi)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Catatan berhasil diubah!", Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
@@ -76,7 +76,6 @@ class EditCatatan : Fragment() {
                 }
             }
         }
-
 
         binding.deleteIcon.setOnClickListener {
             lifecycleScope.launch {
@@ -106,6 +105,7 @@ class EditCatatan : Fragment() {
     private fun setupAmountFormatter() {
         binding.inputAmount.addTextChangedListener(object : TextWatcher {
             private var currentText = ""
+            private var isNegative = false
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -113,20 +113,25 @@ class EditCatatan : Fragment() {
                 if (s.toString() != currentText) {
                     binding.inputAmount.removeTextChangedListener(this)
 
-                    val cleanString = s.toString().replace("[,.]".toRegex(), "")
-                    if (cleanString.isNotEmpty() && cleanString != "-") {
-                        try {
-                            val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
-                                .format(cleanString.toDouble())
-                            currentText = formatted
-                            binding.inputAmount.setText(formatted)
-                            binding.inputAmount.setSelection(formatted.length)
-                        } catch (e: NumberFormatException) {
-                            currentText = ""
-                            binding.inputAmount.setText("")
-                        }
+                    val cleanString = s.toString().replace("[^\\d-]".toRegex(), "")
+                    isNegative = cleanString.startsWith("-")
+
+                    val sanitizedString = if (isNegative) {
+                        "-" + cleanString.replace("-", "")
                     } else {
-                        currentText = s.toString()
+                        cleanString.replace("-", "")
+                    }
+
+                    try {
+                        val rawAmount = sanitizedString.replace("-", "").toIntOrNull() ?: 0
+                        val formatted = formatCurrency(rawAmount)
+                        currentText = if (isNegative) "-$formatted" else formatted
+                        binding.inputAmount.setText(currentText)
+                        binding.inputAmount.setSelection(currentText.length)
+                    } catch (e: NumberFormatException) {
+                        currentText = if (isNegative) "-" else ""
+                        binding.inputAmount.setText(currentText)
+                        binding.inputAmount.setSelection(currentText.length)
                     }
 
                     binding.inputAmount.addTextChangedListener(this)
@@ -138,8 +143,8 @@ class EditCatatan : Fragment() {
     }
 
 
-    private fun formatCurrency(value: String): String {
-        return NumberFormat.getNumberInstance(Locale("in", "ID")).format(value.toLong())
+    private fun formatCurrency(value: Int): String {
+        return NumberFormat.getNumberInstance(Locale("in", "ID")).format(value)
     }
 
     override fun onDestroyView() {
