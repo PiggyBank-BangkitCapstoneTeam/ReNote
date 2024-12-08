@@ -10,6 +10,12 @@ DEFAULT_CLOUD_STORAGE_BUCKET_NAME="renote-usermedia-$GCP_PROJECT_ID"
 
 DEFAULT_REGION="asia-southeast2"
 DEFAULT_ZONE="$DEFAULT_REGION-b"
+
+# SSH Public Key untuk akses VM dari luar GCP
+# FORMAT: username:ssh-................................................................
+EXTRA_SSH_PUBLIC_KEY="""
+c115b4ky2432:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINnhmh+QEajnW8qtPHsY4E3HXbPT+Q+4a9HnzZVDvc+N 
+"""
 #endregion
 
 #region Pre-init preparations
@@ -130,6 +136,9 @@ gcloud iam service-accounts create "backend-service-account" \
 	--display-name="Backend Service Account"
 
 SERVICE_ACCOUNT_EMAIL="backend-service-account@$GCP_PROJECT_ID.iam.gserviceaccount.com"
+
+# Terkadang ada error service-account masih belum terdaftar, jadi tunggu dulu sejenak
+sleep 5
 
 # Create a JSON key to be used to authenticate the service account
 setup_echo "normal" "Membuat JSON key untuk service account \"$SERVICE_ACCOUNT_EMAIL\"..."
@@ -462,6 +471,7 @@ FIREBASE_projectId="..."
 FIREBASE_storageBucket="....firebasestorage.app"
 FIREBASE_messagingSenderId="..."
 FIREBASE_appId=".:...:web:..."
+FIREBASE_APPLICATION_CREDENTIALS="./service-account.json"
 
 GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
 
@@ -481,6 +491,11 @@ MemoryStoreRedis_Port="6379"
 
 EOF
 
+# Dump SSH keys so it can be on metadata
+setup_echo "normal" "Membuat file yang berisi semua SSH Public Key tambahan..."
+
+echo "$EXTRA_SSH_PUBLIC_KEY" > additional-ssh-keys.txt
+
 # Create a Compute Engine for the Backend API
 setup_echo "normal" "Membuat compute engine untuk Backend API (dapat memakan waktu beberapa menit)..."
 gcloud compute instances create backend-api \
@@ -497,7 +512,7 @@ gcloud compute instances create backend-api \
 	--shielded-integrity-monitoring \
 	--labels="goog-ec-src=vm_add-gcloud" \
 	--reservation-affinity="any" \
-	--metadata-from-file="startup-script=backend-api-compute-engine-startup.sh"
+	--metadata-from-file="startup-script=backend-api-compute-engine-startup.sh,ssh-keys=additional-ssh-keys.txt"
 
 # Tunggu hingga compute engine selesai dibuat dan ada tag "backend-api-server"
 setup_echo "normal" "Menunggu hingga setup script selesai..."

@@ -5,8 +5,12 @@ export default class {
 	private FirebaseAdminApp: FirebaseAdmin.app.App;
 
 	constructor() {
+		if (!process.env.FIREBASE_APPLICATION_CREDENTIALS) {
+			throw new Error("Environment variable FIREBASE_APPLICATION_CREDENTIALS harus diset");
+		}
+
 		this.FirebaseAdminApp = FirebaseAdmin.initializeApp({
-			credential: FirebaseAdmin.credential.applicationDefault(), // Akan menggunakan credential dari environment GOOGLE_APPLICATION_CREDENTIALS
+			credential: FirebaseAdmin.credential.cert(process.env.FIREBASE_APPLICATION_CREDENTIALS), // Akan menggunakan credential dari environment GOOGLE_APPLICATION_CREDENTIALS
 		});
 	}
 
@@ -72,6 +76,7 @@ export default class {
 
 			response.status(401).send({ message: "Hak akses ditolak" }).end();
 			console.log(`${request.method} ${request.url}: 401 Token otorisasi ditolak, alasan: ${errorInfo.message}`);
+			return;
 		}
 
 		if (!decodedToken) {

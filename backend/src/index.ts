@@ -85,6 +85,8 @@ if (process.env.MemoryStoreRedis_Enabled === "true") {
 	});
 
 	try {
+		MemoryStore.connect();
+		
 		await MemoryStore.SET("ReNoteMemoryStore_ConnectionProbe", "probe", {
 			EX: 1,
 		});
