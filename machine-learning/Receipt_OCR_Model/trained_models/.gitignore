@@ -1,0 +1,3 @@
+# Jangan track file log di git
+/*/log/
+/*/logs/
