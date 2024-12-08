@@ -138,7 +138,7 @@ gcloud iam service-accounts create "backend-service-account" \
 SERVICE_ACCOUNT_EMAIL="backend-service-account@$GCP_PROJECT_ID.iam.gserviceaccount.com"
 
 # Terkadang ada error service-account masih belum terdaftar, jadi tunggu dulu sejenak
-sleep 5
+sleep 30
 
 # Create a JSON key to be used to authenticate the service account
 setup_echo "normal" "Membuat JSON key untuk service account \"$SERVICE_ACCOUNT_EMAIL\"..."
@@ -175,7 +175,7 @@ echo
 # Enable Compute Engine API
 setup_echo "normal" "Mengaktifkan Compute Engine API (dapat memakan waktu beberapa menit)..."
 gcloud services enable compute.googleapis.com
-sleep 5
+sleep 30
 
 # Create VPC Network
 setup_echo "normal" "Membuat VPC Network..."
@@ -253,7 +253,7 @@ gcloud compute addresses create backend-api \
 # Enable Service Networking API
 setup_echo "normal" "Mengaktifkan Service Networking API..."
 gcloud services enable servicenetworking.googleapis.com
-sleep 5
+sleep 30
 
 # Create a VPC Peering allocation for Managed Services (Redis, Cloud SQL, etc.) connection
 setup_echo "normal" "Membuat VPC Peering untuk Managed Services..."
@@ -280,7 +280,7 @@ echo
 # Enable SQL Admin API
 setup_echo "normal" "Mengaktifkan SQL Admin API..."
 gcloud services enable sqladmin.googleapis.com
-sleep 5
+sleep 30
 
 # Create a CloudSQL (MySQL) instance
 setup_echo "normal" "Membuat Cloud SQL (MySQL) instance (dapat memakan waktu beberapa menit)..."
@@ -305,7 +305,7 @@ gcloud sql users create "backend-api" \
 	--password="$DEFAULT_SQL_BACKEND_API_PASSWORD" \
 	--type="BUILT_IN"
 
-sleep 5
+sleep 30
 #endregion
 
 #region Cloud Storage
@@ -325,10 +325,10 @@ gcloud storage buckets add-iam-policy-binding "gs://$DEFAULT_CLOUD_STORAGE_BUCKE
 #endregion
 
 #region Memorystore (Redis)
-#TODO: Create Memorystore (Redis) instance buat caching data backend
+# Create Memorystore (Redis) instance buat caching data backend
 setup_echo "normal" "Mengaktifkan Memorystore (Redis) API... (dapat memakan waktu beberapa menit)"
 gcloud services enable redis.googleapis.com
-sleep 5
+sleep 30
 
 gcloud redis instances create renote-redis1 \
 	--tier="basic" \
