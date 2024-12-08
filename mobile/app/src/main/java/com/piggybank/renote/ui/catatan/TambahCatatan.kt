@@ -20,7 +20,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.piggybank.renote.data.response.TambahCatatanResponse
+import com.piggybank.renotes.data.retrofit.ApiConfig
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import com.piggybank.renotes.R
+import com.piggybank.renotes.data.pref.UserPreference
 import com.piggybank.renotes.databinding.FragmentTambahBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -141,7 +147,55 @@ class TambahCatatan : Fragment() {
                     nominal = -nominal
                 }
 
+                // Format tanggal
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val formattedDate = sdf.format(selectedDate!!.time)
+
+                // Tambahkan catatan ke Room Database
                 catatanViewModel.addCatatan(selectedDate!!, kategori, nominal, deskripsi)
+
+                // Kirim catatan ke API
+                val token = UserPreference(requireContext()).getToken()
+                if (token.isNullOrEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Token tidak ditemukan, gagal mengirim data ke server.", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                val apiService = ApiConfig.getApiService(token)
+                val request = Catatan(kategori, nominal, deskripsi, formattedDate)
+
+                apiService.addNoteToServer(request).enqueue(object : Callback<TambahCatatanResponse> {
+                    override fun onResponse(
+                        call: Call<TambahCatatanResponse>,
+                        response: Response<TambahCatatanResponse>
+                    ) {
+                        if (!isAdded || isDetached) return
+
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            if (response.isSuccessful && response.body() != null) {
+                                Toast.makeText(requireContext(), "Catatan berhasil disimpan ke server!", Toast.LENGTH_SHORT).show()
+
+                                if (isAdded && !isDetached) {
+                                    bottomNavigationView.visibility = View.VISIBLE
+                                    findNavController().navigateUp()
+                                }
+                            } else {
+                                Toast.makeText(requireContext(), "Gagal menyimpan catatan ke server. Cek data atau koneksi!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<TambahCatatanResponse>, t: Throwable) {
+                        if (!isAdded || isDetached) return
+
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
