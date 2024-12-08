@@ -451,8 +451,12 @@ done
 # Move the service account key to /opt/ReNote/backend/
 sudo mv /tmp/backend-sak.json /opt/ReNote/backend/service-account.json
 
+# symlink the service account key to /opt/ReNote/backend/firebase-service-account.json
+sudo ln -s /opt/ReNote/backend/service-account.json /opt/ReNote/backend/firebase-service-account.json
+
 # Make sure the service account key is owned by backend user
 sudo chown backend:backend /opt/ReNote/backend/service-account.json
+sudo chown backend:backend /opt/ReNote/backend/firebase-service-account.json
 
 # Restart the renote-backend-api service
 sudo systemctl restart renote-backend-api.service
@@ -471,7 +475,7 @@ FIREBASE_projectId="..."
 FIREBASE_storageBucket="....firebasestorage.app"
 FIREBASE_messagingSenderId="..."
 FIREBASE_appId=".:...:web:..."
-FIREBASE_APPLICATION_CREDENTIALS="./service-account.json"
+FIREBASE_APPLICATION_CREDENTIALS="./firebase-service-account.json"
 
 GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
 
@@ -485,8 +489,8 @@ CloudSQL_Database="renote"
 CloudStorage_Enabled="true"
 CloudStorage_UserMediaBucket="$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
 
-MemoryStoreRedis_Enabled="false"
-MemoryStoreRedis_HostName="..."
+MemoryStoreRedis_Enabled="true"
+MemoryStoreRedis_HostName="$(gcloud redis instances describe renote-redis1 --region="$DEFAULT_REGION" --format="value(host)")"
 MemoryStoreRedis_Port="6379"
 
 EOF
