@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.piggybank.renote.data.response.GetAllNoteResponse
 import com.piggybank.renotes.R
 import com.piggybank.renotes.data.pref.UserPreference
@@ -35,6 +36,7 @@ class CatatanFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var catatanAdapter: CatatanAdapter
+    private lateinit var firebaseAuth: FirebaseAuth
     private val catatanViewModel: CatatanViewModel by activityViewModels()
     private lateinit var userPreference: UserPreference
 
@@ -46,6 +48,7 @@ class CatatanFragment : Fragment() {
         _binding = FragmentCatatanBinding.inflate(inflater, container, false)
         userPreference = UserPreference(requireContext())
         setupRecyclerView()
+        firebaseAuth = FirebaseAuth.getInstance()
         fetchNotesFromApi()
         return binding.root
     }
@@ -88,7 +91,9 @@ class CatatanFragment : Fragment() {
 
     private fun fetchNotesFromApi() {
         val token = userPreference.getToken()
-        if (token != null) {
+        val userId = firebaseAuth.currentUser?.uid
+
+        if (token != null && userId != null) {
             val client = ApiConfig.getApiService(token)
             client.getAllNotes().enqueue(object : Callback<GetAllNoteResponse> {
                 override fun onResponse(
@@ -114,18 +119,28 @@ class CatatanFragment : Fragment() {
 
                         catatanAdapter.submitList(notes)
                     } else {
-                        Toast.makeText(requireContext(), "Failed to fetch notes", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to fetch notes",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<GetAllNoteResponse>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
         } else {
-            Toast.makeText(requireContext(), "No token found, please log in", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "No token or user ID found, please log in",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
+
 
     private fun updateUIForDate(date: Calendar) {
         val currentUser = userPreference.getToken()
@@ -134,40 +149,41 @@ class CatatanFragment : Fragment() {
             return
         }
 
-        lifecycleScope.launch {
-            catatanViewModel.setUserId(currentUser)
-            catatanViewModel.updateDataForDate(date)
+        catatanViewModel.setUserId(currentUser)
 
-            catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
-                lifecycleScope.launch {
-                    withContext(Dispatchers.Main) {
-                        catatanAdapter.submitList(catatanList)
-                    }
+        catatanViewModel.updateDataForDate(date)
+
+        catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    catatanAdapter.submitList(catatanList)
                 }
             }
+        }
 
-            catatanViewModel.totalPemasukan.observe(viewLifecycleOwner) { pemasukan ->
-                lifecycleScope.launch {
-                    val formattedPemasukan =
-                        NumberFormat.getNumberInstance(Locale.getDefault()).format(pemasukan)
-                    withContext(Dispatchers.Main) {
-                        binding.textPemasukan.text = getString(R.string.pemasukan_text, formattedPemasukan)
-                    }
+        catatanViewModel.totalPemasukan.observe(viewLifecycleOwner) { pemasukan ->
+            lifecycleScope.launch {
+                val formattedPemasukan =
+                    NumberFormat.getNumberInstance(Locale.getDefault()).format(pemasukan)
+                withContext(Dispatchers.Main) {
+                    binding.textPemasukan.text =
+                        getString(R.string.pemasukan_text, formattedPemasukan)
                 }
             }
+        }
 
-            catatanViewModel.totalPengeluaran.observe(viewLifecycleOwner) { pengeluaran ->
-                lifecycleScope.launch {
-                    val formattedPengeluaran =
-                        NumberFormat.getNumberInstance(Locale.getDefault()).format(pengeluaran)
-                    withContext(Dispatchers.Main) {
-                        binding.textPengeluaran.text =
-                            getString(R.string.pengeluaran_text, formattedPengeluaran)
-                    }
+        catatanViewModel.totalPengeluaran.observe(viewLifecycleOwner) { pengeluaran ->
+            lifecycleScope.launch {
+                val formattedPengeluaran =
+                    NumberFormat.getNumberInstance(Locale.getDefault()).format(pengeluaran)
+                withContext(Dispatchers.Main) {
+                    binding.textPengeluaran.text =
+                        getString(R.string.pengeluaran_text, formattedPengeluaran)
                 }
             }
         }
     }
+
 
     private fun showDatePickerDialog() {
         val year = selectedDate.get(Calendar.YEAR)
