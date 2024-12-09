@@ -91,6 +91,13 @@ class EditCatatan : Fragment() {
                                             "Catatan berhasil diperbarui!",
                                             Toast.LENGTH_SHORT
                                         ).show()
+
+                                        // Perbarui data di CatatanViewModel
+                                        val updatedDate = Calendar.getInstance().apply {
+                                            val parts = selectedCatatan.tanggal.split("-")
+                                            set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                                        }
+                                        catatanViewModel.updateDataForDate(updatedDate)
                                         findNavController().navigateUp()
                                     }
                                 } else {
@@ -140,29 +147,41 @@ class EditCatatan : Fragment() {
                 }
                 catatanViewModel.deleteSelectedCatatan(date)
 
-                // Hapus dari server
                 withContext(Dispatchers.IO) {
-                    client.deleteNote(noteId).enqueue(object :
-                        Callback<HapusCatatanResponse> {
+                    client.deleteNote(noteId).enqueue(object : Callback<HapusCatatanResponse> {
                         override fun onResponse(
                             call: Call<HapusCatatanResponse>,
                             response: Response<HapusCatatanResponse>
                         ) {
                             if (response.isSuccessful) {
                                 lifecycleScope.launch(Dispatchers.Main) {
-                                    Toast.makeText(requireContext(), "Catatan berhasil dihapus dari server!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Catatan berhasil dihapus dari server!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    catatanViewModel.updateDataForDate(date)
                                     findNavController().navigateUp()
                                 }
                             } else {
                                 lifecycleScope.launch(Dispatchers.Main) {
-                                    Toast.makeText(requireContext(), "Gagal menghapus catatan dari server!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Gagal menghapus catatan dari server!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         }
 
                         override fun onFailure(call: Call<HapusCatatanResponse>, t: Throwable) {
                             lifecycleScope.launch(Dispatchers.Main) {
-                                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Error: ${t.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     })
@@ -221,7 +240,6 @@ class EditCatatan : Fragment() {
         })
     }
 
-
     private fun formatCurrency(value: Int): String {
         return NumberFormat.getNumberInstance(Locale("in", "ID")).format(value)
     }
@@ -237,3 +255,4 @@ class EditCatatan : Fragment() {
         bottomNavigationView.visibility = View.VISIBLE
     }
 }
+
