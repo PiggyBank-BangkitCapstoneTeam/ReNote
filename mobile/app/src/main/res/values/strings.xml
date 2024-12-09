@@ -105,4 +105,6 @@
     <string name="send_button">Send Message</string>
     <string name="tanggal_pengirim" translatable="false">Tanggal Pengirim</string>
     <string name="teks_chat" translatable="false">Teks Chat</string>
+    <string name="foto_crop">Crop Foto</string>
+
 </resources>

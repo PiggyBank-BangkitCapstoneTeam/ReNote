@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
@@ -16,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -28,9 +30,11 @@ import retrofit2.Response
 import com.piggybank.renotes.R
 import com.piggybank.renotes.data.pref.UserPreference
 import com.piggybank.renotes.databinding.FragmentTambahBinding
+import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -62,9 +66,32 @@ class TambahCatatan : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
-            binding.textScanResult.text = getString(R.string.foto_diambil)
+            val photoUri = Uri.fromFile(File(requireContext().cacheDir, "temp_image.jpg"))
+            val destinationUri = Uri.fromFile(File(requireContext().cacheDir, "cropped_image.jpg"))
+            val options = UCrop.Options().apply {
+                setCompressionQuality(80)
+                setFreeStyleCropEnabled(true)
+                setToolbarTitle(getString(R.string.foto_crop))
+            }
+            UCrop.of(photoUri, destinationUri)
+                .withOptions(options)
+                .getIntent(requireContext())
+                .let { uCropLauncher.launch(it) }
         } else {
             Toast.makeText(requireContext(), "Tidak ada foto yang diambil.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val uCropLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val resultUri = UCrop.getOutput(result.data!!)
+            resultUri?.let {
+                binding.textScanResult.text = getString(R.string.foto_diambil)
+                Toast.makeText(requireContext(), "Gambar berhasil dicrop!", Toast.LENGTH_SHORT).show()
+            }
+        } else if (result.resultCode == UCrop.RESULT_ERROR) {
+            val cropError = UCrop.getError(result.data!!)
+            Toast.makeText(requireContext(), "Gagal mencrop gambar: ${cropError?.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -147,14 +174,11 @@ class TambahCatatan : Fragment() {
                     nominal = -nominal
                 }
 
-                // Format tanggal
                 val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val formattedDate = sdf.format(selectedDate!!.time)
 
-                // Tambahkan catatan ke Room Database
                 catatanViewModel.addCatatan(selectedDate!!, kategori, nominal, deskripsi)
 
-                // Kirim catatan ke API
                 val token = UserPreference(requireContext()).getToken()
                 if (token.isNullOrEmpty()) {
                     withContext(Dispatchers.Main) {
@@ -172,7 +196,6 @@ class TambahCatatan : Fragment() {
                     tanggal = formattedDate
                 )
 
-
                 apiService.addNote(request).enqueue(object : Callback<TambahCatatanResponse> {
                     override fun onResponse(
                         call: Call<TambahCatatanResponse>,
@@ -183,11 +206,8 @@ class TambahCatatan : Fragment() {
                         lifecycleScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful && response.body() != null) {
                                 Toast.makeText(requireContext(), "Catatan berhasil disimpan ke server!", Toast.LENGTH_SHORT).show()
-
-                                if (isAdded && !isDetached) {
-                                    bottomNavigationView.visibility = View.VISIBLE
-                                    findNavController().navigateUp()
-                                }
+                                bottomNavigationView.visibility = View.VISIBLE
+                                findNavController().navigateUp()
                             } else {
                                 Toast.makeText(requireContext(), "Gagal menyimpan catatan ke server. Cek data atau koneksi!", Toast.LENGTH_SHORT).show()
                             }
@@ -203,7 +223,6 @@ class TambahCatatan : Fragment() {
                     }
                 })
 
-
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                     bottomNavigationView.visibility = View.VISIBLE
@@ -215,7 +234,12 @@ class TambahCatatan : Fragment() {
     }
 
     private fun openCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoFile = File(requireContext().cacheDir, "image.jpg")
+        val photoUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", photoFile)
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+        }
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
             captureImageLauncher.launch(intent)
         } else {

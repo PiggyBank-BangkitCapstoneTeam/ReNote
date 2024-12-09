@@ -105,5 +105,6 @@
     <string name="hentikan_notifikasi">Hentikan Notifikasi</string>
     <string name="butuh_bantuan">Butuh Bantuan?</string>
     <string name="send_button">Kirim Pesan</string>
+    <string name="foto_crop">Foto di Crop</string>
 
 </resources>
