@@ -61,79 +61,62 @@ class EditCatatan : Fragment() {
         setupAmountFormatter()
 
         binding.buttonEdit.setOnClickListener {
-            lifecycleScope.launch {
-                val token = UserPreference(requireContext()).getToken()
-                val client = ApiConfig.getApiService(token ?: "")
+            val newNominalFormatted = binding.inputAmount.text.toString()
+            val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toIntOrNull()
+            val newDeskripsi = binding.inputDescription.text.toString()
 
-                val newNominalFormatted = binding.inputAmount.text.toString()
-                val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toIntOrNull()
-                val newDeskripsi = binding.inputDescription.text.toString()
+            if (newNominal != null && newDeskripsi.isNotBlank() && selectedCatatan != null) {
+                catatanViewModel.editCatatan(newNominal, newDeskripsi)
 
-                if (newNominal != null && newDeskripsi.isNotBlank() && selectedCatatan != null) {
-                    val updatedNote = Catatan(
-                        id = selectedCatatan.id,
-                        kategori = selectedCatatan.kategori,
-                        nominal = newNominal,
-                        deskripsi = newDeskripsi,
-                        tanggal = selectedCatatan.tanggal
-                    )
+                lifecycleScope.launch {
+                    val token = UserPreference(requireContext()).getToken()
+                    val client = ApiConfig.getApiService(token ?: "")
 
                     withContext(Dispatchers.IO) {
-                        client.editNote(selectedCatatan.id, updatedNote).enqueue(object : Callback<EditCatatanResponse> {
-                            override fun onResponse(
-                                call: Call<EditCatatanResponse>,
-                                response: Response<EditCatatanResponse>
-                            ) {
-                                if (response.isSuccessful) {
+                        client.editNote(selectedCatatan.id, selectedCatatan.copy(nominal = newNominal, deskripsi = newDeskripsi))
+                            .enqueue(object : Callback<EditCatatanResponse> {
+                                override fun onResponse(
+                                    call: Call<EditCatatanResponse>,
+                                    response: Response<EditCatatanResponse>
+                                ) {
                                     lifecycleScope.launch(Dispatchers.Main) {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "Catatan berhasil diperbarui!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-
-                                        // Perbarui data di CatatanViewModel
-                                        val updatedDate = Calendar.getInstance().apply {
-                                            val parts = selectedCatatan.tanggal.split("-")
-                                            set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                                        if (response.isSuccessful) {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Catatan berhasil diperbarui di server!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Gagal memperbarui catatan di server!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
-                                        catatanViewModel.updateDataForDate(updatedDate)
                                         findNavController().navigateUp()
                                     }
-                                } else {
+                                }
+
+                                override fun onFailure(call: Call<EditCatatanResponse>, t: Throwable) {
                                     lifecycleScope.launch(Dispatchers.Main) {
                                         Toast.makeText(
                                             requireContext(),
-                                            "Gagal memperbarui catatan!",
+                                            "Error: ${t.message}",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
                                 }
-                            }
-
-                            override fun onFailure(call: Call<EditCatatanResponse>, t: Throwable) {
-                                lifecycleScope.launch(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Error: ${t.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        })
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Nominal atau deskripsi tidak valid! Pastikan input benar.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            })
                     }
                 }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Nominal atau deskripsi tidak valid! Pastikan input benar.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
-
 
         binding.deleteIcon.setOnClickListener {
             lifecycleScope.launch {
