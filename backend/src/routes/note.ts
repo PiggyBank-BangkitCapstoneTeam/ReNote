@@ -57,17 +57,17 @@ const addNote = RouteHandler<NoteModelRequestBody>(async(req) => {
 		};
 	}
 
-	if (typeof nominal === "undefined") {
+	if (typeof nominal !== "number") {
 		return {
 			status: 400,
-			message: "Nominal note harus ada pada request body"
+			message: "Nominal note harus ada pada request body dan berupa angka"
 		};
 	}
 
-	if (nominal < 0) {
+	if (nominal === 0) {
 		return {
 			status: 400,
-			message: "Nominal note harus lebih besar atau sama dengan 0"
+			message: "Nominal note tidak boleh kosong"
 		}
 	}
 
@@ -171,18 +171,18 @@ const updateNote = RouteHandler<NoteModelUpdateRequestBody>(async (req) => {
 	let nominal = req.body.nominal;
 	let deskripsi = req.body.deskripsi;
 
-	if (typeof nominal === "undefined") {
+	if (typeof nominal !== "number") {
 		return {
 			status: 400,
-			message: "Nominal note harus ada pada request body"
+			message: "Nominal note harus ada pada request body dan berupa angka"
 		};
 	}
 
-	if (nominal < 0) {
+	if (nominal === 0) {
 		return {
 			status: 400,
-			message: "Nominal note harus lebih besar atau sama dengan 0"
-		};
+			message: "Nominal note tidak boleh kosong"
+		}
 	}
 
 	if (!deskripsi) {
