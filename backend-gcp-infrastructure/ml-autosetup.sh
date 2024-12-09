@@ -39,8 +39,6 @@ fi
 # Install semua yang tim ML butuhkan
 pip install -r requirements.txt
 
-# FIXME: No module named 'fastapi'
-
 # Syntax run:
 # python main.py predict "image.png here" --conf_limit=0.3 --use_augment
 
@@ -61,7 +59,7 @@ RestartSec=30
 User=backend
 Environment=PATH=${USER_PATH}
 WorkingDirectory=/opt/ReNote/machine-learning/Inference_Model
-ExecStart=/opt/ReNote/machine-learning/.venv/bin/python /opt/ReNote/machine-learning/main.py
+ExecStart=/opt/ReNote/machine-learning/.venv/bin/fastapi run
 
 [Install]
 WantedBy=multi-user.target
