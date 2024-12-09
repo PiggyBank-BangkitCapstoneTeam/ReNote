@@ -164,9 +164,16 @@ class TambahCatatan : Fragment() {
                 }
 
                 val apiService = ApiConfig.getApiService(token)
-                val request = Catatan(kategori, nominal, deskripsi, formattedDate)
+                val request = Catatan(
+                    id = "",
+                    kategori = kategori,
+                    nominal = nominal,
+                    deskripsi = deskripsi,
+                    tanggal = formattedDate
+                )
 
-                apiService.addNoteToServer(request).enqueue(object : Callback<TambahCatatanResponse> {
+
+                apiService.addNote(request).enqueue(object : Callback<TambahCatatanResponse> {
                     override fun onResponse(
                         call: Call<TambahCatatanResponse>,
                         response: Response<TambahCatatanResponse>

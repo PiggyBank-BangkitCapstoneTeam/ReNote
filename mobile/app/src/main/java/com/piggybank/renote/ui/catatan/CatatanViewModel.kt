@@ -39,7 +39,13 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
             viewModelScope.launch {
                 val notes = noteDao.getNotesByDateAndUser(dateKey, user)
                 val catatanList = notes.map {
-                    Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+                    Catatan(
+                        id = it.id.toString(),
+                        kategori = it.kategori,
+                        nominal = it.nominal,
+                        deskripsi = it.deskripsi,
+                        tanggal = it.tanggal
+                    )
                 }
                 _catatanList.postValue(catatanList)
 
@@ -58,7 +64,13 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
                 val notes = noteDao.getNotesByMonthAndYear(month, year)
                     .filter { it.userId == user }
                 val catatanList = notes.map {
-                    Catatan(it.kategori, it.nominal, it.deskripsi, it.tanggal)
+                    Catatan(
+                        id = it.id.toString(),
+                        kategori = it.kategori,
+                        nominal = it.nominal,
+                        deskripsi = it.deskripsi,
+                        tanggal = it.tanggal
+                    )
                 }
                 _catatanList.postValue(catatanList)
 

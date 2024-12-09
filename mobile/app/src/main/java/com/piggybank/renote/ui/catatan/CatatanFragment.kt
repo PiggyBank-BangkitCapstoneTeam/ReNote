@@ -107,6 +107,7 @@ class CatatanFragment : Fragment() {
                         val notes = response.body()?.data?.mapNotNull {
                             it?.let { dataItem ->
                                 Catatan(
+                                    id = dataItem.id.toString(),
                                     kategori = dataItem.kategori ?: "",
                                     nominal = dataItem.nominal ?: 0,
                                     deskripsi = dataItem.deskripsi ?: "",
@@ -206,6 +207,7 @@ class CatatanFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        fetchNotesFromApi()
         updateUIForDate(selectedDate)
     }
 

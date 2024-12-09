@@ -12,11 +12,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.piggybank.renote.data.response.HapusCatatanResponse
 import com.piggybank.renotes.R
+import com.piggybank.renotes.data.pref.UserPreference
+import com.piggybank.renotes.data.retrofit.ApiConfig
 import com.piggybank.renotes.databinding.FragmentEditCatatanBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -79,14 +85,42 @@ class EditCatatan : Fragment() {
 
         binding.deleteIcon.setOnClickListener {
             lifecycleScope.launch {
-                val dateKey = selectedCatatan!!.tanggal.split("-")
+                val token = UserPreference(requireContext()).getToken()
+                val client = ApiConfig.getApiService(token ?: "")
+                val noteId = selectedCatatan!!.id
+
                 val date = Calendar.getInstance().apply {
-                    set(dateKey[0].toInt(), dateKey[1].toInt() - 1, dateKey[2].toInt())
+                    val parts = selectedCatatan.tanggal.split("-")
+                    set(parts[2].toInt(), parts[1].toInt() - 1, parts[0].toInt())
                 }
                 catatanViewModel.deleteSelectedCatatan(date)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Catatan berhasil dihapus!", Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
+
+                // Hapus dari server
+                withContext(Dispatchers.IO) {
+                    client.deleteNote(noteId).enqueue(object :
+                        Callback<HapusCatatanResponse> {
+                        override fun onResponse(
+                            call: Call<HapusCatatanResponse>,
+                            response: Response<HapusCatatanResponse>
+                        ) {
+                            if (response.isSuccessful) {
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    Toast.makeText(requireContext(), "Catatan berhasil dihapus dari server!", Toast.LENGTH_SHORT).show()
+                                    findNavController().navigateUp()
+                                }
+                            } else {
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    Toast.makeText(requireContext(), "Gagal menghapus catatan dari server!", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<HapusCatatanResponse>, t: Throwable) {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    })
                 }
             }
         }
