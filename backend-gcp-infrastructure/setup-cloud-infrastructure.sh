@@ -606,7 +606,7 @@ sudo apt update
 sudo apt upgrade -y
 sudo add-apt-repository --yes ppa:deadsnakes/ppa
 sudo apt update
-sudo apt install -y curl bash git unzip python3.10 python3.10-venv python3.10-dev python3.10-distutils
+sudo apt install -y curl bash git unzip python3.10 python3.10-venv python3.10-dev python3.10-distutils ffmpeg libsm6 libxext6
 
 # Cek instance name untuk compute engine ini
 INSTANCE_NAME=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/name" -H "Metadata-Flavor: Google")
@@ -650,6 +650,7 @@ find /opt/ReNote -type d -print0 | sudo xargs -0 chmod 755
 # Atur permission semua file di /opt/ReNote ke 644
 find /opt/ReNote -type f -print0 | sudo xargs -0 chmod 644
 
+cd backend-gcp-infrastructure/
 sudo chmod 744 ml-autosetup.sh
 sudo su -c "bash /opt/ReNote/backend-gcp-infrastructure/ml-autosetup.sh" backend
 
@@ -715,7 +716,7 @@ while true; do
 		exit 1
 	fi
 
-	setup_echo "info" "Menunggu hingga setup script selesai... ($BACKEND_API_WAITING_ELAPSED detik / 600 detik)"
+	setup_echo "info" "Menunggu hingga setup script selesai... ($ML_VM_WAITING_ELAPSED detik / 600 detik)"
 
 	sleep 10
 	ML_VM_WAITING_ELAPSED=$((ML_VM_WAITING_ELAPSED+10))
