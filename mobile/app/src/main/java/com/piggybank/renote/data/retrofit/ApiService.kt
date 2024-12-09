@@ -1,15 +1,18 @@
 package com.piggybank.renotes.data.retrofit
 
+import com.piggybank.renote.data.response.EditCatatanResponse
 import com.piggybank.renote.data.response.GetAllNoteResponse
 import com.piggybank.renote.data.response.HapusCatatanResponse
 import com.piggybank.renote.data.response.TambahCatatanResponse
 import com.piggybank.renotes.data.response.LoginResponse
 import com.piggybank.renotes.ui.catatan.Catatan
+import com.piggybank.renotes.ui.catatan.EditCatatan
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -24,4 +27,11 @@ interface ApiService {
 
     @DELETE("/note/{id}")
     fun deleteNote(@Path("id") noteId: String): Call<HapusCatatanResponse>
+
+    @PUT("/note/{id}")
+    fun editNote(
+        @Path("id") noteId: String,
+        @Body updatedNote: Catatan
+    ): Call<EditCatatanResponse>
+
 }

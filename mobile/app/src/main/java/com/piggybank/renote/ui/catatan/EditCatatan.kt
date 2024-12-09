@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.piggybank.renote.data.response.EditCatatanResponse
 import com.piggybank.renote.data.response.HapusCatatanResponse
 import com.piggybank.renotes.R
 import com.piggybank.renotes.data.pref.UserPreference
@@ -61,15 +62,58 @@ class EditCatatan : Fragment() {
 
         binding.buttonEdit.setOnClickListener {
             lifecycleScope.launch {
+                val token = UserPreference(requireContext()).getToken()
+                val client = ApiConfig.getApiService(token ?: "")
+
                 val newNominalFormatted = binding.inputAmount.text.toString()
                 val newNominal = newNominalFormatted.replace("[,.]".toRegex(), "").toIntOrNull()
                 val newDeskripsi = binding.inputDescription.text.toString()
 
                 if (newNominal != null && newDeskripsi.isNotBlank() && selectedCatatan != null) {
-                    catatanViewModel.editCatatan(newNominal, newDeskripsi)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Catatan berhasil diubah!", Toast.LENGTH_SHORT).show()
-                        findNavController().navigateUp()
+                    val updatedNote = Catatan(
+                        id = selectedCatatan.id,
+                        kategori = selectedCatatan.kategori,
+                        nominal = newNominal,
+                        deskripsi = newDeskripsi,
+                        tanggal = selectedCatatan.tanggal
+                    )
+
+                    withContext(Dispatchers.IO) {
+                        client.editNote(selectedCatatan.id, updatedNote).enqueue(object : Callback<EditCatatanResponse> {
+                            override fun onResponse(
+                                call: Call<EditCatatanResponse>,
+                                response: Response<EditCatatanResponse>
+                            ) {
+                                if (response.isSuccessful) {
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Catatan berhasil diperbarui!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        findNavController().navigateUp()
+                                    }
+                                } else {
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Gagal memperbarui catatan!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+
+                            override fun onFailure(call: Call<EditCatatanResponse>, t: Throwable) {
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error: ${t.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        })
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -82,6 +126,7 @@ class EditCatatan : Fragment() {
                 }
             }
         }
+
 
         binding.deleteIcon.setOnClickListener {
             lifecycleScope.launch {
