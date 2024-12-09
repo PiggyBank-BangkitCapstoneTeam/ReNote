@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 # FIXME: No module named 'fastapi'
 
-# Syntax run lama:
+# Syntax run:
 # python main.py predict "image.png here" --conf_limit=0.3 --use_augment
 
 # Take note about the npm installation path
@@ -61,7 +61,7 @@ RestartSec=30
 User=backend
 Environment=PATH=${USER_PATH}
 WorkingDirectory=/opt/ReNote/machine-learning/Inference_Model
-ExecStart=python main.py
+ExecStart=/opt/ReNote/machine-learning/.venv/bin/python /opt/ReNote/machine-learning/main.py
 
 [Install]
 WantedBy=multi-user.target
