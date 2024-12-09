@@ -5,9 +5,10 @@ from inference.InferenceModel import InferenceModel
 from fastapi.responses import HTMLResponse
 import os
 
+
 # Paths to models
 YOLO_MODEL_PATH = "./trained_models/YOLO/model_train_renfred_1/weights/best.pt"
-OCR_BEST_WEIGHTS = "./trained_models/OCR/CRNN_MODEL_Agus_V1/weight/best_weight.keras"
+OCR_BEST_WEIGHTS = "./trained_models/OCR/CRNN_Model_Agus_v4/weight/weights.h5"
 CONF_LIMIT = 0.3
 model = None
 
@@ -29,7 +30,8 @@ async def lifespan(app: FastAPI):
         raise HTTPException(status_code=500, detail="Failed to initialize the model.")
     finally:
         print("Cleaning up resources...")
-        del model
+        if model:
+            del model
         print("Resources cleaned up!")
 
 
@@ -86,6 +88,7 @@ def read_root():
 
 @app.post("/predict/")
 async def predict(request: PredictRequest):
+    global model
     if model is None:
         raise HTTPException(status_code=500, detail="Model is not loaded")
 

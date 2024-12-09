@@ -70,7 +70,6 @@ class InferenceModel:
         return processed_results
 
     def validate_cropped_image(self):
-        print("error here!")
         return "receipt" in self.process_cropped_images()
 
     def process_text(self, data):
@@ -96,10 +95,15 @@ class InferenceModel:
 
         if "total" in processed_data:
             total_text = processed_data["total"]
-            total_number = re.sub(r"[^0-9.]", "", total_text)
+            total_number = re.sub(r"[^0-9.,]", "", total_text)
+            try:
+                total_number = total_number
+            except ValueError:
+                total_number = "0"
+
             processed_data["total"] = total_number
         else:
-            processed_data["total"] = ""
+            processed_data["total"] = "0"
 
         if "date_time" in processed_data:
             date_text = processed_data["date_time"]

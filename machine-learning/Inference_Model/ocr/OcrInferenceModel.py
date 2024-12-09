@@ -10,73 +10,131 @@ print(f"Ocr import time: {time.time() - start_time:.2f} seconds")
 
 class OcrInferenceModel:
     def __init__(self, model_weights):
-        vocab_size = 82
-        image_size = (64, 256, 1)
-        ocr_model = self.load_crnn_model(image_size, vocab_size)
+        self.char_set = list("0123456789abcdefghijklmnopqrstuvwxyz.,!?@$&()[]{}:;/- ")
+        self.vocab_size = 56
+        self.build_params = {
+            "height": 31,
+            "width": 300,
+            "color": False,
+            "filters": (64, 128, 256, 256, 512, 512, 512),
+            "rnn_units": (128, 128),
+            "dropout": 0.25,
+            "rnn_steps_to_discard": 2,
+            "pool_size": 2,
+            "stn": False,
+        }
+        ocr_model = self.load_pretrained_model(self.vocab_size, **self.build_params)
         ocr_model.load_weights(model_weights)
         self.model = ocr_model
-        self.char_set = list(
-            "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,!?@$&()[]{}:;/- "
+
+    def load_pretrained_model(self, vocab_size, **kwargs):
+        height = kwargs.get("height")
+        width = kwargs.get("width")
+        color = kwargs.get("color", False)
+        filters = kwargs.get("filters")
+        rnn_units = kwargs.get("rnn_units")
+        pool_size = kwargs.get("pool_size")
+
+        assert len(filters) == 7, "7 CNN filters must be provided."
+        assert len(rnn_units) == 2, "2 RNN units must be provided."
+
+        # Input layer
+        inputs = tf.keras.Input(
+            shape=(height, width, 3 if color else 1), name="input_image"
         )
 
-    def load_crnn_model(self, input_dim, output_dim, activation="relu", dropout=0.3):
-        inputs = tf.keras.layers.Input(shape=input_dim, name="input")
-        inputs_normalized = tf.keras.layers.Lambda(lambda x: x / 255.0)(
+        # Image normalization (scaling pixel values to the range [0, 1])
+        x = tf.keras.layers.Lambda(lambda x: x / 255.0, name="image_normalization")(
             inputs
-        )  # Normalizing input to [0, 1]
+        )
 
-        c_1 = tf.keras.layers.Conv2D(
-            32, (3, 3), activation=activation, padding="same", name="conv_1"
-        )(inputs_normalized)
-        c_2 = tf.keras.layers.Conv2D(
-            32, (3, 3), activation=activation, padding="same", name="conv_2"
-        )(c_1)
-        c_3 = tf.keras.layers.Conv2D(
-            64, (3, 3), activation=activation, padding="same", name="conv_3"
-        )(c_2)
-        bn_3 = tf.keras.layers.BatchNormalization(name="bn_3")(c_3)
-        p_3 = tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="maxpool_3")(bn_3)
+        # Backbone (Convolutional layers)
+        x = tf.keras.layers.Permute((2, 1, 3))(x)  # Swap width and height
+        x = tf.keras.layers.Conv2D(
+            filters[0], (3, 3), activation="relu", padding="same", name="conv_1"
+        )(x)
+        x = tf.keras.layers.Conv2D(
+            filters[1], (3, 3), activation="relu", padding="same", name="conv_2"
+        )(x)
+        x = tf.keras.layers.Conv2D(
+            filters[2], (3, 3), activation="relu", padding="same", name="conv_3"
+        )(x)
+        x = tf.keras.layers.BatchNormalization(name="bn_3")(x)
+        x = tf.keras.layers.MaxPooling2D(
+            pool_size=(pool_size, pool_size), name="maxpool_3"
+        )(x)
 
-        c_4 = tf.keras.layers.Conv2D(
-            64, (3, 3), activation=activation, padding="same", name="conv_4"
-        )(p_3)
-        c_5 = tf.keras.layers.Conv2D(
-            64, (3, 3), activation=activation, padding="same", name="conv_5"
-        )(c_4)
-        bn_5 = tf.keras.layers.BatchNormalization(name="bn_5")(c_5)
-        p_5 = tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="maxpool_5")(bn_5)
+        x = tf.keras.layers.Conv2D(
+            filters[3], (3, 3), activation="relu", padding="same", name="conv_4"
+        )(x)
+        x = tf.keras.layers.Conv2D(
+            filters[4], (3, 3), activation="relu", padding="same", name="conv_5"
+        )(x)
+        x = tf.keras.layers.BatchNormalization(name="bn_5")(x)
+        x = tf.keras.layers.MaxPooling2D(
+            pool_size=(pool_size, pool_size), name="maxpool_5"
+        )(x)
 
-        c_6 = tf.keras.layers.Conv2D(
-            128, (3, 3), activation=activation, padding="same", name="conv_6"
-        )(p_5)
-        c_7 = tf.keras.layers.Conv2D(
-            128, (3, 3), activation=activation, padding="same", name="conv_7"
-        )(c_6)
-        bn_7 = tf.keras.layers.BatchNormalization(name="bn_7")(c_7)
+        x = tf.keras.layers.Conv2D(
+            filters[5], (3, 3), activation="relu", padding="same", name="conv_6"
+        )(x)
+        x = tf.keras.layers.Conv2D(
+            filters[6], (3, 3), activation="relu", padding="same", name="conv_7"
+        )(x)
+        x = tf.keras.layers.BatchNormalization(name="bn_7")(x)
 
-        reshaped_output = tf.keras.layers.Reshape(
-            (bn_7.shape[1] * bn_7.shape[2], bn_7.shape[-1])
-        )(bn_7)
+        x = tf.keras.layers.Reshape(
+            target_shape=(
+                width // pool_size**2,
+                (height // pool_size**2) * filters[-1],
+            ),
+            name="reshape",
+        )(x)
 
-        # Add Bidirectional LSTM layers to capture sequential patterns
-        blstm_8 = tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(
-                32, kernel_initializer="he_normal", return_sequences=True
-            )
-        )(reshaped_output)
-        blstm_8 = tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(
-                64, kernel_initializer="he_normal", return_sequences=True
-            )
-        )(reshaped_output)
-        do_10 = tf.keras.layers.Dropout(dropout, name="dropout")(blstm_8)
+        x = tf.keras.layers.Dense(rnn_units[0], activation="relu", name="fc_9")(x)
 
+        # First RNN layer
+        rnn_1_forward = tf.keras.layers.LSTM(
+            rnn_units[0],
+            return_sequences=True,
+            kernel_initializer="he_normal",
+            name="lstm_10",
+        )(x)
+        rnn_1_backward = tf.keras.layers.LSTM(
+            rnn_units[0],
+            return_sequences=True,
+            kernel_initializer="he_normal",
+            go_backwards=True,
+            name="lstm_10_back",
+        )(x)
+        rnn_1 = tf.keras.layers.Add()([rnn_1_forward, rnn_1_backward])
+
+        # Second RNN layer
+        rnn_2_forward = tf.keras.layers.LSTM(
+            rnn_units[1],
+            return_sequences=True,
+            kernel_initializer="he_normal",
+            name="lstm_11",
+        )(rnn_1)
+        rnn_2_backward = tf.keras.layers.LSTM(
+            rnn_units[1],
+            return_sequences=True,
+            kernel_initializer="he_normal",
+            go_backwards=True,
+            name="lstm_11_back",
+        )(rnn_1)
+        x = tf.keras.layers.Concatenate()([rnn_2_forward, rnn_2_backward])
+
+        # Dense layer for classification
         output = tf.keras.layers.Dense(
-            output_dim + 1, activation="softmax", name="output"
-        )(do_10)
+            vocab_size + 1,  # +1 for the CTC blank token
+            activation="softmax",
+            name="fc_12",
+        )(x)
 
-        # Create and return the model
-        model = tf.keras.Model(inputs=inputs, outputs=output)
+        # Model definition
+        model = tf.keras.Model(inputs=inputs, outputs=output, name="keras_ocr_model")
+
         return model
 
     def get_vocab(self):
@@ -87,8 +145,10 @@ class OcrInferenceModel:
 
     def preprocess_image(self, image):
         image = tf.convert_to_tensor(image, dtype=tf.int32)
-        image.set_shape([None, None, 3])  # Ensure the shape is defined
-        image = tf.image.resize(image, (64, 256))
+        image.set_shape([None, None, 3])
+        image = tf.image.resize(
+            image, (self.build_params["height"], self.build_params["width"])
+        )
         image = tf.image.rgb_to_grayscale(image)
         image = tf.expand_dims(image, axis=0)
         return image
