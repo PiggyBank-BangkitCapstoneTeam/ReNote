@@ -12,13 +12,21 @@ if [ ! -d "/opt/ReNote" ]; then
 	exit 1
 fi
 
-python --version
+python3.10 --version
 
 # Check apakah python bisa dijalankan
 if [ $? -ne 0 ]; then
 	echo "Gagal spawn Python, setup tidak akan dilanjutkan"
 	exit 1
 fi
+
+cd /opt/ReNote/machine-learning/
+
+# Create python3.10 virtual environment
+python3.10 -m venv .venv
+
+# Masuk ke virtual environment
+source .venv/bin/activate
 
 pip --version
 
@@ -28,18 +36,12 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-cd /opt/ReNote/machine-learning/
-
-# Create python3.10 virtual environment
-sudo python3.10 -m venv .venv
-
-# Masuk ke virtual environment
-source .venv/bin/activate
-
 # Install semua yang tim ML butuhkan
 pip install -r requirements.txt
 
-# Syntax run:
+# FIXME: No module named 'fastapi'
+
+# Syntax run lama:
 # python main.py predict "image.png here" --conf_limit=0.3 --use_augment
 
 # Take note about the npm installation path
