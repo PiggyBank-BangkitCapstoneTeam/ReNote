@@ -19,7 +19,7 @@ export function createModelSQL() {
 		id CHAR(32) PRIMARY KEY,
 		user_id VARCHAR(64) NOT NULL,
 		kategori VARCHAR(64) NOT NULL,
-		nominal INT UNSIGNED NOT NULL,
+		nominal INT NOT NULL,
 		deskripsi VARCHAR(1024) NOT NULL,
 		tanggal VARCHAR(32) NOT NULL,
 		photo_id VARCHAR(128)

@@ -638,8 +638,8 @@ sudo unzip "model_train_renfred_1.zip"
 # Hapus file zip, karena sudah tidak dibutuhkan lagi
 sudo rm "model_train_renfred_1.zip"
 
-# Kembali ke root folder dari machine-learning
-cd /opt/ReNote/machine-learning/
+# Kembali ke root folder
+cd /opt/ReNote/
 
 # Ganti ownership folder /opt/ReNote ke user backend
 sudo chown -R backend:backend /opt/ReNote
