@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0120d7ce-5288-4cea-807f-af27acadffbc",
+		"_postman_id": "12110d69-b030-4f23-92a6-a39e05a6e78d",
 		"name": "ReNote API Endpoints",
 		"description": "Sebelum mengirimkan request dari collection postman ini, harap sesuaikan variabel terlebih dahulu:\n\n1. Klik tab `Variables` diatas\n    \n2. Ganti current value `HOST` dengan hostname server (dalam format host:port), tanya kepada tim Cloud Computing (CC) untuk alamat host server backend API\n    \n3. Ganti current value `FIREBASE_SESSION_TOKEN` dengan token Session Firebase suatu user, tim Mobile Development (MD) diwajibkan mengirimkan token ini untuk semua request yang memperlukan otentikasi/login.\n    \n    Cara mendapatkan token ini dapat dicek di [dokumentasi official Firebase Auth](https://firebase.google.com/docs/auth/admin/verify-id-tokens#android)\n    \n\n---\n\nUntuk testing tanpa firebase:\n\n1. Minta tim Cloud Computing (CC) untuk mengatur mode environment server ke `development`.\n    \n2. Ubah nilai variabel `FIREBASE_SESSION_TOKEN` bisa diganti menjadi `tokenhere` , untuk menggunakan user testing, jangan dikosongkan.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -918,62 +918,6 @@
 					},
 					"response": [
 						{
-							"name": "Sukses",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"kategori\": \"pengeluaran\",\n    \"nominal\": 8000,\n    \"deskripsi\": \"Beli milk tea\",\n    \"tanggal\": \"27-11-2024\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{HOST}}/note",
-									"host": [
-										"{{HOST}}"
-									],
-									"path": [
-										"note"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "X-Powered-By",
-									"value": "Express"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Date",
-									"value": "Sat, 30 Nov 2024 12:53:49 GMT"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Keep-Alive",
-									"value": "timeout=5"
-								},
-								{
-									"key": "Content-Length",
-									"value": "52"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"status\": 201,\n    \"message\": \"Note berhasil ditambahkan\"\n}"
-						},
-						{
 							"name": "Nominal Negatif",
 							"originalRequest": {
 								"method": "POST",
@@ -1084,6 +1028,62 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"status\": 400,\n    \"message\": \"Kategori note harus ada pada request body\"\n}"
+						},
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"kategori\": \"pengeluaran\",\n    \"nominal\": 0,\n    \"deskripsi\": \"\",\n    \"tanggal\": \"27-11-2024\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{HOST}}/note",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:15:42 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "110"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 201,\n    \"message\": \"Note berhasil ditambahkan dengan ID berikut\",\n    \"id\": \"YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE\"\n}"
 						}
 					]
 				},
@@ -1094,7 +1094,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli minuman (milk tea)\"\n}",
+							"raw": "{\n    \"nominal\": 12000,\n    \"deskripsi\": \"Beli minuman (milk tea)\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1113,7 +1113,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "",
+									"value": "YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE",
 									"description": "ID Note pada Database"
 								}
 							]
@@ -1181,7 +1181,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": 200,\n    \"message\": \"Note berhasil diubah\"\n}"
+							"body": "{\n    \"status\": 200,\n    \"message\": \"Note berhasil diubah\",\n    \"id\": \"rEwDypNjVrhIJxufDaOlsFeiT6GF2e4C\"\n}"
 						},
 						{
 							"name": "Tidak Ditemukan",
@@ -1190,7 +1190,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"nominal\": \"12000\",\n    \"deskripsi\": \"Beli milk tea\"\n}",
+									"raw": "{\n    \"nominal\": 12000,\n    \"deskripsi\": \"Beli milk tea\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1354,7 +1354,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 30 Nov 2024 12:59:44 GMT"
+									"value": "Tue, 10 Dec 2024 06:18:40 GMT"
 								},
 								{
 									"key": "Connection",
@@ -1366,11 +1366,11 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "67"
+									"value": "84"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": 400,\n    \"message\": \"Nominal note harus ada pada request body\"\n}"
+							"body": "{\n    \"status\": 400,\n    \"message\": \"Nominal note harus ada pada request body dan berupa angka\"\n}"
 						}
 					]
 				},
@@ -1520,7 +1520,7 @@
 									"key": "foto",
 									"description": "Foto struk yang ingin diupload",
 									"type": "file",
-									"src": ""
+									"src": []
 								}
 							]
 						},
@@ -1543,7 +1543,276 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Tidak ada foto",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "foto",
+											"description": "Foto struk yang ingin diupload",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{HOST}}/note/:id/struk",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id",
+										"struk"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE",
+											"description": "ID Note pada Database"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:23:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "68"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 400,\n    \"message\": \"Hanya satu foto struk yang dapat diupload\"\n}"
+						},
+						{
+							"name": "Upload lebih dari 1",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "foto",
+											"description": "Foto struk yang ingin diupload",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{HOST}}/note/:id/struk",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id",
+										"struk"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE",
+											"description": "ID Note pada Database"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:23:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "68"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 400,\n    \"message\": \"Hanya satu foto struk yang dapat diupload\"\n}"
+						},
+						{
+							"name": "Upload file selain foto",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "foto",
+											"description": "Foto struk yang ingin diupload",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{HOST}}/note/:id/struk",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id",
+										"struk"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE",
+											"description": "ID Note pada Database"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:24:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "65"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 400,\n    \"message\": \"File yang diupload harus berupa gambar\"\n}"
+						},
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "foto",
+											"description": "Foto struk yang ingin diupload",
+											"type": "file",
+											"src": "/home/matthewtirta/Pictures/SAMUTO.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{HOST}}/note/:id/struk",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id",
+										"struk"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE",
+											"description": "ID Note pada Database"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:25:16 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "218"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"mQOLGcZZkk8o43MbIPyK2CsaXK41Hxi0\",\n        \"note_id\": \"YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE\",\n        \"url\": \"https://storage.googleapis.com/renote-usermedia-norse-journey-444218/mQOLGcZZkk8o43MbIPyK2CsaXK41Hxi0\"\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "Get Link Foto Struk",
@@ -1569,7 +1838,120 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "Sukses",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/note/:id/struk",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id",
+										"struk"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE",
+											"description": "ID Note pada Database"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:28:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "218"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"mQOLGcZZkk8o43MbIPyK2CsaXK41Hxi0\",\n        \"note_id\": \"YNsT2TKPVQVmtG1Qm3radRkwUlo2euUE\",\n        \"url\": \"https://storage.googleapis.com/renote-usermedia-norse-journey-444218/mQOLGcZZkk8o43MbIPyK2CsaXK41Hxi0\"\n    }\n}"
+						},
+						{
+							"name": "Tidak Ditemukan",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{HOST}}/note/:id/struk",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"note",
+										":id",
+										"struk"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "",
+											"description": "ID Note pada Database"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 10 Dec 2024 06:29:06 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": 404,\n    \"message\": \"Note tidak ditemukan\"\n}"
+						}
+					]
 				}
 			],
 			"description": "Endpoint CRUD Note/Catatan keuangan user"
@@ -1605,7 +1987,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "Komunikasi antar backend ke kode ML, tidak perlu di implementasikan di mobile"
 		},
 		{
 			"name": "Server Connection Check",

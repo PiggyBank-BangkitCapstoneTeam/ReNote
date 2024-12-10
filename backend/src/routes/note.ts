@@ -25,7 +25,8 @@ const getAllNote = RouteHandler(async(req) => {
 			kategori: note.kategori,
 			nominal: note.nominal,
 			deskripsi: note.deskripsi,
-			tanggal: note.tanggal
+			tanggal: note.tanggal,
+			photo_id: note.photo_id || ""
 		};
 	});
 
@@ -47,7 +48,7 @@ const addNote = RouteHandler<NoteModelRequestBody>(async(req) => {
 
 	let kategori = req.body.kategori;
 	let nominal = req.body.nominal;
-	let deskripsi = req.body.deskripsi;
+	let deskripsi = req.body.deskripsi || "";
 	let tanggal = req.body.tanggal;
 
 	if (!kategori) {
@@ -64,20 +65,6 @@ const addNote = RouteHandler<NoteModelRequestBody>(async(req) => {
 		};
 	}
 
-	if (nominal === 0) {
-		return {
-			status: 400,
-			message: "Nominal note tidak boleh kosong"
-		}
-	}
-
-	if (!deskripsi) {
-		return {
-			status: 400,
-			message: "Deskripsi note harus ada pada request body"
-		};
-	}
-
 	if (!tanggal) {
 		return {
 			status: 400,
@@ -86,9 +73,10 @@ const addNote = RouteHandler<NoteModelRequestBody>(async(req) => {
 	}
 
 	const conn = await req.CloudSQL.GetConnection();
+	const id = nanoid();
 	const [result] = await conn.execute<ResultSetHeader>(
 		"INSERT INTO note (id, user_id, kategori, nominal, deskripsi, tanggal) VALUES (?, ?, ?, ?, ?, ?)",
-		[nanoid(), req.FirebaseUserData.uid, kategori, nominal, deskripsi, tanggal]
+		[id, req.FirebaseUserData.uid, kategori, nominal, deskripsi, tanggal]
 	);
 	conn.release();
 
@@ -101,7 +89,8 @@ const addNote = RouteHandler<NoteModelRequestBody>(async(req) => {
 
 	return {
 		status: 201,
-		message: "Note berhasil ditambahkan"
+		message: "Note berhasil ditambahkan dengan ID berikut",
+		id: id
 	};
 });
 
@@ -141,7 +130,8 @@ const getNoteById = RouteHandler(async (req) => {
 		kategori: note.kategori,
 		nominal: note.nominal,
 		deskripsi: note.deskripsi,
-		tanggal: note.tanggal
+		tanggal: note.tanggal,
+		photo_id: note.photo_id || ""
 	};
 
 	return {
@@ -178,20 +168,6 @@ const updateNote = RouteHandler<NoteModelUpdateRequestBody>(async (req) => {
 		};
 	}
 
-	if (nominal === 0) {
-		return {
-			status: 400,
-			message: "Nominal note tidak boleh kosong"
-		}
-	}
-
-	if (!deskripsi) {
-		return {
-			status: 400,
-			message: "Deskripsi note harus ada pada request body"
-		};
-	}
-
 	const conn = await req.CloudSQL.GetConnection();
 	const [result] = await conn.execute<ResultSetHeader>(
 		"UPDATE note SET nominal = ?, deskripsi = ? WHERE id = ? AND user_id = ?",
@@ -208,7 +184,8 @@ const updateNote = RouteHandler<NoteModelUpdateRequestBody>(async (req) => {
 
 	return {
 		status: 200,
-		message: "Note berhasil diubah"
+		message: "Note berhasil diubah",
+		id: id
 	};
 });
 
@@ -307,6 +284,7 @@ const getFotoStruk = RouteHandler(async(req, res) => {
 		status: 200,
 		data: {
 			id: photo_id,
+			note_id: id,
 			url: file.publicUrl()
 		}
 	};
@@ -411,10 +389,18 @@ const uploadFotoStruk = RouteHandler(async(req) => {
 		};
 	}
 
+	if (req.ReNote_MLConnector) {
+		req.ReNote_MLConnector.AddImageToScan({
+			id: id,
+			photo_id: photo_id
+		});
+	}
+
 	return {
 		status: 200,
 		data: {
 			id: photo_id,
+			note_id: id,
 			url: file.publicUrl()
 		}
 	};
