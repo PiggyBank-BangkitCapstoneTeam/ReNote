@@ -8,6 +8,10 @@ DEFAULT_SQL_BACKEND_API_PASSWORD="" # biarkan kosong jika ingin generate passwor
 # Untuk memastikan nama bucket unik, kita menggunakan Project ID sebagai postfix
 DEFAULT_CLOUD_STORAGE_BUCKET_NAME="renote-usermedia-$GCP_PROJECT_ID"
 
+COMPUTE_ENGINE_BACKEND_TYPE="e2-small"
+COMPUTE_ENGINE_ML_TYPE="e2-highcpu-16" # 16 vCPU, 16 GB RAM
+# COMPUTE_ENGINE_ML_TYPE="e2-highcpu-8" # 8 vCPU, 8 GB RAM
+
 DEFAULT_REGION="asia-southeast2"
 DEFAULT_ZONE="$DEFAULT_REGION-b"
 
@@ -604,13 +608,13 @@ echo "$EXTRA_SSH_PUBLIC_KEY" > additional-ssh-keys.txt
 setup_echo "normal" "Membuat compute engine untuk Backend API (dapat memakan waktu beberapa menit)..."
 gcloud compute instances create backend-api \
 	--zone="$DEFAULT_ZONE" \
-	--machine-type="e2-small" \
+	--machine-type="$COMPUTE_ENGINE_BACKEND_TYPE" \
 	--network-interface="network-tier=PREMIUM,private-network-ip=192.168.0.2,stack-type=IPV4_ONLY,subnet=renote-network-internal" \
 	--maintenance-policy="MIGRATE" \
 	--provisioning-model="STANDARD" \
 	--service-account="backend-service-account@$GCP_PROJECT_ID.iam.gserviceaccount.com" \
 	--scopes="compute-rw,storage-rw,service-control,service-management,sql-admin" \
-	--create-disk="auto-delete=yes,boot=yes,device-name=instance-20241130-102327,image=projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20241115,mode=rw,size=10,type=pd-balanced" \
+	--create-disk="auto-delete=yes,boot=yes,device-name=backend-api,image=projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20241115,mode=rw,size=10,type=pd-balanced" \
 	--no-shielded-secure-boot \
 	--shielded-vtpm \
 	--shielded-integrity-monitoring \
@@ -806,7 +810,7 @@ EOF
 setup_echo "normal" "Membuat compute engine untuk Machine Learning (dapat memakan waktu beberapa menit)..."
 gcloud compute instances create machine-learning-vm \
 	--zone="$DEFAULT_ZONE" \
-	--machine-type="e2-medium" \
+	--machine-type="$COMPUTE_ENGINE_ML_TYPE" \
 	--network-interface="network-tier=PREMIUM,private-network-ip=192.168.0.3,stack-type=IPV4_ONLY,subnet=renote-network-internal" \
 	--maintenance-policy="MIGRATE" \
 	--provisioning-model="STANDARD" \
