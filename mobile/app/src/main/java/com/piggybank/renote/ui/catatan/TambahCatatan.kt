@@ -34,6 +34,9 @@ import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -48,6 +51,8 @@ class TambahCatatan : Fragment() {
     private val catatanViewModel: CatatanViewModel by activityViewModels()
 
     private var selectedDate: Calendar? = null
+    private var currentNoteId: String? = null
+    private var uploadedImageUrl: String? = null
 
     private val pemasukanCategory = listOf("Pilih Kategori", "Gaji", "Investasi", "Paruh Waktu", "Lain-lain")
     private val pengeluaranCategory = listOf("Pilih Kategori", "Parkir", "Makanan dan Minuman", "Transportasi", "Hiburan", "Kesehatan", "Lain-lain")
@@ -86,15 +91,14 @@ class TambahCatatan : Fragment() {
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             val resultUri = UCrop.getOutput(result.data!!)
             resultUri?.let {
-                binding.textScanResult.text = getString(R.string.foto_diambil)
-                Toast.makeText(requireContext(), "Gambar berhasil dicrop!", Toast.LENGTH_SHORT).show()
+                val photoFile = File(resultUri.path!!)
+                uploadCroppedPhoto(photoFile)
             }
         } else if (result.resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(result.data!!)
             Toast.makeText(requireContext(), "Gagal mencrop gambar: ${cropError?.message}", Toast.LENGTH_SHORT).show()
         }
     }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -160,6 +164,7 @@ class TambahCatatan : Fragment() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Pilih tanggal terlebih dahulu!", Toast.LENGTH_SHORT).show()
                     }
+                    fetchNoteId()
                     return@launch
                 }
 
@@ -233,6 +238,53 @@ class TambahCatatan : Fragment() {
         return binding.root
     }
 
+    private fun fetchNoteId() {
+        lifecycleScope.launch {
+            val token = UserPreference(requireContext()).getToken()
+            if (token.isNullOrEmpty()) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Token tidak ditemukan, gagal mengirim data ke server.", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+
+            val apiService = ApiConfig.getApiService(token)
+            val request = Catatan(
+                id = "",
+                kategori = "Pengeluaran",
+                nominal = 0,
+                deskripsi = "",
+                tanggal = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
+            )
+
+            apiService.addNote(request).enqueue(object : Callback<TambahCatatanResponse> {
+                override fun onResponse(
+                    call: Call<TambahCatatanResponse>,
+                    response: Response<TambahCatatanResponse>
+                ) {
+                    if (!isAdded || isDetached) return
+
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        if (response.isSuccessful && response.body() != null) {
+                            currentNoteId = response.body()?.id
+                            Toast.makeText(requireContext(), "Note ID berhasil didapatkan: $currentNoteId", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Gagal mendapatkan Note ID. Cek koneksi atau data!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<TambahCatatanResponse>, t: Throwable) {
+                    if (!isAdded || isDetached) return
+
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        }
+    }
+
     private fun openCamera() {
         val photoFile = File(requireContext().cacheDir, "temp_image.jpg")
         val photoUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", photoFile)
@@ -260,6 +312,44 @@ class TambahCatatan : Fragment() {
             }
             withContext(Dispatchers.Main) {
                 binding.spinnerCategory.adapter = adapter
+            }
+        }
+    }
+
+    private fun uploadCroppedPhoto(photoFile: File) {
+        lifecycleScope.launch {
+            val token = UserPreference(requireContext()).getToken()
+            if (token.isNullOrEmpty() || currentNoteId.isNullOrEmpty()) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Token atau Note ID tidak ditemukan.", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+
+            val apiService = ApiConfig.getApiService(token)
+
+            val requestBody = photoFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            val photoPart = MultipartBody.Part.createFormData("file", photoFile.name, requestBody)
+
+            withContext(Dispatchers.IO) {
+                try {
+                    val response = apiService.uploadStruk(currentNoteId!!, photoPart).execute()
+
+                    withContext(Dispatchers.Main) {
+                        if (response.isSuccessful && response.body()?.data?.url != null) {
+                            uploadedImageUrl = response.body()?.data?.url
+                            binding.textScanResult.text = getString(R.string.foto_diambil)
+                            Toast.makeText(requireContext(), "Foto berhasil diunggah!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            val errorBody = response.errorBody()?.string()
+                            Toast.makeText(requireContext(), "Gagal mengunggah foto: ${errorBody ?: "Kesalahan tak diketahui"}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Kesalahan jaringan: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

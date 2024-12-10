@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class TambahCatatanResponse(
 
+	@field:SerializedName("id")
+	val id: String? = null,
+
 	@field:SerializedName("nominal")
 	val nominal: Int? = null,
 
