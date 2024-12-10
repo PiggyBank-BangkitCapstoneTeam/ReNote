@@ -309,17 +309,14 @@ class TambahCatatan : Fragment() {
                     binding.inputAmount.removeTextChangedListener(this)
 
                     val cleanString = s.toString().replace("[,.]".toRegex(), "")
-                    rawAmountValue = if (cleanString.isNotEmpty()) {
-                        cleanString.toIntOrNull() ?: 0
-                    } else {
-                        0
+                    if (cleanString.isNotEmpty()) {
+                        rawAmountValue = cleanString.toIntOrNull() ?: 0
+                        val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
+                            .format(rawAmountValue.toLong())
+                        currentText = formatted
+                        binding.inputAmount.setText(formatted)
+                        binding.inputAmount.setSelection(formatted.length)
                     }
-
-                    val formatted = NumberFormat.getNumberInstance(Locale("in", "ID"))
-                        .format(rawAmountValue.toLong())
-                    currentText = formatted
-                    binding.inputAmount.setText(formatted)
-                    binding.inputAmount.setSelection(formatted.length)
 
                     binding.inputAmount.addTextChangedListener(this)
                 }
@@ -327,8 +324,6 @@ class TambahCatatan : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
-
-        binding.inputAmount.setText("0")
     }
 
     private fun getRawAmountValue(): Int = rawAmountValue
