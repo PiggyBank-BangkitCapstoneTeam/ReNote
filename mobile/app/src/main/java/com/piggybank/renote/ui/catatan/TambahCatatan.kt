@@ -340,6 +340,8 @@ class TambahCatatan : Fragment() {
                             uploadedImageUrl = response.body()?.data?.url
                             binding.textScanResult.text = getString(R.string.foto_diambil)
                             Toast.makeText(requireContext(), "Foto berhasil diunggah!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Struk Anda Sedang Diproses", Toast.LENGTH_SHORT).show()
+                            findNavController().navigateUp()
                         } else {
                             val errorBody = response.errorBody()?.string()
                             Toast.makeText(requireContext(), "Gagal mengunggah foto: ${errorBody ?: "Kesalahan tak diketahui"}", Toast.LENGTH_SHORT).show()
