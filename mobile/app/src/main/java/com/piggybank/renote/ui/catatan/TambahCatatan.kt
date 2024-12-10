@@ -234,7 +234,7 @@ class TambahCatatan : Fragment() {
     }
 
     private fun openCamera() {
-        val photoFile = File(requireContext().cacheDir, "image.jpg")
+        val photoFile = File(requireContext().cacheDir, "temp_image.jpg")
         val photoUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", photoFile)
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
