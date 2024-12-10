@@ -281,7 +281,7 @@ gcloud compute firewall-rules create renote-allow-ssh-public \
 	--action="ALLOW" \
 	--rules="tcp:22" \
 	--source-ranges="0.0.0.0/0" \
-	--target-tags="backend-api-server"
+	--target-tags="backend-api-server,backend-ml-server"
 
 gcloud compute firewall-rules create renote-allow-api-access \
 	--direction="INGRESS" \
@@ -751,11 +751,11 @@ while [ ! -f "/tmp/maclea-api.env" ]; do
 	echo "Waiting for /tmp/maclea-api.env to be uploaded... ($ELAPSED_WAITING_FOR_ENV detik / 600 detik)"
 done
 
-# Move the .env file to /opt/ReNote/machine-learning/
-sudo mv /tmp/maclea-api.env /opt/ReNote/machine-learning/.env
+# Move the .env file to /opt/ReNote/machine-learning/Inference_Model/
+sudo mv /tmp/maclea-api.env /opt/ReNote/machine-learning/Inference_Model/.env
 
 # Make sure the env is owned by backend user
-sudo chown backend:backend /opt/ReNote/machine-learning/.env
+sudo chown backend:backend /opt/ReNote/machine-learning/Inference_Model/.env
 
 # Wait until /tmp/maclea-sak.json is uploaded
 ELAPSED_WAITING_FOR_SAK=0
@@ -771,11 +771,11 @@ while [ ! -f "/tmp/maclea-sak.json" ]; do
 	echo "Waiting for /tmp/maclea-sak.json to be uploaded... ($ELAPSED_WAITING_FOR_SAK detik / 600 detik)"
 done
 
-# Move the service account key to /opt/ReNote/machine-learning/
-sudo mv /tmp/maclea-sak.json /opt/ReNote/machine-learning/service-account.json
+# Move the service account key to /opt/ReNote/machine-learning/Inference_Model/
+sudo mv /tmp/maclea-sak.json /opt/ReNote/machine-learning/Inference_Model/service-account.json
 
 # Make sure the service account key is owned by backend user
-sudo chown backend:backend /opt/ReNote/machine-learning/service-account.json
+sudo chown backend:backend /opt/ReNote/machine-learning/Inference_Model/service-account.json
 
 # Enable and start the renote-ml service
 sudo systemctl enable renote-ml.service
