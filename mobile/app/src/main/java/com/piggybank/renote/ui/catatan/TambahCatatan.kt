@@ -329,7 +329,7 @@ class TambahCatatan : Fragment() {
             val apiService = ApiConfig.getApiService(token)
 
             val requestBody = photoFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            val photoPart = MultipartBody.Part.createFormData("file", photoFile.name, requestBody)
+            val photoPart = MultipartBody.Part.createFormData("foto", photoFile.name, requestBody)
 
             withContext(Dispatchers.IO) {
                 try {
