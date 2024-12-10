@@ -433,6 +433,8 @@ gcloud pubsub subscriptions create "renote-ml-response-subscription" \
 	--expiration-period="14d" \
 	--message-retention-duration="10m"
 
+#endregion
+
 #region Compute Engine for Backend API
 
 setup_echo "normal" "Membuat file startup script untuk compute engine Backend API..."
@@ -583,6 +585,13 @@ CloudStorage_UserMediaBucket="$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
 MemoryStoreRedis_Enabled="true"
 MemoryStoreRedis_HostName="$(gcloud redis instances describe renote-redis1 --region="$DEFAULT_REGION" --format="value(host)")"
 MemoryStoreRedis_Port="6379"
+
+PUBSUB_Enabled="true"
+PUBSUB_ProjectId="$GCP_PROJECT_ID"
+PUBSUB_ML_RequestTopicId="renote-ml-request-topic"
+PUBSUB_ML_RequestSubscriptionId="renote-ml-request-subscription"
+PUBSUB_ML_ResponseTopicId="renote-ml-response-topic"
+PUBSUB_ML_ResponseSubscriptionId="renote-ml-response-subscription"
 
 EOF
 
