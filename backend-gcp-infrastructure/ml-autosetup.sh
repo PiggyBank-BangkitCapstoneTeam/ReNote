@@ -39,9 +39,6 @@ fi
 # Install semua yang tim ML butuhkan
 pip install -r requirements.txt
 
-# Syntax run:
-# python main.py predict "image.png here" --conf_limit=0.3 --use_augment
-
 # Take note about the npm installation path
 USER_PATH="$PATH"
 
@@ -59,7 +56,7 @@ RestartSec=30
 User=backend
 Environment=PATH=${USER_PATH}
 WorkingDirectory=/opt/ReNote/machine-learning/Inference_Model
-ExecStart=/opt/ReNote/machine-learning/.venv/bin/fastapi run
+ExecStart=/opt/ReNote/machine-learning/.venv/bin/python backend-connector.py
 
 [Install]
 WantedBy=multi-user.target
