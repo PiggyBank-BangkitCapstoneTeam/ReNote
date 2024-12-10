@@ -775,7 +775,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"description": "ID Note pada Database"
 								}
 							]
 						}
@@ -1112,7 +1113,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"description": "ID Note pada Database"
 								}
 							]
 						}
@@ -1389,7 +1391,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "",
+									"description": "ID Note pada Database"
 								}
 							]
 						}
@@ -1504,9 +1507,105 @@
 							"body": "{\n    \"status\": 404,\n    \"message\": \"Note tidak ditemukan\"\n}"
 						}
 					]
+				},
+				{
+					"name": "Upload Foto Struk",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "foto",
+									"description": "Foto struk yang ingin diupload",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{HOST}}/note/:id/struk",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"note",
+								":id",
+								"struk"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "ID Note pada Database"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Link Foto Struk",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOST}}/note/:id/struk",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"note",
+								":id",
+								"struk"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "ID Note pada Database"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "Endpoint CRUD Note/Catatan keuangan user"
+		},
+		{
+			"name": "ML FastAPI (Internal Only)",
+			"item": [
+				{
+					"name": "Predict",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"image_path\": \"sample_image/8.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/predict",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Server Connection Check",
@@ -1619,6 +1718,11 @@
 		{
 			"key": "FIREBASE_SESSION_TOKEN",
 			"value": "tokenhere",
+			"type": "string"
+		},
+		{
+			"key": "ML_HOST_INTERNAL",
+			"value": "127.0.0.1:8000",
 			"type": "string"
 		}
 	]

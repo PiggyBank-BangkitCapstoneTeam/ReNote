@@ -52,3 +52,13 @@
 
 	atau jalankan perintah ini jika ingin melihat log saja:<br>
 	`sudo journalctl -u renote-backend-api.service`
+
+## Cara melihat log Machine Learning service
+1. Masuk ke VM instance yang digunakan untuk backend API
+2. Jalankan perintah berikut untuk melihat log realtime (follow mode):<br>
+	`sudo journalctl -f -u renote-ml.service`
+
+	atau jalankan perintah ini jika ingin melihat log saja:<br>
+	`sudo journalctl -u renote-ml.service`
+
+	
