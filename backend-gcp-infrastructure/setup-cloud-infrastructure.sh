@@ -167,6 +167,16 @@ gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 	--member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
 	--role="roles/firebaseauth.viewer"
 
+# Grant the service account the "Pub/Sub Publisher" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/pubsub.publisher"
+
+# Grant the service account the "Pub/Sub Subscriber" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+    --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/pubsub.subscriber"
+
 echo
 
 #endregion
@@ -199,6 +209,16 @@ gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
 	--member="serviceAccount:$ML_SERVICE_ACCOUNT_EMAIL" \
 	--role="roles/storage.objectViewer"
+
+# Grant the service account the "Pub/Sub Publisher" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+    --member="serviceAccount:$ML_SERVICE_ACCOUNT_EMAIL" \
+    --role="roles/pubsub.publisher"
+
+# Grant the service account the "Pub/Sub Subscriber" role
+gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+	--member="serviceAccount:$ML_SERVICE_ACCOUNT_EMAIL" \
+	--role="roles/pubsub.subscriber"
 
 echo
 #endregion
@@ -381,6 +401,37 @@ gcloud redis instances create renote-redis1 \
 	--reserved-ip-range="managed-services-peering" \
 	--display-name="Renote Redis 1"
 #endregion
+
+#region Pub/Sub
+
+# Enable Pub/Sub API
+setup_echo "normal" "Mengaktifkan Pub/Sub API..."
+gcloud services enable pubsub.googleapis.com
+sleep 30
+
+# Create a Pub/Sub topic for the Machine Learning Service
+setup_echo "normal" "Membuat Pub/Sub topic untuk Machine Learning Service..."
+gcloud pubsub topics create "renote-ml-request-topic" \
+	--message-retention-duration="10m"
+	
+gcloud pubsub topics create "renote-ml-response-topic" \
+	--message-retention-duration="10m"
+
+# Create a Pub/Sub subscription for the Machine Learning Service
+setup_echo "normal" "Membuat Pub/Sub subscription untuk Machine Learning Service..."
+gcloud pubsub subscriptions create "renote-ml-request-subscription" \
+	--topic="renote-ml-request-topic" \
+	--ack-deadline="10" \
+	--enable-exactly-once-delivery \
+	--expiration-period="14d" \
+	--message-retention-duration="10m"
+
+gcloud pubsub subscriptions create "renote-ml-response-subscription" \
+	--topic="renote-ml-response-topic" \
+	--ack-deadline="10" \
+	--enable-exactly-once-delivery \
+	--expiration-period="14d" \
+	--message-retention-duration="10m"
 
 #region Compute Engine for Backend API
 

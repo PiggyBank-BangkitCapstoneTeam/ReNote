@@ -738,7 +738,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 30 Nov 2024 12:53:58 GMT"
+									"value": "Tue, 10 Dec 2024 06:51:38 GMT"
 								},
 								{
 									"key": "Connection",
@@ -750,11 +750,11 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "156"
+									"value": "170"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": 200,\n    \"data\": [\n        {\n            \"id\": \"rEwDypNjVrhIJxufDaOlsFeiT6GF2e4C\",\n            \"kategori\": \"pengeluaran\",\n            \"nominal\": 8000,\n            \"deskripsi\": \"Beli milk tea\",\n            \"tanggal\": \"27-11-2024\"\n        }\n    ]\n}"
+							"body": "{\n    \"status\": 200,\n    \"data\": [\n        {\n            \"id\": \"19Zz8s5gLVxq0hzSoDlPfj5BsHmz6Len\",\n            \"kategori\": \"pengeluaran\",\n            \"nominal\": 8000,\n            \"deskripsi\": \"Beli milk tea\",\n            \"tanggal\": \"27-11-2024\",\n            \"photo_id\": \"\"\n        }\n    ]\n}"
 						}
 					]
 				},
@@ -834,7 +834,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"rEwDypNjVrhIJxufDaOlsFeiT6GF2e4C\",\n        \"kategori\": \"pengeluaran\",\n        \"nominal\": 8000,\n        \"deskripsi\": \"Beli milk tea\",\n        \"tanggal\": \"27-11-2024\"\n    }\n}"
+							"body": "{\n    \"status\": 200,\n    \"data\": {\n        \"id\": \"rEwDypNjVrhIJxufDaOlsFeiT6GF2e4C\",\n        \"kategori\": \"pengeluaran\",\n        \"nominal\": 8000,\n        \"deskripsi\": \"Beli milk tea\",\n        \"tanggal\": \"27-11-2024\",\n        \"photo_id\": \"\"\n    }\n}"
 						},
 						{
 							"name": "Tidak Ditemukan",

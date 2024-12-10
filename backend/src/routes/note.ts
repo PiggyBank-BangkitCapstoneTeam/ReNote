@@ -391,7 +391,7 @@ const uploadFotoStruk = RouteHandler(async(req) => {
 
 	if (req.ReNote_MLConnector) {
 		req.ReNote_MLConnector.AddImageToScan({
-			id: id,
+			note_id: id,
 			photo_id: photo_id
 		});
 	}

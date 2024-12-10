@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import multer from "multer";
 import { Storage } from "@google-cloud/storage";
 import MemoryStoreRedis from "redis";
+import ReNote_MLConnector from "./lib/ml-connector.js";
 
 // Load environment variable dari file .env
 dotenv.config();
@@ -22,6 +23,7 @@ const file_upload = multer({
 });
 const CloudSQL = new GCP_CloudSQL();
 const CloudStorage = new Storage();
+const MLConnector = new ReNote_MLConnector(CloudSQL, CloudStorage);
 
 async function InitializeDatabase() {
 	console.log("Menyiapkan koneksi database di CloudSQL...");
@@ -101,6 +103,15 @@ if (process.env.MemoryStoreRedis_Enabled === "true") {
 		req.MemoryStore = MemoryStore;
 		next();
 	});
+}
+
+if (process.env.PUBSUB_Enabled === "true") {
+	MLConnector.Initialize();
+
+	app.use((req, res, next) => {
+        req.ReNote_MLConnector = MLConnector;
+        next();
+    });
 }
 
 // Otomatis parse JSON yang diterima dari request body

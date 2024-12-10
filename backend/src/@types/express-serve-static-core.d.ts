@@ -2,6 +2,7 @@ import express_core from "express-serve-static-core";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { Storage, Bucket } from "@google-cloud/storage";
 import { createClient } from "redis";
+import ReNote_MLConnector from "../lib/ml-connector";
 
 declare module "express-serve-static-core" {
 	export interface Request extends express_core.Request {
@@ -10,5 +11,6 @@ declare module "express-serve-static-core" {
 		CloudStorage?: Storage;
 		CloudStorage_UserMediaBucket?: Bucket;
 		MemoryStore?: ReturnType<typeof createClient>;
+		ReNote_MLConnector?: ReNote_MLConnector;
 	}
 }
