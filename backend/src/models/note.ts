@@ -38,12 +38,6 @@ export type InternalMLScanResult = {
 		*/
 		total?: string;
 
-		/** Waktu scan image
-        *
-        * @example "12/05/2024"
-        */
-		date_time?: string;
-
 		/** Nama toko
         *
         * @example "WARUNG PASTA"

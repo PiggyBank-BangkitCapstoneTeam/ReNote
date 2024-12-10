@@ -734,12 +734,71 @@ sudo mv renote-ml.service /etc/systemd/system/
 # Reload the systemd daemon
 sudo systemctl daemon-reload
 
+# Add the compute engine to the backend-ml-server
+gcloud compute instances add-tags "$INSTANCE_NAME" --tags="backend-ml-server" --zone="$INSTANCE_ZONE"
+
+# Wait until /tmp/maclea-api.env is uploaded
+ELAPSED_WAITING_FOR_ENV=0
+while [ ! -f "/tmp/maclea-api.env" ]; do
+	sleep 10
+	ELAPSED_WAITING_FOR_ENV=$((ELAPSED_WAITING_FOR_ENV+10))
+
+	if [ $ELAPSED_WAITING_FOR_ENV -gt 600 ]; then
+		echo "Timeout waiting for /tmp/maclea-api.env, exiting..."
+		exit 1
+	fi
+
+	echo "Waiting for /tmp/maclea-api.env to be uploaded... ($ELAPSED_WAITING_FOR_ENV detik / 600 detik)"
+done
+
+# Move the .env file to /opt/ReNote/machine-learning/
+sudo mv /tmp/maclea-api.env /opt/ReNote/machine-learning/.env
+
+# Make sure the env is owned by backend user
+sudo chown backend:backend /opt/ReNote/machine-learning/.env
+
+# Wait until /tmp/maclea-sak.json is uploaded
+ELAPSED_WAITING_FOR_SAK=0
+while [ ! -f "/tmp/maclea-sak.json" ]; do
+	sleep 10
+	ELAPSED_WAITING_FOR_SAK=$((ELAPSED_WAITING_FOR_SAK+10))
+
+	if [ $ELAPSED_WAITING_FOR_SAK -gt 600 ]; then
+		echo "Timeout waiting for /tmp/maclea-sak.json, exiting..."
+		exit 1
+	fi
+
+	echo "Waiting for /tmp/maclea-sak.json to be uploaded... ($ELAPSED_WAITING_FOR_SAK detik / 600 detik)"
+done
+
+# Move the service account key to /opt/ReNote/machine-learning/
+sudo mv /tmp/maclea-sak.json /opt/ReNote/machine-learning/service-account.json
+
+# Make sure the service account key is owned by backend user
+sudo chown backend:backend /opt/ReNote/machine-learning/service-account.json
+
 # Enable and start the renote-ml service
 sudo systemctl enable renote-ml.service
 sudo systemctl start renote-ml.service
 
-# Add the compute engine to the backend-ml-server
-gcloud compute instances add-tags "$INSTANCE_NAME" --tags="backend-ml-server" --zone="$INSTANCE_ZONE"
+EOF
+
+# Buat file .env untuk machine learning
+setup_echo "normal" "Membuat file .env untuk machine learning..."
+
+cat << EOF > maclea-api.env
+ENVIRONMENT=development
+GOOGLE_APPLICATION_CREDENTIALS="./service-account.json"
+
+CloudStorage_Enabled="true"
+CloudStorage_UserMediaBucket="$DEFAULT_CLOUD_STORAGE_BUCKET_NAME"
+
+PUBSUB_Enabled="true"
+PUBSUB_ProjectId="$GCP_PROJECT_ID"
+PUBSUB_ML_RequestTopicId="renote-ml-request-topic"
+PUBSUB_ML_RequestSubscriptionId="renote-ml-request-subscription"
+PUBSUB_ML_ResponseTopicId="renote-ml-response-topic"
+PUBSUB_ML_ResponseSubscriptionId="renote-ml-response-subscription"
 
 EOF
 
@@ -781,6 +840,14 @@ while true; do
 	sleep 10
 	ML_VM_WAITING_ELAPSED=$((ML_VM_WAITING_ELAPSED+10))
 done
+
+# Copy the .env file to Machine Learning Compute Engine
+setup_echo "normal" "Mengirim file .env ke compute engine Machine Learning..."
+gcloud compute scp maclea-api.env machine-learning-vm:/tmp/maclea-api.env --zone="$DEFAULT_ZONE"
+
+# Copy the service account key to Machine Learning Compute Engine
+setup_echo "normal" "Mengirim service account key ke compute engine Machine Learning..."
+gcloud compute scp maclea-sak.json machine-learning-vm:/tmp/maclea-sak.json --zone="$DEFAULT_ZONE"
 
 #endregion
 

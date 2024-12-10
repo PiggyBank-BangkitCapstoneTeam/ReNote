@@ -8,6 +8,9 @@ export default class ReNote_MLConnector {
 	private photo_scan_queue: InternalMLScanRequest[] = []; // Array id gambar yang butuh di scan oleh model tim ML
 	private WorkTimer?: NodeJS.Timeout;
 	private WORKER_BUSY: boolean = false;
+	/** Variabel Increment untuk menghindari menunggu worker yang hang/dead selamanya */
+	private WORKER_BUSY_DEAD_PROTECTION = 0;
+	private WORKER_BUSY_DEAD_PROTECTION_SEC = 30; // maksimum 30 detik
 	private pubsub?: PubSub;
 	private pubsub_RequestTopic?: Topic;
 	private pubsub_ResponseTopic?: Topic;
@@ -36,11 +39,20 @@ export default class ReNote_MLConnector {
 		}
 
 		this.WorkTimer = setInterval(() => {
+			if (this.WORKER_BUSY_DEAD_PROTECTION > this.WORKER_BUSY_DEAD_PROTECTION_SEC) {
+				console.error(`[MLConnector] Tidak ada respon dari kode ML selama ${this.WORKER_BUSY_DEAD_PROTECTION_SEC} detik, job lock di reset`);
+				this.WORKER_BUSY_DEAD_PROTECTION = 0;
+				this.WORKER_BUSY = false;
+				return;
+			}
+
 			if (this.IsWorkerBusy()) {
+				this.WORKER_BUSY_DEAD_PROTECTION++;
 				return;
 			}
 
 			this.WORKER_BUSY = true;
+			this.WORKER_BUSY_DEAD_PROTECTION = 0;
 
 			const photo_id = this.photo_scan_queue.shift();
 
@@ -80,20 +92,11 @@ export default class ReNote_MLConnector {
 		});
 
 		this.pubsub_RequestTopic = this.pubsub.topic(process.env.PUBSUB_ML_RequestTopicId);
-		if (!(await this.pubsub_RequestTopic.exists())[0]) {
-			throw new Error("[MLConnector] Topik sesuai nilai .env PUBSUB_ML_TopicId tidak ada di GCP");
-		}
 
 		this.pubsub_ResponseTopic = this.pubsub.topic(process.env.PUBSUB_ML_ResponseTopicId);
-		if (!(await this.pubsub_ResponseTopic.exists())[0]) {
-			throw new Error("[MLConnector] Topik sesuai nilai .env PUBSUB_ML_TopicId tidak ada di GCP");
-		}
 
 		// Pastikan subscription sudah dibuat
 		this.pubsub_ResponseSubscription = this.pubsub_ResponseTopic.subscription(process.env.PUBSUB_ML_ResponseSubscriptionId);
-		if (!(await this.pubsub_ResponseSubscription.exists())[0]) {
-            throw new Error("[MLConnector] Subscription sesuai nilai .env PUBSUB_ML_SubscriptionId tidak ada di GCP");
-        }
 
 		this.pubsub_ResponseSubscription.on("message", (message) => {
 			message.ack();
@@ -135,6 +138,8 @@ export default class ReNote_MLConnector {
 	}
 
 	private async onMLResponse(data: Buffer) {
+		this.WORKER_BUSY = false;
+
 		// JSON convert
 		let jsonData: InternalMLScanResult;
 		try {
@@ -170,11 +175,6 @@ export default class ReNote_MLConnector {
 			return;
 		}
 
-		if (!jsonData.result.date_time) {
-			console.error("[MLConnector] Response dari kode ML tidak ada date_time");
-			return;
-		}
-
 		if (!jsonData.result.item) {
 			console.error("[MLConnector] Response dari kode ML tidak ada array item");
 			return;
@@ -189,21 +189,25 @@ export default class ReNote_MLConnector {
 		const total_clean = jsonData.result.total.replace(/[,.]/g, "");
 		const nominal_total = parseInt(total_clean);
 
-		if (!jsonData.result.date_time) {
-			console.error("[MLConnector] Response dari kode ML tidak ada date_time");
-			return;
-		}
-
 		if (!jsonData.result.shop) {
 			console.error("[MLConnector] Response dari kode ML tidak ada shop");
 			return;
 		}
 
+		let description = `${jsonData.result.shop}\n`;
+
+		for (const item of jsonData.result.item) {
+            description += `  - ${item}\n`;
+        }
+
+		// Hapus \n diakhir jika ada
+		description = description.replace(/\n$/, "");
+
 		// Simpan ke database
 		const conn = await this.CloudSQL.GetConnection();
 		const [result] = await conn.execute<ResultSetHeader>(
 			"UPDATE note SET nominal = ?, deskripsi = ? WHERE id = ? AND photo_id = ?",
-			[nominal_total, jsonData.result.shop, jsonData.note_id, jsonData.photo_id]
+			[nominal_total, description, jsonData.note_id, jsonData.photo_id]
 		);
 		conn.release();
 
@@ -212,8 +216,6 @@ export default class ReNote_MLConnector {
 			return;
 		}
 		console.log(`[MLConnector] Update note berhasil pada photo_id ${jsonData.photo_id}`);
-
-		this.WORKER_BUSY = false;
 	}
 
 	public ClearScanQueue() {

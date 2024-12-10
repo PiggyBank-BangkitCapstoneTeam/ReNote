@@ -355,11 +355,13 @@ const uploadFotoStruk = RouteHandler(async(req) => {
 	const [result] = await conn.query<Pick<NoteModel, "photo_id">>("SELECT photo_id FROM note WHERE id = ? AND user_id = ?", [id, req.FirebaseUserData.uid]);
 
 	if (result.length === 0) {
+		conn.release();
 		return {
 			status: 404,
 			message: "Note tidak ditemukan, tidak dapat menambahkan foto struk"
 		};
 	}
+	
 	const old_photo_id = result[0].photo_id;
 	if (old_photo_id) {
 		const old_file = req.CloudStorage_UserMediaBucket.file(old_photo_id);
