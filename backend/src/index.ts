@@ -8,6 +8,7 @@ import multer from "multer";
 import { Storage } from "@google-cloud/storage";
 import MemoryStoreRedis from "redis";
 import ReNote_MLConnector from "./lib/ml-connector.js";
+import ComputeEngine from "@google-cloud/compute";
 
 // Load environment variable dari file .env
 dotenv.config();
@@ -23,7 +24,8 @@ const file_upload = multer({
 });
 const CloudSQL = new GCP_CloudSQL();
 const CloudStorage = new Storage();
-const MLConnector = new ReNote_MLConnector(CloudSQL, CloudStorage);
+const GCEInstanceManager = new ComputeEngine.InstancesClient();
+const MLConnector = new ReNote_MLConnector(CloudSQL, CloudStorage, GCEInstanceManager);
 
 async function InitializeDatabase() {
 	console.log("Menyiapkan koneksi database di CloudSQL...");

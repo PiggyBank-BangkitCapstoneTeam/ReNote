@@ -597,6 +597,11 @@ PUBSUB_ML_RequestSubscriptionId="renote-ml-request-subscription"
 PUBSUB_ML_ResponseTopicId="renote-ml-response-topic"
 PUBSUB_ML_ResponseSubscriptionId="renote-ml-response-subscription"
 
+COMPUTE_MANAGER_Enabled="true"
+COMPUTE_MANAGER_ProjectId="$GCP_PROJECT_ID"
+COMPUTE_MANAGER_ML_SERVER_Zone="$DEFAULT_ZONE"
+COMPUTE_MANAGER_ML_SERVER_SleepAfterIdleForSeconds=120
+
 EOF
 
 # Dump SSH keys so it can be on metadata
