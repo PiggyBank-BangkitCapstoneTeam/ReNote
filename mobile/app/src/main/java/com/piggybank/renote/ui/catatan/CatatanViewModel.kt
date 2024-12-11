@@ -16,7 +16,9 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class CatatanViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -47,6 +49,9 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         if (token != null && userId != null) {
             val client = ApiConfig.getApiService(token)
 
+            val selectedDateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                .format(date.time)
+
             viewModelScope.launch {
                 client.getAllNotes().enqueue(object : Callback<GetAllNoteResponse> {
                     override fun onResponse(
@@ -54,15 +59,17 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
                         response: Response<GetAllNoteResponse>
                     ) {
                         if (response.isSuccessful) {
-                            val notes = response.body()?.data?.map { dataItem ->
-                                Catatan(
-                                    id = dataItem?.id.toString(),
-                                    kategori = dataItem?.kategori ?: "",
-                                    nominal = dataItem?.nominal ?: 0,
-                                    deskripsi = dataItem?.deskripsi ?: "",
-                                    tanggal = dataItem?.tanggal ?: ""
-                                )
-                            } ?: emptyList()
+                            val notes = response.body()?.data?.mapNotNull { dataItem ->
+                                dataItem?.let {
+                                    Catatan(
+                                        id = it.id.toString(),
+                                        kategori = it.kategori ?: "",
+                                        nominal = it.nominal ?: 0,
+                                        deskripsi = it.deskripsi ?: "",
+                                        tanggal = it.tanggal ?: ""
+                                    )
+                                }
+                            }?.filter { it.tanggal == selectedDateString } ?: emptyList()
 
                             val pemasukan = notes.filter { it.nominal >= 0 }.sumOf { it.nominal }
                             val pengeluaran = notes.filter { it.nominal < 0 }.sumOf { it.nominal }
@@ -74,7 +81,7 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
                     }
 
                     override fun onFailure(call: Call<GetAllNoteResponse>, t: Throwable) {
-
+                        // Handle failure
                     }
                 })
             }
@@ -178,7 +185,8 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun getDateKey(date: Calendar): String {
-        return "${date.get(Calendar.DAY_OF_MONTH)}-${date.get(Calendar.MONTH) + 1}-${date.get(Calendar.YEAR)}"
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return formatter.format(date.time)
     }
 
     fun clearSelectedCatatan() {
