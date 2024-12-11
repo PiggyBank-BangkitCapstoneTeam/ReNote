@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.piggybank.renotes.R
+import com.piggybank.renotes.data.pref.UserPreference
 import com.piggybank.renotes.databinding.FragmentProfileBinding
 import com.piggybank.renotes.ui.main.WelcomeActivity
 import java.io.File
@@ -164,6 +165,10 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logoutUser() {
+
+        val userPreference = UserPreference(requireContext())
+        userPreference.clearToken()
+
         FirebaseAuth.getInstance().signOut()
         Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
 
@@ -172,6 +177,7 @@ class ProfileFragment : Fragment() {
 
         requireActivity().finish()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
