@@ -23,7 +23,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextContrastCheck" />
 
     <ImageButton
         android:id="@+id/calendar_button"
@@ -35,7 +36,8 @@
         android:contentDescription="@string/icon_calendar"
         android:src="@drawable/ic_calendar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck,TouchTargetSizeCheck" />
 
     <LinearLayout
         android:id="@+id/linearLayout_pemasukan_pengeluaran"

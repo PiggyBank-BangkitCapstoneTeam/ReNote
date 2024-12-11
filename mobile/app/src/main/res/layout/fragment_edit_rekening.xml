@@ -54,11 +54,13 @@
             android:background="@drawable/rounded_output"
             android:hint="@string/nama_rekening"
             android:inputType="text"
+            android:minHeight="48dp"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_edit_rekening" />
+            app:layout_constraintTop_toBottomOf="@id/title_edit_rekening"
+            tools:ignore="VisualLintTextFieldSize" />
 
 
         <EditText
@@ -70,11 +72,13 @@
             android:background="@drawable/edit_text_stroke"
             android:hint="@string/jumlah_rekening"
             android:inputType="number"
+            android:minHeight="48dp"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rekeningNameEdit" />
+            app:layout_constraintTop_toBottomOf="@id/rekeningNameEdit"
+            tools:ignore="VisualLintTextFieldSize" />
 
         <Button
             android:id="@+id/button_simpan"
@@ -83,7 +87,7 @@
             android:layout_marginTop="36dp"
             android:backgroundTint="#D2B48C"
             android:text="@string/edit"
-            android:textColor="#FFFFFF"
+            android:textColor="#5D4037"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"

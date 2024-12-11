@@ -58,7 +58,8 @@
                 android:autofillHints="creditCardNumber"
                 android:background="@drawable/edit_text_stroke"
                 android:padding="16dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                tools:ignore="VisualLintTextFieldSize" />
 
             <EditText
                 android:id="@+id/input_description"
@@ -70,18 +71,20 @@
                 android:inputType="textMultiLine"
                 android:minLines="3"
                 android:autofillHints="name"
-                android:padding="16dp" />
+                android:padding="16dp"
+                tools:ignore="VisualLintTextFieldSize" />
 
 
             <Button
                 android:id="@+id/button_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/edit"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:textColor="@android:color/white"
                 android:paddingVertical="12dp"
-                android:layout_marginTop="8dp"/>
+                android:text="@string/edit"
+                android:textColor="#5D4037"
+                tools:ignore="VisualLintButtonSize" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

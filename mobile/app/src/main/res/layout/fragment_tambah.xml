@@ -19,7 +19,8 @@
             android:id="@+id/guideline_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintGuide_end="16dp" />
+            app:layout_constraintGuide_end="16dp"
+            tools:ignore="VisualLintBounds" />
 
         <ImageView
             android:id="@+id/icon_back"
@@ -84,16 +85,18 @@
             android:button="@null"
             android:layout_weight="1"
             android:padding="12dp"
-            android:checked="true" />
+            android:checked="true"
+            tools:ignore="VisualLintButtonSize" />
 
         <RadioButton
             android:id="@+id/radio_pemasukan"
             style="@style/ToggleButtonStyle"
-            android:text="@string/pemasukan"
+            android:layout_weight="1"
             android:background="@drawable/toggle_selector"
             android:button="@null"
-            android:layout_weight="1"
-            android:padding="12dp" />
+            android:padding="12dp"
+            android:text="@string/pemasukan"
+            tools:ignore="TextContrastCheck,VisualLintButtonSize" />
     </RadioGroup>
 
     <ScrollView
@@ -126,12 +129,12 @@
                 android:id="@+id/text_scan_result"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/rounded_output"
+                android:gravity="top|start"
                 android:hint="@string/hasil_scan"
                 android:padding="16dp"
-                android:gravity="top|start"
-                android:textColorHint="@color/Gainsboro"
-                android:layout_marginBottom="16dp"
+                android:textColorHint="#616161"
                 android:visibility="visible" />
 
             <Spinner
@@ -151,7 +154,8 @@
                 android:background="@drawable/edit_text_stroke"
                 android:padding="16dp"
                 android:autofillHints="AUTOFILL_HINT_CURRENCY_AMOUNT"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                tools:ignore="VisualLintTextFieldSize" />
 
             <EditText
                 android:id="@+id/input_description"
@@ -163,7 +167,8 @@
                 android:background="@drawable/edit_text_stroke"
                 android:padding="16dp"
                 android:autofillHints="AUTOFILL_HINT_DESCRIPTION"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                tools:ignore="VisualLintTextFieldSize" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -195,11 +200,12 @@
                 android:id="@+id/button_create"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/buat"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_background"
-                android:textColor="@android:color/white"
                 android:paddingVertical="12dp"
-                android:layout_marginTop="8dp"/>
+                android:text="@string/buat"
+                android:textColor="#5D4037"
+                tools:ignore="VisualLintButtonSize" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

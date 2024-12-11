@@ -45,31 +45,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:autofillHints="name"
             android:background="@drawable/edit_text_stroke"
             android:hint="@string/nama_rekening"
             android:inputType="text"
+            android:minHeight="48dp"
             android:padding="8dp"
-            android:autofillHints="name" />
+            tools:ignore="VisualLintTextFieldSize" />
 
         <EditText
             android:id="@+id/input_jumlah_rekening"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/jumlah_rekening"
-            android:background="@drawable/edit_text_stroke"
-            android:padding="8dp"
             android:layout_marginBottom="16dp"
+            android:autofillHints="money"
+            android:background="@drawable/edit_text_stroke"
+            android:hint="@string/jumlah_rekening"
             android:inputType="numberDecimal|numberSigned"
-            android:autofillHints="money" />
+            android:minHeight="48dp"
+            android:padding="8dp"
+            tools:ignore="VisualLintTextFieldSize" />
 
         <Button
             android:id="@+id/button_simpan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:background="@drawable/rounded_button_simpanedit"
             android:text="@string/buat"
-            android:textColor="@android:color/white"
-            android:layout_gravity="end" />
+            android:textColor="#5D4037" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

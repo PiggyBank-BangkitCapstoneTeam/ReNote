@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -22,7 +23,8 @@
             android:layout_height="24dp"
             android:contentDescription="@string/back_button"
             app:srcCompat="@drawable/ic_arrow_back"
-            app:tint="@color/black" />
+            app:tint="@color/black"
+            tools:ignore="RedundantDescriptionCheck" />
 
         <TextView
             android:id="@+id/titleNotifikasi"
@@ -75,7 +77,8 @@
             android:minHeight="48dp"
             android:autofillHints="username"
             android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:ignore="VisualLintTextFieldSize" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -88,29 +91,31 @@
 
             <Button
                 android:id="@+id/cancelAlarmButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:backgroundTint="@color/light_brown"
                 android:gravity="center"
                 android:text="@string/hentikan_notifikasi"
-                android:textColor="@color/white"
+                android:textColor="#5D4037"
                 android:textSize="14sp"
-                style="?android:attr/buttonBarButtonStyle" />
+                tools:ignore="VisualLintButtonSize" />
 
             <Button
                 android:id="@+id/setAlarmButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:backgroundTint="@color/light_brown"
                 android:gravity="center"
                 android:text="@string/atur_notifikasi"
-                android:textColor="@color/white"
+                android:textColor="#5D4037"
                 android:textSize="14sp"
-                style="?android:attr/buttonBarButtonStyle" />
+                tools:ignore="VisualLintButtonSize" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

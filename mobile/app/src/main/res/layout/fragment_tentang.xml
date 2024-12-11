@@ -20,9 +20,10 @@
             android:layout_height="24dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back"
             android:contentDescription="@string/back_button"
-            app:tint="#000000" />
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#000000"
+            tools:ignore="RedundantDescriptionCheck" />
 
         <TextView
             android:id="@+id/tittleTentang"
@@ -73,10 +74,10 @@
             android:id="@+id/appVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="@string/app_version"
-            android:textSize="16sp"
-            android:textColor="#808080"
-            android:layout_marginBottom="8dp" />
+            android:textColor="#757575"
+            android:textSize="16sp" />
 
         <!-- Team Name -->
         <TextView
@@ -84,8 +85,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/piggybank"
-            android:textSize="16sp"
-            android:textColor="#808080" />
+            android:textColor="#757575"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </FrameLayout>

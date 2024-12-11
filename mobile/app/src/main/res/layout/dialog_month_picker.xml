@@ -36,7 +36,8 @@
                 android:id="@+id/yearSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#A0522D" />
+                android:backgroundTint="#A0522D"
+                android:minHeight="48dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

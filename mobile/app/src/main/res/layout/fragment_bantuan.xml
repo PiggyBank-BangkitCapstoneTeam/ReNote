@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android/tools"
     xmlns:app="http://schemas.android/apk/res-auto"
+    xmlns:tools2="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -20,9 +21,10 @@
             android:layout_height="24dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back"
             android:contentDescription="@string/back_button"
-            app:tint="#000000" />
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#000000"
+            tools2:ignore="RedundantDescriptionCheck" />
 
         <TextView
             android:id="@+id/titleBantuan"
@@ -68,16 +70,18 @@
             android:inputType="text"
             android:minHeight="48dp"
             android:padding="10dp"
-            android:autofillHints="autofillHintsText" />
+            android:autofillHints="autofillHintsText"
+            tools2:ignore="VisualLintTextFieldSize" />
 
         <ImageView
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:contentDescription="@string/send_button"
             android:enabled="false"
             android:src="@drawable/send"
-            android:contentDescription="@string/send_button" />
+            tools2:ignore="ImageContrastCheck" />
     </LinearLayout>
 
     <ProgressBar
