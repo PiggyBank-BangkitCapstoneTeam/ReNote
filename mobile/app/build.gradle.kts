@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation (libs.glide)
-    annotationProcessor (libs.compiler)
+    annotationProcessor(libs.compiler)
     implementation (libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
