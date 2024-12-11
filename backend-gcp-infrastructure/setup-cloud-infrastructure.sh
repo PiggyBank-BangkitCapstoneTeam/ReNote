@@ -558,6 +558,8 @@ sudo chown backend:backend /opt/ReNote/backend/firebase-service-account.json
 # Restart the renote-backend-api service
 sudo systemctl restart renote-backend-api.service
 
+gcloud compute instances add-tags "$INSTANCE_NAME" --tags="auto-setup-done" --zone="$INSTANCE_ZONE"
+
 EOF
 
 # Buat file .env untuk backend-api
@@ -600,7 +602,7 @@ PUBSUB_ML_ResponseSubscriptionId="renote-ml-response-subscription"
 COMPUTE_MANAGER_Enabled="true"
 COMPUTE_MANAGER_ProjectId="$GCP_PROJECT_ID"
 COMPUTE_MANAGER_ML_SERVER_Zone="$DEFAULT_ZONE"
-COMPUTE_MANAGER_ML_SERVER_SleepAfterIdleForSeconds=120
+COMPUTE_MANAGER_ML_SERVER_SleepAfterIdleForSeconds=180
 
 EOF
 
@@ -789,6 +791,8 @@ sudo chown backend:backend /opt/ReNote/machine-learning/Inference_Model/service-
 # Enable and start the renote-ml service
 sudo systemctl enable renote-ml.service
 sudo systemctl start renote-ml.service
+
+gcloud compute instances add-tags "$INSTANCE_NAME" --tags="auto-setup-done" --zone="$INSTANCE_ZONE"
 
 EOF
 

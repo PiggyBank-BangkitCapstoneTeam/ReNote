@@ -332,7 +332,33 @@ export default class ReNote_MLConnector {
 
 		console.log("[ComputeManager] Mulai mengecek status server ML...");
 
-		let status = await this.GetMLServerStatus();
+		let MLServer = await this.GetMLServerInstance();
+
+		if (!MLServer.tags) {
+			this.ComputeManager_BUSY = false;
+			console.error("[ComputeManager] Error mendapatkan tags server ML");
+			return;
+		}
+
+		if (!MLServer.tags.items) {
+			this.ComputeManager_BUSY = false;
+			console.error("[ComputeManager] Error mendapatkan tags server ML");
+			return;
+		}
+
+		if (!MLServer.tags.items.includes("auto-setup-done")) {
+			console.error("[ComputeManager] Server ML masih belum selesai setup, jangan di-manage");
+			this.WORKER_LAST_BUSY_TIMESTAMP = Date.now();
+			this.WORKER_BUSY_DEAD_PROTECTION = 0;
+
+			await new Promise((resolve) => setTimeout(resolve, 30000));
+			this.WORKER_LAST_BUSY_TIMESTAMP = Date.now();
+			this.WORKER_BUSY_DEAD_PROTECTION = 0;
+			this.ComputeManager_BUSY = false;
+			return;
+		}
+
+		let status = (MLServer.status || "RUNNING") as MLServerStatus;
 
 		if (status === "STOPPED" || status === "TERMINATED") {
 			this.ComputeManager_BUSY = false;
@@ -386,15 +412,20 @@ export default class ReNote_MLConnector {
 		}
 	}
 
-	private async GetMLServerStatus() {
+	private async GetMLServerInstance() {
 		const [response] = await this.ComputeInstance.get(this.ComputeManagerInstanceParam);
+		return response;
+	}
 
-		if (!response.status) {
+	private async GetMLServerStatus() {
+		const MLServer = await this.GetMLServerInstance();
+
+		if (!MLServer.status) {
 			console.warn("[MLConnector] Status server ML tidak diketahui, untuk aman dianggap aktif");
 			return "RUNNING";
 		}
 
-		return response.status as MLServerStatus;
+		return MLServer.status as MLServerStatus;
 	}
 
 	private async BangunkanServer() {
