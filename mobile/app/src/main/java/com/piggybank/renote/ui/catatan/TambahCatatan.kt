@@ -210,7 +210,7 @@ class TambahCatatan : Fragment() {
 
                         lifecycleScope.launch(Dispatchers.Main) {
                             if (response.isSuccessful && response.body() != null) {
-                                Toast.makeText(requireContext(), "Catatan berhasil disimpan ke server!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Catatan berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                                 bottomNavigationView.visibility = View.VISIBLE
                                 findNavController().navigateUp()
                             } else {

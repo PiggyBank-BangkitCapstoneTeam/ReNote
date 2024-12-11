@@ -87,7 +87,7 @@ class EditCatatan : Fragment() {
                                             }
                                             Toast.makeText(
                                                 requireContext(),
-                                                "Catatan berhasil diperbarui di server!",
+                                                "Catatan berhasil diperbarui!",
                                                 Toast.LENGTH_SHORT
                                             ).show()
 
@@ -148,7 +148,7 @@ class EditCatatan : Fragment() {
                                 if (response.isSuccessful) {
                                     Toast.makeText(
                                         requireContext(),
-                                        "Catatan berhasil dihapus dari server!",
+                                        "Catatan berhasil dihapus!",
                                         Toast.LENGTH_SHORT
                                     ).show()
 
