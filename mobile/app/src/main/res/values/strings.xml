@@ -13,7 +13,7 @@
     <string name="riwayat">History</string>
     <string name="kategori">Category</string>
     <string name="deskripsi_transaksi">Transaction Description</string>
-    <string name="jumlah_nominal">Nominal Amount</string>
+    <string name="jumlah_nominal">Amount</string>
     <string name="arrow_icon">Arrow Icon</string>
     <string name="tambah">Add</string>
     <string name="hello_blank_fragment">Hello Blank Fragment</string>
@@ -53,7 +53,7 @@
 
     <string name="pilih_bulantahun">Calendar</string>
     <string name="bulan">Month</string>
-    <string name="bantuan">Help</string>
+    <string name="bantuan">Service</string>
     <string name="back_button">Back Button</string>
     <string name="foto_profile">Profile Photo</string>
     <string name="ganti_gambar">Change Picture</string>
