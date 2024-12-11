@@ -267,7 +267,7 @@ class TambahCatatan : Fragment() {
                     lifecycleScope.launch(Dispatchers.Main) {
                         if (response.isSuccessful && response.body() != null) {
                             currentNoteId = response.body()?.id
-                            Toast.makeText(requireContext(), "Note ID berhasil didapatkan: $currentNoteId", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Catatan anda telah dibuat silahkan upload gambar", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(requireContext(), "Gagal mendapatkan Note ID. Cek koneksi atau data!", Toast.LENGTH_SHORT).show()
                         }
@@ -321,14 +321,14 @@ class TambahCatatan : Fragment() {
             val token = UserPreference(requireContext()).getToken()
             if (token.isNullOrEmpty() || currentNoteId.isNullOrEmpty()) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Token atau Note ID tidak ditemukan.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Masukkan nominal jumlah 0 terlebih dahulu", Toast.LENGTH_SHORT).show()
                 }
                 return@launch
             }
 
             val apiService = ApiConfig.getApiService(token)
 
-            val requestBody = photoFile.asRequestBody("image/png".toMediaTypeOrNull())
+            val requestBody = photoFile.asRequestBody("image/*".toMediaTypeOrNull())
             val photoPart = MultipartBody.Part.createFormData("foto", photoFile.name, requestBody)
 
             withContext(Dispatchers.IO) {
@@ -338,9 +338,8 @@ class TambahCatatan : Fragment() {
                     withContext(Dispatchers.Main) {
                         if (response.isSuccessful && response.body()?.data?.url != null) {
                             uploadedImageUrl = response.body()?.data?.url
-                            binding.textScanResult.text = getString(R.string.foto_diambil)
                             Toast.makeText(requireContext(), "Foto berhasil diunggah!", Toast.LENGTH_SHORT).show()
-                            Toast.makeText(requireContext(), "Struk Anda Sedang Diproses", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Struk anda sedang diproses mohon tunggu beberapa saat!", Toast.LENGTH_SHORT).show()
                             findNavController().navigateUp()
                         } else {
                             val errorBody = response.errorBody()?.string()
@@ -358,8 +357,6 @@ class TambahCatatan : Fragment() {
 
     private fun toggleAdditionalFieldsVisibility(isPengeluaran: Boolean) {
         binding.iconCamera.visibility = if (isPengeluaran) View.VISIBLE else View.GONE
-        binding.titleScanResult.visibility = if (isPengeluaran) View.VISIBLE else View.GONE
-        binding.textScanResult.visibility = if (isPengeluaran) View.VISIBLE else View.GONE
     }
 
     private fun showDatePickerDialog() {
