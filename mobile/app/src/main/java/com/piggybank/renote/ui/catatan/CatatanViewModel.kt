@@ -5,10 +5,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.piggybank.renote.data.response.GetAllNoteResponse
 import com.piggybank.renotes.data.database.NoteDao
 import com.piggybank.renotes.data.database.NoteEntity
 import com.piggybank.renotes.data.database.NoteRoomDatabase
+import com.piggybank.renotes.data.pref.UserPreference
+import com.piggybank.renotes.data.retrofit.ApiConfig
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 
 class CatatanViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,29 +40,49 @@ class CatatanViewModel(application: Application) : AndroidViewModel(application)
         userId = id
     }
 
-    fun updateDataForDate(date: Calendar) {
-        val dateKey = getDateKey(date)
-        userId?.let { user ->
+    private fun syncDataWithServer(date: Calendar) {
+        val token = UserPreference(getApplication()).getToken()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (token != null && userId != null) {
+            val client = ApiConfig.getApiService(token)
+
             viewModelScope.launch {
-                val notes = noteDao.getNotesByDateAndUser(dateKey, user)
-                val catatanList = notes.map {
-                    Catatan(
-                        id = it.id.toString(),
-                        kategori = it.kategori,
-                        nominal = it.nominal,
-                        deskripsi = it.deskripsi,
-                        tanggal = it.tanggal
-                    )
-                }
-                _catatanList.postValue(catatanList)
+                client.getAllNotes().enqueue(object : Callback<GetAllNoteResponse> {
+                    override fun onResponse(
+                        call: Call<GetAllNoteResponse>,
+                        response: Response<GetAllNoteResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val notes = response.body()?.data?.map { dataItem ->
+                                Catatan(
+                                    id = dataItem?.id.toString(),
+                                    kategori = dataItem?.kategori ?: "",
+                                    nominal = dataItem?.nominal ?: 0,
+                                    deskripsi = dataItem?.deskripsi ?: "",
+                                    tanggal = dataItem?.tanggal ?: ""
+                                )
+                            } ?: emptyList()
 
-                val pemasukan = catatanList.filter { it.nominal >= 0 }.sumOf { it.nominal }
-                val pengeluaran = catatanList.filter { it.nominal < 0 }.sumOf { it.nominal }
+                            val pemasukan = notes.filter { it.nominal >= 0 }.sumOf { it.nominal }
+                            val pengeluaran = notes.filter { it.nominal < 0 }.sumOf { it.nominal }
 
-                _totalPemasukan.postValue(pemasukan)
-                _totalPengeluaran.postValue(pengeluaran)
+                            _catatanList.postValue(notes)
+                            _totalPemasukan.postValue(pemasukan)
+                            _totalPengeluaran.postValue(pengeluaran)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GetAllNoteResponse>, t: Throwable) {
+
+                    }
+                })
             }
-        } ?: error("User ID not set")
+        }
+    }
+
+    fun updateDataForDate(date: Calendar) {
+        syncDataWithServer(date)
     }
 
     fun updateDataForMonthAll(month: String, year: String) {

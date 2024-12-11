@@ -81,11 +81,19 @@ class EditCatatan : Fragment() {
                                 ) {
                                     lifecycleScope.launch(Dispatchers.Main) {
                                         if (response.isSuccessful) {
+                                            val date = Calendar.getInstance().apply {
+                                                val parts = selectedCatatan.tanggal.split("-")
+                                                set(parts[2].toInt(), parts[1].toInt() - 1, parts[0].toInt())
+                                            }
                                             Toast.makeText(
                                                 requireContext(),
                                                 "Catatan berhasil diperbarui di server!",
                                                 Toast.LENGTH_SHORT
                                             ).show()
+
+                                            // Update data for the specific date
+                                            catatanViewModel.updateDataForDate(date)
+
                                         } else {
                                             Toast.makeText(
                                                 requireContext(),
@@ -136,19 +144,19 @@ class EditCatatan : Fragment() {
                             call: Call<HapusCatatanResponse>,
                             response: Response<HapusCatatanResponse>
                         ) {
-                            if (response.isSuccessful) {
-                                lifecycleScope.launch(Dispatchers.Main) {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                if (response.isSuccessful) {
                                     Toast.makeText(
                                         requireContext(),
                                         "Catatan berhasil dihapus dari server!",
                                         Toast.LENGTH_SHORT
                                     ).show()
 
+                                    // Update data for the specific date
                                     catatanViewModel.updateDataForDate(date)
                                     findNavController().navigateUp()
-                                }
-                            } else {
-                                lifecycleScope.launch(Dispatchers.Main) {
+
+                                } else {
                                     Toast.makeText(
                                         requireContext(),
                                         "Gagal menghapus catatan dari server!",
@@ -157,7 +165,6 @@ class EditCatatan : Fragment() {
                                 }
                             }
                         }
-
                         override fun onFailure(call: Call<HapusCatatanResponse>, t: Throwable) {
                             lifecycleScope.launch(Dispatchers.Main) {
                                 Toast.makeText(
