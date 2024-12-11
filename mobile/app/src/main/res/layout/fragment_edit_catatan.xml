@@ -55,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/jumlah_nominal"
                 android:inputType="number"
+                android:autofillHints="creditCardNumber"
                 android:background="@drawable/edit_text_stroke"
                 android:padding="16dp"
                 android:layout_marginBottom="16dp" />
@@ -68,7 +69,9 @@
                 android:hint="@string/deskripsi_transaksi"
                 android:inputType="textMultiLine"
                 android:minLines="3"
+                android:autofillHints="name"
                 android:padding="16dp" />
+
 
             <Button
                 android:id="@+id/button_edit"

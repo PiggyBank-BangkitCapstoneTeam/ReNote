@@ -50,7 +50,7 @@
         android:layout_marginTop="2dp"
         android:text="@string/tanggal_pengirim"
         android:textColor="@color/grey_tebel"
-        android:textSize="10sp"
+        android:textSize="11sp"
         app:layout_constraintStart_toEndOf="@id/profile_image"
         app:layout_constraintTop_toBottomOf="@id/message_text" />
 
