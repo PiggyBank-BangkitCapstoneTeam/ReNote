@@ -602,7 +602,7 @@ PUBSUB_ML_ResponseSubscriptionId="renote-ml-response-subscription"
 COMPUTE_MANAGER_Enabled="true"
 COMPUTE_MANAGER_ProjectId="$GCP_PROJECT_ID"
 COMPUTE_MANAGER_ML_SERVER_Zone="$DEFAULT_ZONE"
-COMPUTE_MANAGER_ML_SERVER_SleepAfterIdleForSeconds=180
+COMPUTE_MANAGER_ML_SERVER_SleepAfterIdleForSeconds=300
 
 EOF
 
