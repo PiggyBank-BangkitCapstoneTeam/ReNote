@@ -321,7 +321,7 @@ class TambahCatatan : Fragment() {
             val token = UserPreference(requireContext()).getToken()
             if (token.isNullOrEmpty() || currentNoteId.isNullOrEmpty()) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Masukkan nominal jumlah 0 terlebih dahulu", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Masukkan nominal dengan jumlah 0 terlebih dahulu", Toast.LENGTH_SHORT).show()
                 }
                 return@launch
             }
