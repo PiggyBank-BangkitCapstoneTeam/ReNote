@@ -4,6 +4,9 @@ import android.Manifest
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -38,6 +42,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.io.FileInputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -316,6 +321,27 @@ class TambahCatatan : Fragment() {
         }
     }
 
+    private fun fixImageOrientation(photoFile: File): Bitmap {
+        val inputStream = FileInputStream(photoFile)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        val exif = ExifInterface(photoFile.absolutePath)
+        val orientation = exif.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL
+        )
+
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+        }
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
     private fun uploadCroppedPhoto(photoFile: File) {
         lifecycleScope.launch {
             val token = UserPreference(requireContext()).getToken()
@@ -326,10 +352,20 @@ class TambahCatatan : Fragment() {
                 return@launch
             }
 
+            // Perbaiki orientasi gambar
+            val fixedBitmap = fixImageOrientation(photoFile)
+            val correctedFile = File(requireContext().cacheDir, "corrected_image.jpg")
+
+            withContext(Dispatchers.IO) {
+                correctedFile.outputStream().use { out ->
+                    fixedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
+                }
+            }
+
             val apiService = ApiConfig.getApiService(token)
 
-            val requestBody = photoFile.asRequestBody("image/*".toMediaTypeOrNull())
-            val photoPart = MultipartBody.Part.createFormData("foto", photoFile.name, requestBody)
+            val requestBody = correctedFile.asRequestBody("image/*".toMediaTypeOrNull())
+            val photoPart = MultipartBody.Part.createFormData("foto", correctedFile.name, requestBody)
 
             withContext(Dispatchers.IO) {
                 try {
@@ -354,6 +390,7 @@ class TambahCatatan : Fragment() {
             }
         }
     }
+
 
     private fun toggleAdditionalFieldsVisibility(isPengeluaran: Boolean) {
         binding.iconCamera.visibility = if (isPengeluaran) View.VISIBLE else View.GONE

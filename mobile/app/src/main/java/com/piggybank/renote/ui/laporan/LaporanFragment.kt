@@ -105,7 +105,7 @@ class LaporanFragment : Fragment() {
     }
 
     private fun observeCatatanChanges() {
-        catatanViewModel.catatanList.observe(viewLifecycleOwner) { catatanList ->
+        catatanViewModel.catatanList.observe(viewLifecycleOwner) { _ ->
             lifecycleScope.launch {
                 updatePieCharts()
             }

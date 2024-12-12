@@ -76,4 +76,5 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.ucrop)
+    implementation(libs.androidx.exifinterface)
 }
