@@ -598,6 +598,7 @@ PUBSUB_ML_RequestTopicId="renote-ml-request-topic"
 PUBSUB_ML_RequestSubscriptionId="renote-ml-request-subscription"
 PUBSUB_ML_ResponseTopicId="renote-ml-response-topic"
 PUBSUB_ML_ResponseSubscriptionId="renote-ml-response-subscription"
+PUBSUB_ML_ResponseForceFixResponse="true"
 
 COMPUTE_MANAGER_Enabled="true"
 COMPUTE_MANAGER_ProjectId="$GCP_PROJECT_ID"

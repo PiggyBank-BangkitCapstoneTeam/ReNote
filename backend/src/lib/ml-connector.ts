@@ -20,6 +20,7 @@ export default class ReNote_MLConnector {
 	private pubsub_RequestTopic?: Topic;
 	private pubsub_ResponseTopic?: Topic;
 	private pubsub_ResponseSubscription?: Subscription;
+	private PUBSUB_ML_ResponseForceFixResponse: boolean = false;
 	private CloudSQL: GCP_CloudSQL;
 	private CloudStorageBucket: Bucket;
 	private ComputeInstance: InstancesClient;
@@ -119,7 +120,7 @@ export default class ReNote_MLConnector {
 
 				this.ComputeManager_BUSY = true;
 				this.ComputeManagerDoWork();
-			}, Math.max(60, this.ComputeManagerSleepAfterIdleForSeconds) * 1000); // Pilih mana yang lebih lama agar gak spam
+			}, 60000);
 
 			this.ComputeManagerStatusCheckTimer = setInterval(async () => {
 				this.ComputeManagerInstanceState = await this.GetMLServerStatus();
@@ -151,6 +152,12 @@ export default class ReNote_MLConnector {
 			throw new Error("[MLConnector] PUBSUB_ML_ResponseSubscriptionId harus diisi");
 		}
 
+		let ForceFixResponse = process.env.PUBSUB_ML_ResponseForceFixResponse;
+		if (!ForceFixResponse) {
+			throw new Error("[MLConnector] PUBSUB_ML_ResponseForceFixResponse harus diisi");
+		}
+		this.PUBSUB_ML_ResponseForceFixResponse = (ForceFixResponse === "true");
+
 		this.pubsub = new PubSub({
 			projectId: process.env.PUBSUB_ProjectId,
 			keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
@@ -167,6 +174,7 @@ export default class ReNote_MLConnector {
 			message.ack();
 
 			this.onMLResponse(message.data);
+			this.current_photo_scan_job = undefined;
 		});
 
 		this.pubsub_ResponseSubscription.on("error", (err) => {
@@ -216,6 +224,12 @@ export default class ReNote_MLConnector {
 	}
 
 	private async onMLResponse(data: Buffer) {
+		let JobContext = this.current_photo_scan_job;
+		if (!JobContext) {
+			console.error("[MLConnector] Ada response dari ML tetapi tidak ada job yang sedang aktif");
+			return;
+		}
+
 		this.WORKER_BUSY = false;
 		this.WORKER_LAST_BUSY_TIMESTAMP = Date.now();
 
@@ -240,43 +254,71 @@ export default class ReNote_MLConnector {
 		}
 
 		if (!jsonData.note_id) {
-			console.error("[MLConnector] Response dari kode ML tidak ada note_id");
-			return;
+			if (!this.PUBSUB_ML_ResponseForceFixResponse) {
+				console.error("[MLConnector] Response dari kode ML tidak ada note_id");
+				return;
+			}
+			jsonData.note_id = JobContext.note_id;
 		}
 
 		if (!jsonData.photo_id) {
-			console.error("[MLConnector] Response dari kode ML tidak ada photo_id");
-			return;
+			if (!this.PUBSUB_ML_ResponseForceFixResponse) {
+				console.error("[MLConnector] Response dari kode ML tidak ada photo_id");
+				return;
+			}
+			jsonData.photo_id = JobContext.photo_id;
 		}
 
 		if (!jsonData.result) {
-			console.error("[MLConnector] Response dari kode ML tidak ada result");
-			return;
+			if (!this.PUBSUB_ML_ResponseForceFixResponse) {
+				console.error("[MLConnector] Response dari kode ML tidak ada result");
+				return;
+			}
+			jsonData.result = {};
 		}
 
 		if (!jsonData.result.item) {
-			console.error("[MLConnector] Response dari kode ML tidak ada array item");
-			return;
+			if (!this.PUBSUB_ML_ResponseForceFixResponse) {
+				console.warn("[MLConnector] Response dari kode ML tidak ada array item");
+				return;
+			}
+			jsonData.result.item = [];
 		}
 
 		if (!jsonData.result.total) {
-			console.error("[MLConnector] Response dari kode ML tidak ada total");
-			return;
+			if (!this.PUBSUB_ML_ResponseForceFixResponse) {
+				console.error("[MLConnector] Response dari kode ML tidak ada total");
+				return;
+			}
+			jsonData.result.total = "0"
 		}
 
 		// Buang semua . dan , dari total
 		const total_clean = jsonData.result.total.replace(/[,.]/g, "");
 		const nominal_total = parseInt(total_clean);
 
-		if (!jsonData.result.shop) {
-			console.error("[MLConnector] Response dari kode ML tidak ada shop");
+		if (Number.isNaN(nominal_total)) {
+			console.error("[MLConnector] Response dari kode ML memiliki total yang tidak ada angka");
 			return;
+		}
+
+		if (!jsonData.result.shop) {
+			if (!this.PUBSUB_ML_ResponseForceFixResponse) {
+				console.error("[MLConnector] Response dari kode ML tidak ada shop");
+				return;
+			}
+			jsonData.result.shop = "ML Scan Error, nama toko tidak terbaca"
 		}
 
 		let description = `${jsonData.result.shop}\n`;
 
-		for (const item of jsonData.result.item) {
-			description += `  - ${item}\n`;
+		if (jsonData.result.item.length === 0) {
+			description += "ML Scan Error, tidak ada item yang terbaca\n";
+		}
+		else {
+			for (const item of jsonData.result.item) {
+				description += `  - ${item}\n`;
+			}
 		}
 
 		// Hapus \n diakhir jika ada
