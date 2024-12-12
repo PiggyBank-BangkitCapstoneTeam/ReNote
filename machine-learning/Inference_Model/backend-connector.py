@@ -10,8 +10,8 @@ from io import BytesIO
 load_dotenv()
 
 # Paths to models
-YOLO_MODEL_PATH = "./trained_models/YOLO/model_train_renfred_1/weights/best.pt"
-OCR_BEST_WEIGHTS = "./trained_models/OCR/CRNN_Model_Agus_v4/weight/weights.h5"
+YOLO_MODEL_PATH = "./trained_models/YOLO/model_train_renfred_7/weights/best.pt"
+OCR_BEST_WEIGHTS = "./trained_models/OCR/keras_ocr_model/model/best.weights.h5"
 CONF_LIMIT = 0.3
 ML_MODEL = None
 
