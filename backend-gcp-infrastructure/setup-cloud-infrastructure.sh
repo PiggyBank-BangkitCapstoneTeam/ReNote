@@ -350,7 +350,7 @@ sleep 30
 setup_echo "normal" "Membuat Cloud SQL (MySQL) instance (dapat memakan waktu beberapa menit)..."
 gcloud sql instances create renote-mysql \
 	--database-version="MYSQL_8_4" \
-	--tier="db-g1-small" \
+	--tier="db-f1-micro" \
 	--region="$DEFAULT_REGION" \
 	--network="renote-network" \
 	--no-assign-ip \
