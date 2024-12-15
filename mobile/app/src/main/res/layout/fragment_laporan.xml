@@ -1,0 +1,101 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.laporan.LaporanFragment">
+
+    <TextView
+        android:id="@+id/title_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_brown"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/menu_laporan"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextContrastCheck" />
+
+    <RadioGroup
+        android:id="@+id/toggle_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_label">
+
+        <RadioButton
+            android:id="@+id/radio_pengeluaran"
+            style="@style/ToggleButtonStyle"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_selector"
+            android:button="@null"
+            android:checked="true"
+            android:padding="12dp"
+            android:text="@string/pengeluaran"
+            tools:ignore="VisualLintButtonSize" />
+
+        <RadioButton
+            android:id="@+id/radio_pemasukan"
+            style="@style/ToggleButtonStyle"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_selector"
+            android:button="@null"
+            android:padding="12dp"
+            android:text="@string/pemasukan"
+            tools:ignore="TextContrastCheck,VisualLintButtonSize" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/date_dropdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/laporan_bulanan"
+        android:textSize="18sp"
+        app:drawableEndCompat="@drawable/ic_drop_down_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toggle_group" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pie_chart_pengeluaran"
+        android:layout_width="250dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date_dropdown" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pie_chart_pemasukan"
+        android:layout_width="250dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date_dropdown" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="pie_chart_pemasukan,pie_chart_pengeluaran" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

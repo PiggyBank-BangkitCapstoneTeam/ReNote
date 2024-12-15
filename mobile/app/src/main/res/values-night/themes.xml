@@ -1,0 +1,28 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.ReNote" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Primary brand color (light brown). -->
+        <item name="colorPrimary">@color/light_brown</item>
+        <item name="colorPrimaryVariant">@color/dark_brown</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color (cream). -->
+        <item name="colorSecondary">@color/light_brown</item>
+        <item name="colorSecondaryVariant">@color/light_cream</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Status bar color (cream). -->
+        <item name="android:statusBarColor">@color/beige</item>
+
+        <!-- Set text color for menu items to black -->
+        <item name="android:textColorPrimary">@color/black</item>
+
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!-- Tema untuk splash screen tanpa ActionBar -->
+    <style name="Theme.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/warm_cream</item>
+    </style>
+
+</resources>

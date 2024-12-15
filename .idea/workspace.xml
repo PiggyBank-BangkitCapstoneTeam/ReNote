@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_screen.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_welcome.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_month_picker.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_akun.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_bantuan.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_catatan.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_edit_catatan.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_edit_rekening.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_first.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_laporan.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_login.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_profile.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_rekening.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_second.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tambah.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tambah_rekening.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_tentang.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_catatan.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_laporan.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_month.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_rekening.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/bottom_nav_menu.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/navigation/mobile_navigation.xml">
+        <config>
+          <theme>@style/Theme.ReNote</theme>
+        </config>
+      </layout>
+    </layouts>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0d630255-0354-4700-a823-d76094c1be99" name="Changes" comment="updated" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\ASUS\.android\avd\Device_Pemula_API_VanillaIceCream.avd)]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Data Class" />
+        <option value="valueResourceFile" />
+        <option value="layoutResourceFile" />
+        <option value="resourceFile" />
+        <option value="Kotlin Interface" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MhmdFahreza&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/PiggyBank-BangkitCapstoneTeam/ReNote.git",
+    "accountId": "44bc37ba-3771-4542-95d1-98a7c3ae6f36"
+  }
+}]]></component>
+  <component name="KotlinCodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2oeLttsdkwcmuPJS57k6cXUPvVB" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "md",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Project Capstone/ReNote/mobile",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "vcs.Git"
+  }
+}]]></component>
+  <component name="PsdUISettings">
+    <option name="MODULE_TAB" value="Default Config" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Project Capstone\ReNote\app\src\main\java\com\piggybank\renote\ui\dashboard\setting" />
+    </key>
+    <key name="android.template.-1384841101">
+      <recent name="com.piggybank.renote.ui.welcome" />
+      <recent name="com.piggybank.renote.ui.main" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.piggybank.renote.ui.main" />
+      <recent name="com.piggybank.renote.ui.setting" />
+      <recent name="com.piggybank.renote.ui.dashboard.setting" />
+    </key>
+    <key name="android.template.325724261">
+      <recent name="com.piggybank.renote.ui.main" />
+    </key>
+    <key name="android.template.-1132406428">
+      <recent name="com.piggybank.renote.ui.main" />
+      <recent name="com.piggybank.renote.ui" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="ReNote.app.main" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0d630255-0354-4700-a823-d76094c1be99" name="Changes" comment="" />
+      <created>1731225312741</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1731225312741</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Update Rekening">
+      <option name="closed" value="true" />
+      <created>1731596443024</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1731596443032</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Update Rekening">
+      <option name="closed" value="true" />
+      <created>1731597697720</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1731597697723</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Update Rekening">
+      <option name="closed" value="true" />
+      <created>1731599362432</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1731599362433</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Update Rekening">
+      <option name="closed" value="true" />
+      <created>1731601608072</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1731601608075</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Update Rekening">
+      <option name="closed" value="true" />
+      <created>1731602528744</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1731602528746</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Update Catatan">
+      <option name="closed" value="true" />
+      <created>1731633106555</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1731633106555</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Update Catatan">
+      <option name="closed" value="true" />
+      <created>1731639204028</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1731639204028</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Update Catatan">
+      <option name="closed" value="true" />
+      <created>1731639239940</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1731639239940</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Update Catatan and rekening">
+      <option name="closed" value="true" />
+      <created>1731657349511</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1731657349511</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Update rekening">
+      <option name="closed" value="true" />
+      <created>1731667695511</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1731667695512</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Update catatan">
+      <option name="closed" value="true" />
+      <created>1731679806899</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1731679806899</updated>
+    </task>
+    <task id="LOCAL-00044" summary="bug buttom menu fix">
+      <option name="closed" value="true" />
+      <created>1731680193268</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1731680193268</updated>
+    </task>
+    <task id="LOCAL-00045" summary="update">
+      <option name="closed" value="true" />
+      <created>1731684371470</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1731684371470</updated>
+    </task>
+    <task id="LOCAL-00046" summary="update">
+      <option name="closed" value="true" />
+      <created>1731689150665</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1731689150665</updated>
+    </task>
+    <task id="LOCAL-00047" summary="update">
+      <option name="closed" value="true" />
+      <created>1731699988171</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1731699988171</updated>
+    </task>
+    <task id="LOCAL-00048" summary="update">
+      <option name="closed" value="true" />
+      <created>1731747207458</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1731747207459</updated>
+    </task>
+    <task id="LOCAL-00049" summary="update">
+      <option name="closed" value="true" />
+      <created>1731752173575</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1731752173577</updated>
+    </task>
+    <task id="LOCAL-00050" summary="update">
+      <option name="closed" value="true" />
+      <created>1731757434781</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1731757434783</updated>
+    </task>
+    <task id="LOCAL-00051" summary="update">
+      <option name="closed" value="true" />
+      <created>1731757900155</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1731757900156</updated>
+    </task>
+    <task id="LOCAL-00052" summary="updating front end">
+      <option name="closed" value="true" />
+      <created>1731759327058</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1731759327062</updated>
+    </task>
+    <task id="LOCAL-00053" summary="updating front end">
+      <option name="closed" value="true" />
+      <created>1731759772549</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1731759772551</updated>
+    </task>
+    <task id="LOCAL-00054" summary="updating front end">
+      <option name="closed" value="true" />
+      <created>1731778541867</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1731778541869</updated>
+    </task>
+    <task id="LOCAL-00055" summary="updating front end">
+      <option name="closed" value="true" />
+      <created>1731780576234</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1731780576236</updated>
+    </task>
+    <task id="LOCAL-00056" summary="updating front end">
+      <option name="closed" value="true" />
+      <created>1731816699558</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1731816699559</updated>
+    </task>
+    <task id="LOCAL-00057" summary="calander laporan">
+      <option name="closed" value="true" />
+      <created>1731829161441</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1731829161441</updated>
+    </task>
+    <task id="LOCAL-00058" summary="calander laporan">
+      <option name="closed" value="true" />
+      <created>1731830023492</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1731830023493</updated>
+    </task>
+    <task id="LOCAL-00059" summary="include library MpAndroidChart">
+      <option name="closed" value="true" />
+      <created>1731840748585</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1731840748587</updated>
+    </task>
+    <task id="LOCAL-00060" summary="include library MpAndroidChart">
+      <option name="closed" value="true" />
+      <created>1731843412134</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1731843412134</updated>
+    </task>
+    <task id="LOCAL-00061" summary="update laporanfragment">
+      <option name="closed" value="true" />
+      <created>1731843821717</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1731843821717</updated>
+    </task>
+    <task id="LOCAL-00062" summary="update laporanfragment">
+      <option name="closed" value="true" />
+      <created>1731856611548</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1731856611548</updated>
+    </task>
+    <task id="LOCAL-00063" summary="update SettingFragment">
+      <option name="closed" value="true" />
+      <created>1731863342120</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1731863342122</updated>
+    </task>
+    <task id="LOCAL-00064" summary="update SettingFragment">
+      <option name="closed" value="true" />
+      <created>1732026863515</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1732026863516</updated>
+    </task>
+    <task id="LOCAL-00065" summary="big update AkunFragment">
+      <option name="closed" value="true" />
+      <created>1732037254682</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1732037254686</updated>
+    </task>
+    <task id="LOCAL-00066" summary="update bahasa">
+      <option name="closed" value="true" />
+      <created>1732126471658</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1732126471659</updated>
+    </task>
+    <task id="LOCAL-00067" summary="update bahasa">
+      <option name="closed" value="true" />
+      <created>1732126795987</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1732126795992</updated>
+    </task>
+    <task id="LOCAL-00068" summary="update bahasa">
+      <option name="closed" value="true" />
+      <created>1732126898166</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1732126898167</updated>
+    </task>
+    <task id="LOCAL-00069" summary="update bahasa">
+      <option name="closed" value="true" />
+      <created>1732130265495</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1732130265495</updated>
+    </task>
+    <task id="LOCAL-00070" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732131076995</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1732131076995</updated>
+    </task>
+    <task id="LOCAL-00071" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732133878451</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1732133878451</updated>
+    </task>
+    <task id="LOCAL-00072" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732134924161</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1732134924162</updated>
+    </task>
+    <task id="LOCAL-00073" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732156180140</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1732156180141</updated>
+    </task>
+    <task id="LOCAL-00074" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732177922513</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1732177922539</updated>
+    </task>
+    <task id="LOCAL-00075" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732185208281</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1732185208283</updated>
+    </task>
+    <task id="LOCAL-00076" summary="updated front end">
+      <option name="closed" value="true" />
+      <created>1732206117930</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1732206117932</updated>
+    </task>
+    <task id="LOCAL-00077" summary="updated front end">
+      <option name="closed" value="true" />
+      <created>1732206581805</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1732206581806</updated>
+    </task>
+    <task id="LOCAL-00078" summary="updated front end">
+      <option name="closed" value="true" />
+      <created>1732210765788</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1732210765802</updated>
+    </task>
+    <task id="LOCAL-00079" summary="updated front end">
+      <option name="closed" value="true" />
+      <created>1732213315912</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1732213315915</updated>
+    </task>
+    <task id="LOCAL-00080" summary="add library room">
+      <option name="closed" value="true" />
+      <created>1732262115293</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1732262115296</updated>
+    </task>
+    <task id="LOCAL-00081" summary="updated">
+      <option name="closed" value="true" />
+      <created>1732268603910</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1732268603911</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Category Updated" />
+    <MESSAGE value="Backend Updated" />
+    <MESSAGE value="fitur ubah done" />
+    <MESSAGE value="fitur delete done" />
+    <MESSAGE value="fitur edit update" />
+    <MESSAGE value="fitur edit done" />
+    <MESSAGE value="fitur add rekening updated" />
+    <MESSAGE value="formatter rekening" />
+    <MESSAGE value="Update Rekening" />
+    <MESSAGE value="Update Catatan" />
+    <MESSAGE value="Update Catatan and rekening" />
+    <MESSAGE value="Update rekening" />
+    <MESSAGE value="Update catatan" />
+    <MESSAGE value="bug buttom menu fix" />
+    <MESSAGE value="update" />
+    <MESSAGE value="updating front end" />
+    <MESSAGE value="calander laporan" />
+    <MESSAGE value="include library MpAndroidChart" />
+    <MESSAGE value="update laporanfragment" />
+    <MESSAGE value="update SettingFragment" />
+    <MESSAGE value="big update AkunFragment" />
+    <MESSAGE value="update bahasa" />
+    <MESSAGE value="updated front end" />
+    <MESSAGE value="add library room" />
+    <MESSAGE value="updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated" />
+  </component>
+</project>
